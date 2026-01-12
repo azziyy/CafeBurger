@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cafe 888 - Premium App</title>
+    <link rel="stylesheet" href="style.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --------------------------------------------------
+           1. ASOSIY SOZLAMALAR VA ANIMATSIYALAR
+           -------------------------------------------------- */
+        :root {
+            --primary: #ffbe0b; 
+            --secondary: #fb5607; 
+            --dark: #1a1a1a;
+            --green: #2ecc71; 
+            --red: #ff4757; 
+            --gray: #f8f9fa;
+            --white: #ffffff; 
+            --text: #2d3436; 
+            --shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        /* Tungi rejim ranglari */
+        body.dark-mode {
+            --gray: #121212; 
+            --white: #1e1e1e; 
+            --text: #f1f2f6; 
+            --dark: #000000;
+            --shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--gray); margin: 0; 
+            padding-top: 65px; padding-bottom: 85px;
+            color: var(--text);
+            transition: background 0.3s, color 0.3s;
+            overflow-x: hidden;
+        }
+
+        /* Sahifa almashish animatsiyasi */
+        .p-con { animation: slideUp 0.4s ease-out forwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --------------------------------------------------
+           2. HEADER VA DRAWER (YON MENYU)
+           -------------------------------------------------- */
+        .header-nav {
+            position: fixed; top: 0; width: 100%; height: 60px;
+            background: var(--white); display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; z-index: 3000; box-shadow: var(--shadow);
+        }
+        .menu-icon { font-size: 24px; cursor: pointer; color: var(--text); }
+        .logo { font-weight: 900; font-size: 20px; letter-spacing: 1px; }
+        .logo span { color: var(--primary); }
+        .user-badge {
+            background: var(--gray); padding: 5px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 5px;
+            border: 1px solid #ddd;
+        }
+
+        /* Drawer (Yon panel) */
+        .drawer-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 4000; display: none; backdrop-filter: blur(4px);
+        }
+        .drawer {
+            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+            background: var(--white); z-index: 4001; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 20px; box-shadow: 10px 0 30px rgba(0,0,0,0.2);
+            display: flex; flex-direction: column;
+        }
+        .drawer.open { left: 0; }
+        .drawer-header { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+        .drawer-item {
+            padding: 15px; margin-bottom: 5px; border-radius: 12px;
+            display: flex; align-items: center; gap: 15px; font-weight: 600; cursor: pointer;
+            transition: 0.2s;
+        }
+        .drawer-item:active { background: var(--gray); transform: scale(0.98); }
+        .drawer-item i { width: 25px; font-size: 18px; color: var(--secondary); }
+
+        /* Tungi rejim tugmasi */
+        .toggle-switch {
+            width: 40px; height: 20px; background: #ccc; border-radius: 20px;
+            position: relative; margin-left: auto; transition: 0.3s;
+        }
+        .toggle-switch::after {
+            content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+            background: white; border-radius: 50%; transition: 0.3s;
+        }
+        .dark-mode .toggle-switch { background: var(--green); }
+        .dark-mode .toggle-switch::after { left: 22px; }
+
+        /* --------------------------------------------------
+           3. CUSTOM ALERT (CHROYLI OGOHLANTIRISH)
+           -------------------------------------------------- */
+        .custom-alert {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 9999; display: none;
+            align-items: center; justify-content: center; backdrop-filter: blur(5px);
+        }
+        .alert-box {
+            background: var(--white); width: 80%; max-width: 320px; padding: 25px;
+            border-radius: 25px; text-align: center; animation: popIn 0.3s;
+        }
+        @keyframes popIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .alert-icon { font-size: 50px; margin-bottom: 15px; display: block; }
+        .alert-btn {
+            background: var(--dark); color: white; border: none; padding: 12px 30px;
+            border-radius: 15px; font-weight: bold; margin-top: 15px; width: 100%;
+        }
+
+        /* --------------------------------------------------
+           4. MODALLAR (Profile, Product, Info)
+           -------------------------------------------------- */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 5000; display: none;
+            align-items: center; justify-content: center; backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: var(--white); width: 90%; max-width: 400px; border-radius: 25px;
+            position: relative; overflow: hidden; animation: slideUp 0.3s;
+        }
+        .close-modal {
+            position: absolute; top: 15px; right: 15px; width: 35px; height: 35px;
+            background: rgba(255,255,255,0.8); border-radius: 50%; border: none;
+            font-size: 20px; font-weight: bold; z-index: 10; cursor: pointer;
+        }
+        
+        /* Mahsulot Modali */
+        .modal-img { width: 100%; height: 300px; object-fit: cover; }
+        .modal-body { padding: 25px; }
+        .modal-title { font-size: 22px; margin: 0 0 10px; }
+        .modal-price { color: var(--secondary); font-size: 24px; font-weight: 900; }
+        .modal-desc { color: #777; line-height: 1.6; margin: 15px 0; }
+
+        /* Profil Modali */
+        .profile-header { background: var(--primary); height: 100px; position: relative; }
+        .profile-avatar {
+            width: 80px; height: 80px; background: white; border-radius: 50%;
+            position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%);
+            display: flex; align-items: center; justify-content: center; font-size: 40px; color: #ccc;
+            border: 4px solid var(--white);
+        }
+        .profile-form { padding: 50px 25px 25px; text-align: center; }
+        .inp-group { margin-bottom: 15px; text-align: left; }
+        .inp-group label { font-size: 12px; font-weight: bold; color: #888; margin-left: 10px; }
+        .inp {
+            width: 100%; padding: 15px; border: 2px solid #eee; background: var(--gray);
+            border-radius: 15px; font-size: 16px; margin-top: 5px; color: var(--text);
+        }
+        .inp:focus { border-color: var(--primary); }
+
+        /* --------------------------------------------------
+           5. ASOSIY SAHIFA ELEMENTLARI
+           -------------------------------------------------- */
+        .category-nav {
+            display: flex; gap: 10px; overflow-x: auto; padding: 15px;
+            background: var(--white); position: sticky; top: 60px; z-index: 100;
+            scrollbar-width: none;
+        }
+        .cat-btn {
+            padding: 8px 20px; border-radius: 20px; border: 1px solid #eee;
+            background: transparent; color: var(--text); font-weight: bold; white-space: nowrap;
+        }
+        .cat-btn.active { background: var(--dark); color: var(--primary); border-color: var(--dark); }
+
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
+        
+        .card {
+            background: var(--white); border-radius: 20px; overflow: hidden;
+            box-shadow: var(--shadow); position: relative;
+        }
+        .card img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+        .card-info { padding: 12px; text-align: center; }
+        .card h4 { margin: 5px 0; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* Smart Tugma */
+        .ctrl-btn {
+            width: 100%; padding: 10px; border-radius: 12px; border: none; margin-top: 10px;
+            font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .btn-add { background: var(--gray); color: var(--dark); display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-qty { background: var(--primary); color: white; display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; }
+        .qty-circle { width: 28px; height: 28px; background: rgba(255,255,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+
+        /* Savatcha va Buyurtma */
+        .cart-card { background: var(--white); margin: 15px; padding: 20px; border-radius: 25px; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; }
+        
+        .location-btn {
+            width: 100%; padding: 15px; border: 2px dashed var(--secondary); border-radius: 15px;
+            background: rgba(251, 86, 7, 0.1); color: var(--secondary); font-weight: bold;
+            margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .order-btn {
+            width: 100%; padding: 16px; background: var(--green); color: white;
+            border: none; border-radius: 18px; font-weight: 900; font-size: 16px;
+            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.4); opacity: 0.5; pointer-events: none;
+        }
+        .order-btn.ready { opacity: 1; pointer-events: all; }
+
+        /* Toolbar */
+        .toolbar {
+            position: fixed; bottom: 0; width: 100%; height: 75px;
+            background: var(--white); display: flex; justify-content: space-around; align-items: center;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 3000;
+        }
+        .tool-item { display: flex; flex-direction: column; align-items: center; color: #ccc; font-size: 11px; font-weight: 600; }
+        .tool-item.active { color: var(--secondary); transform: translateY(-3px); }
+        .tool-item i { font-size: 22px; margin-bottom: 4px; }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="myAlert" class="custom-alert">
+        <div class="alert-box">
+            <span id="alertIcon" class="alert-icon"></span>
+            <h3 id="alertTitle">Diqqat</h3>
+            <p id="alertMsg" style="color:#666; margin-bottom:20px;">Xabar matni</p>
+            <button class="alert-btn" onclick="closeAlert()">Tushunarli</button>
+        </div>
+    </div>
+
+    <div id="drawerOverlay" class="drawer-overlay" onclick="toggleDrawer()"></div>
+    <div id="myDrawer" class="drawer">
+        <div class="drawer-header">
+            <h2>Cafe 888</h2>
+            <p style="color:#888; font-size:14px;">Premium Mobile App</p>
+        </div>
+        <div class="drawer-item" onclick="toggleMode()">
+            <i class="fa fa-moon"></i> <span>Tungi rejim</span>
+            <div id="modeSwitch" class="toggle-switch"></div>
+        </div>
+        <div class="drawer-item" onclick="showAlert('Bog\'lanish', 'Admin: +998 90 123 45 67\nTelegram: @cafe888admin', '📞')">
+            <i class="fa fa-phone"></i> <span>Biz bilan aloqa</span>
+        </div>
+        <div class="drawer-item" onclick="showAlert('Ilova haqida', 'Cafe 888 v2.0\nPremium Versiya\nDeveloper: Gemini', 'ℹ️')">
+            <i class="fa fa-info-circle"></i> <span>Dastur haqida</span>
+        </div>
+    </div>
+
+    <header class="header-nav">
+        <div class="menu-icon" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
+        <div class="logo">CAFE <span>888</span></div>
+        <div class="user-badge" onclick="openProfile()">
+            <i class="fa fa-user"></i> <span id="headerName">Kirish</span>
+        </div>
+    </header>
+
+    <div id="prodModal" class="modal" onclick="if(event.target === this) closeModal('prodModal')">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('prodModal')">×</button>
+            <img id="pm-img" class="modal-img" src="">
+            <div class="modal-body">
+                <h3 id="pm-title" class="modal-title"></h3>
+                <div id="pm-price" class="modal-price"></div>
+                <p id="pm-desc" class="modal-desc"></p>
+                <button class="alert-btn" onclick="closeModal('prodModal')">Yopish</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <div class="profile-header">
+                <div class="profile-avatar"><i class="fa fa-user"></i></div>
+            </div>
+            <div class="profile-form">
+                <h3>Profilingiz</h3>
+                <p style="color:#888; font-size:12px; margin-bottom:20px;">Buyurtma berish uchun to'ldiring</p>
+                
+                <div class="inp-group">
+                    <label>Ismingiz</label>
+                    <input type="text" id="profName" class="inp" placeholder="Ali Valiyev">
+                </div>
+                <div class="inp-group">
+                    <label>Telefon raqam</label>
+                    <input type="tel" id="profPhone" class="inp" placeholder="+998" maxlength="13">
+                </div>
+                
+                <button class="alert-btn" style="background:var(--green)" onclick="saveProfile()">SAQLASH</button>
+            </div>
+        </div>
+    </div>
+
+    <main id="p-main" class="p-con">
+        <div id="catNav" class="category-nav"></div>
+        <div id="menuGrid" class="menu-grid"></div>
+    </main>
+
+    <div id="p-cart" class="p-con hidden">
+        <div class="cart-card">
+            <h2>Savat <span style="font-size:16px; color:#888">(<span id="cartCountInner">0</span>)</span></h2>
+            <div id="cartList"></div>
+            
+            <div style="margin-top:20px; border-top:2px dashed #eee; padding-top:15px;">
+                <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:900; margin-bottom:20px;">
+                    <span>Jami:</span> <span id="totalPrice">0 so'm</span>
+                </div>
+                
+                <button id="locBtn" class="location-btn" onclick="getLocation()">
+                    <i class="fa fa-map-marker-alt"></i> MANZILNI ANIQLASH
+                </button>
+                
+                <button id="orderBtn" class="order-btn" onclick="sendOrder()">
+                    BUYURTMANI TASDIQLASH
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="p-orders" class="p-con hidden">
+        <div style="padding:20px;">
+            <h2>Buyurtmalarim</h2>
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <nav class="toolbar">
+        <div class="tool-item active" onclick="nav('main', this)">
+            <i class="fa fa-utensils"></i><span>Menyu</span>
+        </div>
+        <div class="tool-item" onclick="nav('cart', this)">
+            <i class="fa fa-shopping-cart"></i><span>Savat</span>
+        </div>
+        <div class="tool-item" onclick="nav('orders', this)">
+            <i class="fa fa-clock"></i><span>Tarix</span>
+        </div>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // 1. CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVSfWRZ77PFFxip93NcD5QZ9Fc0gMUyW8",
+            authDomain: "cafe888-c2d7d.firebaseapp.com",
+            databaseURL: "https://cafe888-c2d7d-default-rtdb.firebaseio.com",
+            projectId: "cafe888-c2d7d",
+            storageBucket: "cafe888-c2d7d.firebasestorage.app",
+            messagingSenderId: "286769489924",
+            appId: "1:286769489924:web:f778a8d15d46abaf1b2d51"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const SHEET_ID = "1j6VojbeSYWgYj3UY98xCxHLCzHcGlEg0nXjYwHDkKQk";
+
+        // GLOBAL STATES
+        let products = [];
+        let cart = {};
+        let userLocation = null;
+        let user = JSON.parse(localStorage.getItem('cafe_user'));
+
+        // 2. INITIALIZATION
+        function init() {
+            checkProfile();
+            fetchProducts();
+            
+            // Telefon input formatlash (+998)
+            const phoneInp = document.getElementById('profPhone');
+            phoneInp.addEventListener('input', function(e) {
+                let val = e.target.value.replace(/\D/g, ''); // Faqat raqam
+                if(!val.startsWith('998')) val = '998' + val;
+                if(val.length > 12) val = val.slice(0, 12);
+                e.target.value = '+' + val;
+            });
+            phoneInp.value = "+998"; // Default
+        }
+
+        function checkProfile() {
+            if(user) {
+                document.getElementById('headerName').innerText = user.name.split(' ')[0];
+                document.getElementById('profName').value = user.name;
+                document.getElementById('profPhone').value = user.phone;
+                listenOrders();
+            } else {
+                setTimeout(() => openModal('profileModal'), 1000);
+            }
+        }
+
+        // 3. DATA FETCHING
+        async function fetchProducts() {
+            try {
+                const res = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`);
+                const text = await res.text();
+                const json = JSON.parse(text.substr(47).slice(0, -2));
+                products = json.table.rows.map(r => ({
+                    id: r.c[0]?.v, cat: r.c[1]?.v || "Boshqa", name: r.c[2]?.v,
+                    price: r.c[3]?.v || 0, img: r.c[4]?.v, desc: r.c[5]?.v
+                }));
+                renderCats();
+                renderMenu('Barchasi');
+            } catch(e) { showAlert("Xato", "Internetni tekshiring!", "❌"); }
+        }
+
+        // 4. RENDERING
+        function renderCats() {
+            const cats = ['Barchasi', ...new Set(products.map(p => p.cat))];
+            document.getElementById('catNav').innerHTML = cats.map(c => 
+                `<button class="cat-btn ${c==='Barchasi'?'active':''}" onclick="filter('${c}', this)">${c}</button>`
+            ).join('');
+        }
+
+        function filter(cat, el) {
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            renderMenu(cat);
+        }
+
+        function renderMenu(cat) {
+            const list = cat === 'Barchasi' ? products : products.filter(p => p.cat === cat);
+            const grid = document.getElementById('menuGrid');
+            grid.innerHTML = "";
+            
+            list.forEach(p => {
+                const q = cart[p.id] || 0;
+                // Smart tugma logikasi
+                let btnHtml = "";
+                if(q === 0) {
+                    btnHtml = `<button class="ctrl-btn btn-add" onclick="updateCart(${p.id}, 1)">
+                                <i class="fa fa-shopping-basket"></i> Savatga
+                               </button>`;
+                } else {
+                    btnHtml = `<div class="ctrl-btn btn-qty">
+                                <div class="qty-circle" onclick="updateCart(${p.id}, -1)">-</div>
+                                <span>${q}</span>
+                                <div class="qty-circle" onclick="updateCart(${p.id}, 1)">+</div>
+                               </div>`;
+                }
+
+                grid.innerHTML += `
+                <div class="card">
+                    <img src="${p.img}" onclick="openProdModal(${p.id})" onerror="this.src='https://via.placeholder.com/300'">
+                    <div class="card-info">
+                        <h4 onclick="openProdModal(${p.id})">${p.name}</h4>
+                        <b style="color:var(--secondary)">${p.price.toLocaleString()} so'm</b>
+                        ${btnHtml}
+                    </div>
+                </div>`;
+            });
+        }
+
+        function updateCart(id, n) {
+            cart[id] = (cart[id] || 0) + n;
+            if(cart[id] <= 0) delete cart[id];
+            
+            // UI Update
+            const activeCat = document.querySelector('.cat-btn.active')?.innerText || 'Barchasi';
+            if(document.getElementById('p-main').classList.contains('active')) renderMenu(activeCat);
+            if(document.getElementById('p-cart').classList.contains('active')) renderCartList();
+            
+            checkOrderReady();
+        }
+
+        // 5. SAVAT VA BUYURTMA
+        function renderCartList() {
+            const div = document.getElementById('cartList');
+            let total = 0, count = 0;
+            let html = "";
+            
+            for(let id in cart) {
+                const p = products.find(x => x.id == id);
+                const sum = p.price * cart[id];
+                total += sum; count += cart[id];
+                
+                html += `
+                <div class="cart-item">
+                    <div>
+                        <b>${p.name}</b>
+                        <div style="font-size:12px; color:#888">${p.price} x ${cart[id]} = ${sum.toLocaleString()}</div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <button class="qty-circle" style="background:#ddd; border:none;" onclick="updateCart(${p.id}, -1)">-</button>
+                        <b>${cart[id]}</b>
+                        <button class="qty-circle" style="background:var(--primary); border:none; color:white" onclick="updateCart(${p.id}, 1)">+</button>
+                    </div>
+                </div>`;
+            }
+            div.innerHTML = html || "<p style='text-align:center; padding:20px; color:#aaa'>Savatcha bo'sh</p>";
+            document.getElementById('totalPrice').innerText = total.toLocaleString() + " so'm";
+            document.getElementById('cartCountInner').innerText = count;
+            checkOrderReady();
+        }
+
+        function getLocation() {
+            const btn = document.getElementById('locBtn');
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Aniqlanmoqda...';
+            
+            if(!navigator.geolocation) {
+                showAlert("Xato", "Brauzeringiz lokatsiyani qo'llamaydi", "❌");
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    userLocation = { lat: pos.coords.latitude, long: pos.coords.longitude };
+                    btn.innerHTML = '<i class="fa fa-check-circle"></i> MANZIL ANIQLANDI';
+                    btn.style.borderColor = "var(--green)";
+                    btn.style.color = "var(--green)";
+                    btn.style.background = "rgba(46, 204, 113, 0.1)";
+                    checkOrderReady();
+                    showAlert("Zo'r!", "Manzilingiz muvaffaqiyatli olindi.", "📍");
+                },
+                () => {
+                    btn.innerHTML = '<i class="fa fa-exclamation-circle"></i> QAYTA URINISH';
+                    showAlert("Xato", "Iltimos, joylashuvga ruxsat bering!", "⚠️");
+                }
+            );
+        }
+
+        function checkOrderReady() {
+            const hasItems = Object.keys(cart).length > 0;
+            const hasUser = !!user;
+            const hasLoc = !!userLocation;
+            
+            const btn = document.getElementById('orderBtn');
+            if(hasItems && hasUser && hasLoc) {
+                btn.classList.add('ready');
+                btn.innerHTML = "BUYURTMANI TASDIQLASH";
+            } else {
+                btn.classList.remove('ready');
+                if(!hasItems) btn.innerHTML = "SAVAT BO'SH";
+                else if(!hasLoc) btn.innerHTML = "MANZILNI ANIQLANG";
+                else btn.innerHTML = "FORMANI TO'LDIRING";
+            }
+        }
+
+        function sendOrder() {
+            if(!Object.keys(cart).length) return showAlert("Diqqat", "Savat bo'shku axir!", "🛒");
+            if(!userLocation) return showAlert("Manzil yo'q", "Iltimos, manzilni aniqlash tugmasini bosing.", "📍");
+            if(!user) return openProfile();
+
+            const items = [];
+            let total = 0;
+            for(let id in cart) {
+                const p = products.find(x => x.id == id);
+                items.push({ name: p.name, qty: cart[id], price: p.price });
+                total += p.price * cart[id];
+            }
+
+            const order = {
+                user_id: user.phone.replace(/\D/g, ''),
+                user_info: `${user.name} (${user.phone})`,
+                items: items,
+                total: total,
+                location: userLocation, // Bot uchun koordinata
+                status: 'yangi',
+                time: new Date().toLocaleString()
+            };
+
+            db.ref('orders').push(order);
+            showAlert("Qabul qilindi", "Buyurtmangiz yuborildi. Operator tez orada bog'lanadi.", "✅");
+            
+            cart = {}; userLocation = null;
+            document.getElementById('locBtn').innerHTML = '<i class="fa fa-map-marker-alt"></i> MANZILNI ANIQLASH';
+            document.getElementById('locBtn').style = ""; // Reset style
+            renderCartList();
+            nav('orders', document.querySelectorAll('.tool-item')[2]);
+        }
+
+        // 6. UI FUNCTIONS
+        function nav(id, el) {
+            document.querySelectorAll('.p-con').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.tool-item').forEach(t => t.classList.remove('active'));
+            
+            document.getElementById('p-' + id).classList.remove('hidden');
+            el.classList.add('active');
+            
+            if(id === 'cart') renderCartList();
+        }
+
+        function openProdModal(id) {
+            const p = products.find(x => x.id == id);
+            document.getElementById('pm-img').src = p.img;
+            document.getElementById('pm-title').innerText = p.name;
+            document.getElementById('pm-price').innerText = p.price.toLocaleString() + " so'm";
+            document.getElementById('pm-desc').innerText = p.desc;
+            openModal('prodModal');
+        }
+
+        // Alert System
+        function showAlert(title, msg, icon) {
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertMsg').innerText = msg;
+            document.getElementById('alertIcon').innerText = icon;
+            document.getElementById('myAlert').style.display = 'flex';
+        }
+        function closeAlert() { document.getElementById('myAlert').style.display = 'none'; }
+
+        // Profil va Drawer
+        function toggleDrawer() { 
+            document.getElementById('myDrawer').classList.toggle('open');
+            document.getElementById('drawerOverlay').style.display = 
+                document.getElementById('myDrawer').classList.contains('open') ? 'block' : 'none';
+        }
+        function toggleMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+        function openProfile() { openModal('profileModal'); }
+        
+        function saveProfile() {
+            const name = document.getElementById('profName').value.trim();
+            const phone = document.getElementById('profPhone').value.trim();
+            
+            if(name.length < 3 || phone.length < 13) {
+                showAlert("Xatolik", "Ism va telefonni to'liq kiriting!", "⚠️");
+                return;
+            }
+            
+            user = { name, phone };
+            localStorage.setItem('cafe_user', JSON.stringify(user));
+            closeModal('profileModal');
+            checkProfile();
+            showAlert("Saqlandi", "Ma'lumotlaringiz yangilandi", "✅");
+        }
+
+        // Generic Modal
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
