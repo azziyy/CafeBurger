@@ -7,9 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --------------------------------------------------
-           1. SOZLAMALAR (VARIABLES)
-           -------------------------------------------------- */
+        /* 1. ASOSIY SOZLAMALAR */
         :root {
             --bg-dark: #0f0f13;
             --card-dark: #1b1b22;
@@ -22,10 +20,9 @@
             --st-road: #9b59b6;
             --st-done: #2ecc71;
             
-            /* Glass Effekt (Shaffoflik) */
+            /* Glass Effekt */
             --glass: rgba(27, 27, 34, 0.7); 
             --glass-blur: blur(20px);
-            
             --radius: 24px;
             --shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
@@ -47,35 +44,25 @@
         /* Animatsiyalar */
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes zoomIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-        
-        /* Ezilish effekti */
-        button:active, .card:active, .icon-btn:active, .story-circle:active, .nav-item:active {
-            transform: scale(0.95); transition: 0.1s;
-        }
+        button:active, .card:active, .icon-btn:active, .story-circle:active, .nav-item:active { transform: scale(0.95); transition: 0.1s; }
 
-        /* --------------------------------------------------
-           2. HEADER & TOOLBAR (IXCHAM & SHAFFOF)
-           -------------------------------------------------- */
+        /* 2. HEADER & TOOLBAR */
         .header {
-            position: fixed; top: 0; left: 0; width: 100%; 
-            height: 60px; /* Pasaytirildi */
+            position: fixed; top: 0; left: 0; width: 100%; height: 60px;
             background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; z-index: 1000; /* Drawer dan pastda turadi */
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 0 20px; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .logo { font-size: 22px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase; }
         .logo span { color: var(--gold); }
         .icon-btn { font-size: 22px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: var(--text-dark); }
 
-        /* NAVBAR (PASTKI MENYU) - SHAFFOF VA Drawer ostida */
+        /* NAVBAR */
         .navbar {
-            position: fixed; bottom: 0; width: 100%; 
-            height: 70px; /* Pasaytirildi */
+            position: fixed; bottom: 0; width: 100%; height: 70px;
             background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
             display: flex; justify-content: space-around; align-items: center;
-            border-radius: 25px 25px 0 0; 
-            z-index: 1000; /* Drawer dan pastda */
+            border-radius: 25px 25px 0 0; z-index: 1000;
             box-shadow: 0 -5px 20px rgba(0,0,0,0.2); border-top: 1px solid rgba(255,255,255,0.05);
             padding-bottom: 5px;
         }
@@ -86,37 +73,28 @@
         .nav-item.active { color: var(--gold); transform: translateY(-3px); }
         .nav-item i { font-size: 26px; margin-bottom: 4px; }
 
-        /* --------------------------------------------------
-           3. DRAWER (YON MENYU) - ENG TEPADA
-           -------------------------------------------------- */
+        /* 3. DRAWER (YON MENYU) - ENG TEPADA */
         .drawer-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
-            z-index: 2000; display: none; /* Navbar(1000) dan baland */
+            z-index: 2000; display: none;
         }
         .drawer {
             position: fixed; top: 0; left: -300px; width: 280px; height: 100%;
-            background: var(--card-dark); 
-            z-index: 2001; /* Overlay dan baland */
+            background: var(--card-dark); z-index: 2001;
             transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
             display: flex; flex-direction: column; padding: 40px 25px;
             box-shadow: 5px 0 30px rgba(0,0,0,0.5);
         }
         .drawer.open { left: 0; }
-        
         .drawer-item {
             padding: 15px; border-radius: 15px; display: flex; align-items: center; gap: 15px;
             font-size: 16px; color: var(--text-dark); background: rgba(255,255,255,0.03); margin-bottom: 10px;
         }
         .drawer-item:active { background: rgba(255,193,7,0.1); color: var(--gold); }
 
-        /* --------------------------------------------------
-           4. ASOSIY QISMLAR
-           -------------------------------------------------- */
-        .stories-container {
-            padding: 75px 15px 10px 15px; /* Header pasaygani uchun kamaytirildi */
-            display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none;
-        }
+        /* 4. ASOSIY QISMLAR */
+        .stories-container { padding: 75px 15px 10px 15px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
         .story-circle {
             min-width: 72px; height: 72px; border-radius: 50%;
             background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
@@ -135,27 +113,20 @@
         .card-title { font-weight: 800; font-size: 15px; margin-bottom: 5px; line-height: 1.3; }
         .card-price { color: var(--gold); font-weight: 900; font-size: 16px; margin-bottom: 12px; }
 
-        /* TUGMALAR */
         .btn { width: 100%; padding: 12px; border-radius: 15px; border: none; font-weight: bold; font-size: 14px; margin-top: auto; cursor: pointer; }
         .btn-gold { background: var(--gold); color: #000; box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3); }
-        
         .btn-qty-wrap {
             display: flex; justify-content: space-between; align-items: center;
             background: rgba(255,255,255,0.05); border: 1px solid var(--gold);
             border-radius: 15px; padding: 4px; height: 42px; margin-top: auto;
         }
-        .qty-btn {
-            width: 32px; height: 32px; border-radius: 12px; background: var(--gold); color: black;
-            display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; cursor: pointer;
-        }
+        .qty-btn { width: 32px; height: 32px; border-radius: 12px; background: var(--gold); color: black; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; }
         .qty-num { font-size: 18px; font-weight: 800; color: var(--text-dark); }
 
-        /* MODALLAR */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 3000; display: none; align-items: center; justify-content: center; }
         .modal-card { background: var(--card-dark); width: 85%; padding: 0; border-radius: 25px; overflow: hidden; transform: scale(0.9); transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); }
         .modal-overlay.active .modal-card { transform: scale(1); }
 
-        /* Status Badges */
         .st-badge { padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
         .st-new { background: rgba(52,152,219,0.2); color: var(--st-new); }
         .st-cook { background: rgba(230,126,34,0.2); color: var(--st-cook); }
@@ -164,11 +135,10 @@
 
         .blocked-screen { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
         .hidden { display: none !important; }
-        .inp { width: 100%; padding: 15px; background: rgba(0,0,0,0.3); border: 1px solid #444; border-radius: 12px; color: var(--text-dark); margin-bottom: 10px; font-size: 16px; }
     </style>
 </head>
 <body>
-    <div id="blockedScreen" class="blocked-screen">
+        <div id="blockedScreen" class="blocked-screen">
         <i class="fa fa-ban" style="font-size: 60px; color: #ff4757; margin-bottom: 20px;"></i>
         <h1 style="color:#ff4757">KIRISH TAQIQLANDI</h1>
         <p style="color:#aaa;">Sizning raqamingiz bloklangan.</p>
@@ -192,23 +162,18 @@
 
     <div id="p-menu" class="page">
         <div id="storiesContainer" class="stories-container hidden"></div>
-        
         <div id="catNav" style="display:flex; gap:10px; overflow-x:auto; padding:10px 15px; position:sticky; top:60px; z-index:900; background:var(--bg-dark); backdrop-filter:blur(10px);"></div>
-        
         <div id="menuGrid" class="grid"></div>
     </div>
 
     <div id="p-cart" class="page hidden" style="padding-top: 80px;">
         <h2 style="padding:0 20px;">Savatcha</h2>
         <div id="cartList" style="padding:0 20px 180px 20px;"></div>
-        
         <div style="position:fixed; bottom:80px; left:20px; right:20px; background:var(--card-dark); padding:20px; border-radius:20px; box-shadow: var(--shadow); border:1px solid rgba(255,255,255,0.1); z-index:900;">
             <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:900; font-size:18px;">
                 <span>Jami:</span> <span id="totalPrice" style="color:var(--gold)">0 so'm</span>
             </div>
-            <button id="locBtn" class="btn" style="background:transparent; border:1px dashed #666; color:#888; margin-bottom:10px;" onclick="getLocation()">
-                <i class="fa fa-location-arrow"></i> Manzilni aniqlash
-            </button>
+            <button id="locBtn" class="btn" style="background:transparent; border:1px dashed #666; color:#888; margin-bottom:10px;" onclick="getLocation()"><i class="fa fa-location-arrow"></i> Manzilni aniqlash</button>
             <button id="orderBtn" class="btn" style="background:#333; color:#666; pointer-events:none;" onclick="sendOrder()">BUYURTMA BERISH</button>
         </div>
     </div>
@@ -245,12 +210,21 @@
             <button class="btn btn-gold" onclick="closeAlert()">OK</button>
         </div>
     </div>
+
     <div id="profModal" class="modal-overlay">
-        <div class="modal-card" style="padding:30px;">
-            <h3 style="text-align:center; margin-bottom:20px;">Ro'yxatdan o'tish</h3>
-            <input id="profName" class="inp" placeholder="Ismingiz">
-            <input id="profPhone" class="inp" type="tel" value="+998">
-            <button class="btn btn-gold" onclick="saveProfile()">SAQLASH</button>
+        <div class="modal-card" style="padding:40px 30px; text-align:center; max-width:350px;">
+            <div style="width:80px; height:80px; background:rgba(0, 136, 204, 0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px auto;">
+                <i class="fab fa-telegram-plane" style="font-size:45px; color:#0088cc;"></i>
+            </div>
+            <h2 style="color:var(--text-dark); margin:0 0 10px 0;">Xush kelibsiz</h2>
+            <p style="color:#888; font-size:14px; margin-bottom:30px; line-height:1.5;">Buyurtma berish uchun Telegram orqali xavfsiz va tez ro'yxatdan o'ting.</p>
+            <div id="loginLoading" class="hidden" style="margin-bottom:20px;">
+                <i class="fa fa-circle-notch fa-spin" style="font-size:30px; color:var(--gold);"></i>
+                <p style="margin-top:10px; font-size:13px; color:var(--gold);">Tasdiqlash kutilmoqda...</p>
+            </div>
+            <button id="tgLoginBtn" class="btn" onclick="startTelegramLogin()" style="background:#0088cc; color:white; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow: 0 8px 20px rgba(0, 136, 204, 0.4);">
+                <i class="fab fa-telegram-plane" style="font-size:20px"></i> Telegram orqali kirish
+            </button>
         </div>
     </div>
     
@@ -261,10 +235,14 @@
         <div style="position:absolute; left:0; top:0; width:30%; height:100%;" onclick="prevStory()"></div>
         <div style="position:absolute; right:0; top:0; width:70%; height:100%;" onclick="nextStory()"></div>
     </div>
+    
         <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
+        // --- SOZLAMALAR ---
+        const BOT_USERNAME = "Cafe888adminbot"; // SIZNING BOTINGIZ ✅
+        
         const firebaseConfig = {
             apiKey: "AIzaSyCVSfWRZ77PFFxip93NcD5QZ9Fc0gMUyW8",
             authDomain: "cafe888-c2d7d.firebaseapp.com",
@@ -286,16 +264,32 @@
             if(localStorage.getItem('theme')==='light') document.body.classList.add('light-mode');
             const phone = localStorage.getItem('cafe_phone');
             if(phone) checkUser(phone); else openProfile();
-
             loadMenu(); loadAds();
+        }
 
-            document.getElementById('profPhone').addEventListener('input', e => {
-                let v=e.target.value.replace(/\D/g,''); if(!v.startsWith('998')) v='998'+v;
-                e.target.value='+'+v.substring(0,12);
+        // TELEGRAM LOGIN
+        function startTelegramLogin() {
+            const token = 'req_' + Math.floor(Math.random() * 10000000);
+            const link = `https://t.me/${BOT_USERNAME}?start=login_${token}`;
+            window.open(link, '_blank');
+            
+            document.getElementById('tgLoginBtn').style.display = 'none';
+            document.getElementById('loginLoading').classList.remove('hidden');
+            
+            const listener = db.ref('auth_tokens/' + token);
+            listener.on('value', (snap) => {
+                const data = snap.val();
+                if (data) {
+                    listener.off(); db.ref('auth_tokens/' + token).remove();
+                    user = data; localStorage.setItem('cafe_phone', data.phone.replace('+',''));
+                    document.getElementById('profModal').classList.remove('active');
+                    setTimeout(()=>document.getElementById('profModal').style.display='none', 300);
+                    showAlert("Muvaffaqiyatli!", `Xush kelibsiz, ${data.name}`);
+                    checkUser(data.phone.replace('+',''));
+                }
             });
         }
 
-        // USER
         function checkUser(phone) {
             db.ref('users/'+phone).on('value', snap => {
                 const val = snap.val();
@@ -310,24 +304,8 @@
                 } else openProfile();
             });
         }
-        function saveProfile() {
-            const name=document.getElementById('profName').value;
-            const phone=document.getElementById('profPhone').value.replace(/\D/g,'');
-            if(name.length<3 || phone.length<12) return showAlert("Xato","Ma'lumot xato");
-            db.ref('users/'+phone).once('value', s => {
-                if(s.val() && s.val().blocked) checkUser(phone);
-                else {
-                    const u={name, phone, blocked:false};
-                    db.ref('users/'+phone).set(u);
-                    user=u; localStorage.setItem('cafe_phone', phone);
-                    document.getElementById('profModal').classList.remove('active');
-                    setTimeout(()=>document.getElementById('profModal').style.display='none',300);
-                    showAlert("Xush kelibsiz", name); loadHistory();
-                }
-            });
-        }
 
-        // MENU & ADS
+        // MENU
         function loadMenu() {
             const s=document.createElement('script');
             s.src=`https://docs.google.com/spreadsheets/d/${MENU_SHEET}/gviz/tq?tqx=responseHandler:handleMenu`;
@@ -344,8 +322,8 @@
             const cats = ['Barchasi', ...new Set(products.map(p=>p.cat))];
             document.getElementById('catNav').innerHTML = cats.map(c => `
                 <button class="cat-btn ${c==='Barchasi'?'active':''}" onclick="filter('${c}', this)" 
-                style="padding:8px 20px; border-radius:20px; border:1px solid rgba(255,255,255,0.1); background:${c==='Barchasi'?'var(--gold)':'var(--card-dark)'}; 
-                color:${c==='Barchasi'?'black':'#888'}; font-weight:bold; white-space:nowrap; margin-right:5px;">${c}</button>
+                style="padding:10px 24px; border-radius:30px; border:1px solid rgba(255,255,255,0.05); background:${c==='Barchasi'?'var(--gold)':'var(--card-dark)'}; 
+                color:${c==='Barchasi'?'black':'#888'}; font-weight:700; white-space:nowrap; margin-right:8px;">${c}</button>
             `).join('');
         }
         function filter(c, el) {
@@ -366,14 +344,12 @@
                         <span class="qty-num">${q}</span>
                         <div class="qty-btn" onclick="upd(${p.id}, 1)">+</div>
                     </div>`;
-
                 return `
                 <div class="card" onclick="openProd(${p.id})" style="animation-delay:${delay}ms">
                     <img src="${p.img}" onerror="this.src='https://via.placeholder.com/200'">
                     <div class="card-body">
-                        <div class="card-title">${p.name}</div>
-                        <div class="card-price">${p.price.toLocaleString()} so'm</div>
-                        ${btnHtml}
+                        <div><div class="card-title">${p.name}</div><div class="card-desc" style="font-size:11px; color:#888; margin-bottom:5px; height:30px; overflow:hidden;">${p.desc}</div></div>
+                        <div><div class="card-price">${p.price.toLocaleString()} so'm</div>${btnHtml}</div>
                     </div>
                 </div>`;
             }).join('');
@@ -382,17 +358,13 @@
         function upd(id, n) {
             cart[id] = (cart[id]||0) + n;
             if(cart[id] <= 0) delete cart[id];
-            
             if(!document.getElementById('p-menu').classList.contains('hidden')) {
                  const activeBtn = Array.from(document.querySelectorAll('#catNav button')).find(b => b.style.background.includes('rgb(255, 193, 7)') || b.style.background.includes('gold'));
                  renderGrid(activeBtn ? activeBtn.innerText : 'Barchasi');
             }
             if(!document.getElementById('p-cart').classList.contains('hidden')) renderCart();
-            
             const btn = document.getElementById('pm-btn');
-            if(btn) {
-                if(cart[id]) btn.innerText = `Savatda: ${cart[id]} ta`; else btn.innerText = "Savatga qo'shish";
-            }
+            if(btn) { if(cart[id]) btn.innerText = `Savatda: ${cart[id]} ta`; else btn.innerText = "Savatga qo'shish"; }
         }
 
         function renderCart() {
@@ -400,20 +372,64 @@
             for(let id in cart) {
                 const p = products.find(x => x.id == id); t += p.price * cart[id];
                 h += `
-                <div style="background:var(--card-dark); padding:15px; border-radius:18px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <div><b>${p.name}</b><br><small style="color:#666">${p.price} x ${cart[id]}</small></div>
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <span onclick="upd(${p.id}, -1)" class="qty-btn" style="width:28px; height:28px;">-</span>
-                        <b style="color:var(--text-dark); font-size:16px;">${cart[id]}</b>
-                        <span onclick="upd(${p.id}, 1)" class="qty-btn" style="width:28px; height:28px;">+</span>
+                <div style="background:var(--card-dark); padding:15px; border-radius:18px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+                    <div><b style="font-size:15px;">${p.name}</b><br><small style="color:#666">${p.price} x ${cart[id]}</small></div>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <span onclick="upd(${p.id}, -1)" class="qty-btn" style="width:30px; height:30px; font-size:16px;">-</span>
+                        <b style="font-size:16px;">${cart[id]}</b>
+                        <span onclick="upd(${p.id}, 1)" class="qty-btn" style="width:30px; height:30px; font-size:16px;">+</span>
                     </div>
                 </div>`;
             }
-            document.getElementById('cartList').innerHTML = h || "<div style='text-align:center; color:#666; margin-top:50px'>Savat bo'sh</div>";
+            document.getElementById('cartList').innerHTML = h || "<div style='text-align:center; color:#666; margin-top:60px'><i class='fa fa-shopping-basket' style='font-size:40px; margin-bottom:15px; opacity:0.3'></i><br>Savat bo'sh</div>";
             document.getElementById('totalPrice').innerText = t.toLocaleString() + " so'm";
             const btn = document.getElementById('orderBtn');
             if(t>0 && loc) { btn.style.background="var(--gold)"; btn.style.color="black"; btn.style.pointerEvents="all"; }
             else { btn.style.background="#333"; btn.style.color="#666"; btn.style.pointerEvents="none"; }
+        }
+
+        function loadHistory() {
+            db.ref('orders').limitToLast(20).on('value', snap => {
+                const data=snap.val();
+                const list=document.getElementById('historyList');
+                if(!data) { list.innerHTML="<div style='text-align:center; margin-top:60px; color:#666'>Tarix bo'sh</div>"; return; }
+                const myOrders=Object.values(data).filter(o=>o.user_id==user.phone).sort((a,b)=>new Date(b.time)-new Date(a.time));
+                list.innerHTML=myOrders.map(o=> {
+                    let stClass='st-new'; const s=o.status.toLowerCase();
+                    if(s.includes('tayyor')||s.includes('pish')) stClass='st-cook'; else if(s.includes('yo\'l')||s.includes('yetkazil')) stClass='st-road'; else if(s.includes('yetdi')||s.includes('tamom')) stClass='st-done';
+                    return `
+                    <div style="background:var(--card-dark); padding:20px; border-radius:18px; margin-bottom:15px; border:1px solid rgba(255,255,255,0.05); box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <span class="st-badge ${stClass}">${o.status.toUpperCase()}</span>
+                            <span style="color:#666; font-size:11px;">${o.time.split(',')[0]}</span>
+                        </div>
+                        <div style="margin-bottom:12px; color:#ccc; font-size:14px; line-height:1.5;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div>
+                        <div style="font-weight:900; color:var(--gold); font-size:18px;">${o.total.toLocaleString()} so'm</div>
+                    </div>`;
+                }).join('');
+            });
+        }
+
+        function getLocation() {
+            const btn=document.getElementById('locBtn');
+            btn.innerHTML="<i class='fa fa-spinner fa-spin'></i> Aniqlanmoqda...";
+            navigator.geolocation.getCurrentPosition(p=>{
+                loc={lat:p.coords.latitude, long:p.coords.longitude};
+                btn.innerHTML="<i class='fa fa-check'></i> Manzil olindi";
+                btn.style.background="rgba(255, 193, 7, 0.1)"; btn.style.borderColor="var(--gold)"; btn.style.color="var(--gold)";
+                renderCart();
+            }, ()=>{ showAlert("Xato","GPS yoqing"); btn.innerHTML="Qayta urinish"; });
+        }
+        function sendOrder() {
+            const items=[]; let t=0;
+            for(let id in cart) { const p=products.find(x=>x.id==id); items.push({name:p.name, qty:cart[id]}); t+=p.price*cart[id]; }
+            db.ref('orders').push({
+                user_id: user.phone, user_info: `${user.name} (${user.phone})`,
+                items, total: t, location: loc, status: 'yangi', time: new Date().toLocaleString()
+            });
+            showAlert("Qabul qilindi", "Buyurtmangiz yuborildi. Kuting!");
+            cart={}; loc=null; document.getElementById('locBtn').innerHTML="Manzilni aniqlash"; document.getElementById('locBtn').style.background="transparent"; document.getElementById('locBtn').style.color="#888";
+            renderCart(); nav('orders', document.querySelectorAll('.nav-item')[2]);
         }
 
         function loadAds() {
@@ -447,56 +463,6 @@
         function prevStory() { if(adIdx>0) adIdx--; showStoryImg(); }
         function closeStories() { clearTimeout(adTimer); document.getElementById('storyViewer').style.display='none'; }
 
-        function getLocation() {
-            const btn=document.getElementById('locBtn');
-            btn.innerHTML="<i class='fa fa-spinner fa-spin'></i> Aniqlanmoqda...";
-            navigator.geolocation.getCurrentPosition(p=>{
-                loc={lat:p.coords.latitude, long:p.coords.longitude};
-                btn.innerHTML="<i class='fa fa-check'></i> Manzil olindi";
-                btn.style.color="var(--gold)"; btn.style.borderColor="var(--gold)";
-                renderCart();
-            }, ()=>{ showAlert("Xato","GPS yoqing"); btn.innerHTML="Qayta urinish"; });
-        }
-        function sendOrder() {
-            const items=[]; let t=0;
-            for(let id in cart) { const p=products.find(x=>x.id==id); items.push({name:p.name, qty:cart[id]}); t+=p.price*cart[id]; }
-            db.ref('orders').push({
-                user_id: user.phone, user_info: `${user.name} (${user.phone})`,
-                items, total: t, location: loc, status: 'yangi', time: new Date().toLocaleString()
-            });
-            showAlert("Rahmat", "Buyurtma qabul qilindi!");
-            cart={}; loc=null; document.getElementById('locBtn').innerHTML="Manzilni aniqlash";
-            renderCart(); nav('orders', document.querySelectorAll('.nav-item')[2]);
-        }
-        
-        // --- RANGLI TARI X ---
-        function loadHistory() {
-            db.ref('orders').limitToLast(20).on('value', snap => {
-                const data=snap.val();
-                const list=document.getElementById('historyList');
-                if(!data) { list.innerHTML="<div style='text-align:center; color:#666; margin-top:50px'>Bo'sh</div>"; return; }
-                const myOrders=Object.values(data).filter(o=>o.user_id==user.phone).sort((a,b)=>new Date(b.time)-new Date(a.time));
-                
-                list.innerHTML=myOrders.map(o=> {
-                    let badgeClass = 'st-new';
-                    const s = o.status.toLowerCase();
-                    if(s.includes('tayyor') || s.includes('pish')) badgeClass='st-cook';
-                    else if(s.includes('yo\'l') || s.includes('yetkazil')) badgeClass='st-road';
-                    else if(s.includes('yetdi') || s.includes('tamom')) badgeClass='st-done';
-
-                    return `
-                    <div style="background:var(--card-dark); padding:20px; border-radius:18px; margin-bottom:15px; border:1px solid rgba(255,255,255,0.05); box-shadow:0 4px 10px rgba(0,0,0,0.1);">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
-                            <span class="st-badge ${badgeClass}">${o.status.toUpperCase()}</span>
-                            <span style="color:#666; font-size:11px;">${o.time.split(',')[0]}</span>
-                        </div>
-                        <div style="margin-bottom:12px; color:#ccc; font-size:14px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div>
-                        <div style="font-weight:900; color:var(--gold); font-size:18px;">${o.total.toLocaleString()} so'm</div>
-                    </div>`;
-                }).join('');
-            });
-        }
-
         function nav(page, el) {
             document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
             document.getElementById('p-'+page).classList.remove('hidden');
@@ -507,8 +473,8 @@
         function toggleDrawer() {
             const d=document.getElementById('myDrawer'); d.classList.toggle('open');
             const o=document.getElementById('drawerOverlay');
-            if(d.classList.contains('open')) { o.style.display='block'; setTimeout(()=>o.classList.add('active'),10); }
-            else { o.classList.remove('active'); setTimeout(()=>o.style.display='none',300); }
+            if(d.classList.contains('open')) { o.style.display='block'; setTimeout(()=>o.style.opacity='1',10); }
+            else { o.style.opacity='0'; setTimeout(()=>o.style.display='none',300); }
         }
         function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('theme', document.body.classList.contains('light-mode')?'light':'dark'); }
         function openProd(id) {
