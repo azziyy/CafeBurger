@@ -5,116 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cafe 888 Platinum</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* 1. SETUP */
         :root {
             --bg: #0f0f13; --card: #1b1b22; --text: #fff; --gold: #FFC107;
-            --glass: rgba(27, 27, 34, 0.7); --blur: blur(20px);
-            --st-new: #3498db; --st-cook: #e67e22; --st-road: #9b59b6; --st-done: #2ecc71;
+            --glass: rgba(27, 27, 34, 0.8); --blur: blur(20px);
+            --st-new: #3498db; --st-cook: #e67e22; --st-done: #2ecc71;
         }
-        body.light-mode { --bg: #f4f6f8; --card: #fff; --text: #1a1a1a; --glass: rgba(255,255,255,0.85); }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
-        body { margin: 0; padding-bottom: 90px; background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; transition: 0.3s; }
+        body.light-mode { --bg: #f4f6f8; --card: #fff; --text: #1a1a1a; --glass: rgba(255,255,255,0.9); }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; outline: none; }
+        body { margin: 0; padding-bottom: 100px; background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; transition: 0.3s; }
 
-        /* 2. ANIMATSIYALAR (Optimallashgan) */
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes zoom { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        .card:active, .btn:active, .icon-btn:active { transform: scale(0.96); transition: 0.1s; }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .card { animation: slideUp 0.5s backwards; }
+        .card:active, .btn:active { transform: scale(0.96); transition: 0.1s; }
 
-        /* 3. HEADER & NAV */
         .header {
             position: fixed; top: 0; width: 100%; height: 60px; z-index: 1000;
             background: var(--glass); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
             display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; }
-        .logo span { color: var(--gold); }
-        .icon-btn { font-size: 22px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
-
-        .navbar {
-            position: fixed; bottom: 0; width: 100%; height: 70px; z-index: 1000;
-            background: var(--glass); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
-            display: flex; justify-content: space-around; align-items: center;
-            border-radius: 25px 25px 0 0; border-top: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.2); padding-bottom: 5px;
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #777; font-size: 11px; font-weight: 600; transition: 0.3s; }
-        .nav-item.active { color: var(--gold); transform: translateY(-3px); }
-        .nav-item i { font-size: 24px; margin-bottom: 4px; } /* O'rta o'lcham */
-
-        /* 4. DRAWER & MODALS */
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 2000; display: none; }
+        .logo { font-size: 22px; font-weight: 900; } .logo span { color: var(--gold); }
         
-        .drawer {
-            position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: var(--card);
-            z-index: 2001; transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            display: flex; flex-direction: column; padding: 40px 25px; box-shadow: 5px 0 30px rgba(0,0,0,0.5);
-        }
+        .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: none; backdrop-filter: blur(5px); }
+        .drawer { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: var(--card); z-index: 2001; transition: 0.4s; padding: 40px 25px; box-shadow: 5px 0 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; }
         .drawer.open { left: 0; }
-        .drawer-item { padding: 15px; margin-bottom: 10px; border-radius: 12px; display: flex; align-items: center; gap: 15px; font-size: 16px; background: rgba(255,255,255,0.03); }
-        
-        .modal-card {
-            background: var(--card); width: 85%; padding: 25px; border-radius: 25px;
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
-            z-index: 3000; display: none; opacity: 0; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1);
-        }
-        .modal-card.active { display: block; opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        .drawer-item { padding: 15px; margin-bottom: 10px; border-radius: 12px; display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.03); }
 
-        /* 5. CARDS & BUTTONS */
+        .stories { padding: 75px 15px 10px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
+        .story-c { min-width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(45deg, #f09433, #bc1888); padding: 2px; }
+        .story-c img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--bg); object-fit: cover; }
+
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
-        .card {
-            background: var(--card); border-radius: 20px; overflow: hidden; position: relative;
-            display: flex; flex-direction: column; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.03);
-            /* Animatsiya JS dan boshqariladi */
-            opacity: 0; animation: slideUp 0.5s forwards; 
-        }
+        .card { background: var(--card); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.03); }
         .card img { width: 100%; height: 150px; object-fit: cover; }
-        .card-body { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-body { padding: 12px; flex-grow: 1; }
         
         .btn { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: bold; margin-top: auto; cursor: pointer; }
         .btn-gold { background: var(--gold); color: #000; box-shadow: 0 4px 15px rgba(255,193,7,0.3); }
-        
-        .qty-wrap {
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.05); border: 1px solid var(--gold);
-            border-radius: 12px; padding: 4px; height: 40px; margin-top: auto;
-        }
+        .qty-wrap { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); border: 1px solid var(--gold); border-radius: 12px; padding: 4px; height: 40px; margin-top: auto; }
         .qty-btn { width: 30px; height: 30px; border-radius: 10px; background: var(--gold); color: black; display: flex; align-items: center; justify-content: center; font-weight: bold; }
 
-        /* 6. STORIES & HISTORY */
-        .stories { padding: 70px 15px 10px 15px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
-        .story-c { min-width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(45deg, #f09433, #bc1888); padding: 2px; }
-        .story-c img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--bg); object-fit: cover; }
-        
+        .navbar { position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--glass); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); display: flex; justify-content: space-around; align-items: center; border-radius: 25px 25px 0 0; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.2); padding-bottom: 5px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #777; font-size: 11px; transition: 0.3s; }
+        .nav-item.active { color: var(--gold); transform: translateY(-3px); }
+        .nav-item i { font-size: 24px; margin-bottom: 4px; }
+
+        .modal-card { background: var(--card); width: 85%; padding: 25px; border-radius: 25px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); z-index: 3000; display: none; opacity: 0; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); }
+        .modal-card.active { display: block; opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2999; display: none; backdrop-filter: blur(5px); }
+
         .st-badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
         .st-new { background: rgba(52,152,219,0.2); color: var(--st-new); }
-        .st-cook { background: rgba(230,126,34,0.2); color: var(--st-cook); }
+        .st-cook { background: rgba(230,126,34,0.2); color: #e67e22; }
         .st-done { background: rgba(46,204,113,0.2); color: var(--st-done); }
-
+        
         .hidden { display: none !important; }
-        #blockedScreen { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; text-align: center; }
+        .blocked { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; text-align: center; }
     </style>
 </head>
 <body>
-    <div id="blockedScreen">
-        <i class="fa fa-ban" style="font-size:50px; color:#ff4757; margin-bottom:20px;"></i>
-        <h2 style="color:#ff4757">BLOKLANDINGIZ</h2>
+    <div id="blockedScreen" class="blocked">
+        <i class="fa fa-ban" style="font-size:60px; color:#ff4757; margin-bottom:20px;"></i>
+        <h2 style="color:#ff4757">BLOKLANGAN</h2>
         <p style="color:#777">Admin bilan bog'laning</p>
     </div>
 
     <header class="header">
-        <div class="icon-btn" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
+        <div onclick="toggleDrawer()"><i class="fa fa-bars" style="font-size:24px"></i></div>
         <div class="logo">CAFE <span>888</span></div>
-        <div class="icon-btn" onclick="showProfileInfo()"><i class="fa fa-user"></i></div>
+        <div onclick="showProfile()"><i class="fa fa-user" style="font-size:24px"></i></div>
     </header>
 
-    <div id="drawerOverlay" class="overlay" onclick="toggleDrawer()"></div>
+    <div id="drawerOverlay" class="drawer-overlay" onclick="toggleDrawer()"></div>
     <div id="myDrawer" class="drawer">
-        <h2 style="color:var(--gold); margin-top:0;">Menyu</h2>
+        <h2 style="color:var(--gold); margin-top:0">Menyu</h2>
         <div class="drawer-item" onclick="toggleTheme()"><i class="fa fa-moon"></i> Tungi rejim</div>
-        <div class="drawer-item" onclick="showProfileInfo()"><i class="fa fa-user"></i> Profilim</div>
+        <div class="drawer-item" onclick="showProfile()"><i class="fa fa-user"></i> Profil</div>
         <div class="drawer-item" onclick="alert('Admin: +998901234567')"><i class="fa fa-phone"></i> Bog'lanish</div>
     </div>
 
@@ -124,21 +92,19 @@
         <div id="menuGrid" class="grid"></div>
     </div>
 
-    <div id="p-cart" class="page hidden" style="padding-top:80px;">
-        <h2 style="padding:0 20px;">Savatcha</h2>
-        <div id="cartList" style="padding:0 20px 150px;"></div>
+    <div id="p-cart" class="page hidden" style="padding-top:80px">
+        <h2 style="padding:0 20px">Savatcha</h2>
+        <div id="cartList" style="padding:0 20px 150px"></div>
         <div style="position:fixed; bottom:80px; left:20px; right:20px; background:var(--card); padding:20px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.3); z-index:900; border:1px solid rgba(255,255,255,0.1);">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:900; font-size:18px;">
-                <span>Jami:</span> <span id="totalPrice" style="color:var(--gold)">0 so'm</span>
-            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:900; font-size:18px;"><span>Jami:</span> <span id="totalPrice" style="color:var(--gold)">0 so'm</span></div>
             <button id="locBtn" class="btn" style="background:transparent; border:1px dashed #666; color:#777; margin-bottom:10px;" onclick="getLocation()">Manzilni aniqlash</button>
             <button id="orderBtn" class="btn" style="background:#333; color:#666; pointer-events:none;" onclick="sendOrder()">BUYURTMA BERISH</button>
         </div>
     </div>
 
-    <div id="p-orders" class="page hidden" style="padding-top:80px;">
-        <h2 style="padding:0 20px;">Tarix</h2>
-        <div id="historyList" style="padding:0 20px 100px;"></div>
+    <div id="p-orders" class="page hidden" style="padding-top:80px">
+        <h2 style="padding:0 20px">Tarix</h2>
+        <div id="historyList" style="padding:0 20px 100px"></div>
     </div>
 
     <nav class="navbar">
@@ -159,9 +125,7 @@
 
     <div id="infoOverlay" class="overlay" onclick="this.style.display='none'">
         <div class="modal-card active" onclick="event.stopPropagation()" style="text-align:center;">
-            <div style="width:70px; height:70px; background:rgba(255,193,7,0.1); border-radius:50%; margin:0 auto 15px; display:flex; align-items:center; justify-content:center;">
-                <i class="fa fa-user" style="font-size:30px; color:var(--gold)"></i>
-            </div>
+            <div style="width:70px; height:70px; background:rgba(255,193,7,0.1); border-radius:50%; margin:0 auto 15px; display:flex; align-items:center; justify-content:center;"><i class="fa fa-user" style="font-size:30px; color:var(--gold)"></i></div>
             <h2 id="infoName" style="margin:0 0 5px;"></h2>
             <p id="infoPhone" style="color:#777; margin-bottom:25px;"></p>
             <button class="btn" onclick="logout()" style="background:rgba(255,71,87,0.1); color:#ff4757;">CHIQISH</button>
@@ -177,7 +141,7 @@
             <div style="padding:20px;">
                 <h2 id="pm-title" style="margin:0 0 5px;"></h2>
                 <h3 id="pm-price" style="color:var(--gold); margin:0 0 15px;"></h3>
-                <p id="pm-desc" style="color:#777; font-size:14px; line-height:1.5; margin-bottom:20px;"></p>
+                <p id="pm-desc" style="color:#777; font-size:14px; margin-bottom:20px;"></p>
                 <button id="pm-btn" class="btn btn-gold">Savatga</button>
             </div>
         </div>
@@ -194,7 +158,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        const BOT_USER = "Cafe888adminbot"; // SIZNING BOTINGIZ
+        const BOT_USER = "Cafe888adminbot"; 
         const firebaseConfig = {
             apiKey: "AIzaSyCVSfWRZ77PFFxip93NcD5QZ9Fc0gMUyW8",
             authDomain: "cafe888-c2d7d.firebaseapp.com",
@@ -219,13 +183,11 @@
             loadMenu(); loadAds();
         }
 
-        // --- LOGIN & USER ---
         function startLogin() {
             const t = 'req_'+Math.floor(Math.random()*1000000);
             window.open(`https://t.me/${BOT_USER}?start=login_${t}`, '_blank');
             document.getElementById('tgBtn').style.display='none';
             document.getElementById('loading').classList.remove('hidden');
-            
             const l = db.ref('auth_tokens/'+t);
             l.on('value', s=>{
                 const d=s.val();
@@ -252,14 +214,13 @@
             });
         }
 
-        function showProfileInfo() {
+        function showProfile() {
             if(!user) return;
             document.getElementById('infoName').innerText = user.name;
             document.getElementById('infoPhone').innerText = user.phone;
             document.getElementById('infoOverlay').style.display = 'flex';
         }
 
-        // --- MENU (OPTIMIZED) ---
         function loadMenu() {
             const s=document.createElement('script');
             s.src=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json;responseHandler:hMenu`;
@@ -283,12 +244,10 @@
             document.querySelectorAll('#catNav button').forEach(b=>{ b.style.background='rgba(255,255,255,0.05)'; b.style.color='#888'; });
             el.style.background='var(--gold)'; el.style.color='#000';
         }
-
-        // --- GRID & UPD (NO FLICKER) ---
+        
         function renderGrid(c) {
             const list = c=='Barchasi'?products:products.filter(p=>p.cat==c);
             document.getElementById('menuGrid').innerHTML = list.map((p,i)=> {
-                // Animation Delay limit
                 const delay = Math.min(i*30, 600); 
                 return `
                 <div class="card" onclick="openProd(${p.id})" style="animation-delay:${delay}ms">
@@ -320,26 +279,18 @@
         function upd(id, n) {
             cart[id] = (cart[id]||0) + n;
             if(cart[id]<=0) delete cart[id];
-            
-            // 1. Update ONLY the button zone (No full refresh)
             const zone = document.getElementById(`btn-zone-${id}`);
             if(zone) zone.innerHTML = getBtnHtml(id);
-            
-            // 2. Update Cart Page if visible
             if(!document.getElementById('p-cart').classList.contains('hidden')) renderCart();
-            
-            // 3. Update Modal Button if open
             const mb = document.getElementById('pm-btn');
             if(mb && document.getElementById('prodOverlay').style.display=='flex') {
                 mb.innerText = cart[id] ? `Savatda: ${cart[id]} ta` : "Savatga";
-                // Clone button to remove old listeners and add new one
                 const newMb = mb.cloneNode(true);
                 mb.parentNode.replaceChild(newMb, mb);
                 newMb.onclick = () => { upd(id, 1); closeProd(); };
             }
         }
 
-        // --- CART & HISTORY ---
         function renderCart() {
             let t=0, h='';
             for(let id in cart) {
@@ -368,7 +319,7 @@
                     let cls='st-new'; const st=o.status.toLowerCase();
                     if(st.includes('tayyor')||st.includes('pish')) cls='st-cook';
                     else if(st.includes('tamom')||st.includes('yetdi')) cls='st-done';
-                    return `<div style="background:var(--card); padding:20px; border-radius:15px; margin-bottom:15px; border:1px solid rgba(255,255,255,0.05);">
+                    return `<div style="background:var(--card); padding:20px; border-radius:15px; margin-bottom:15px; border:1px solid rgba(255,255,255,0.05); box-shadow:0 4px 15px rgba(0,0,0,0.1);">
                         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                             <span class="st-badge ${cls}">${o.status.toUpperCase()}</span>
                             <span style="font-size:11px; color:#777">${o.time.split(',')[0]}</span>
@@ -380,7 +331,6 @@
             });
         }
 
-        // --- UTILS ---
         function getLocation() {
             const b=document.getElementById('locBtn'); b.innerText="Aniqlanmoqda...";
             navigator.geolocation.getCurrentPosition(p=>{
