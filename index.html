@@ -61,7 +61,7 @@
             border: 3px solid var(--bg); object-fit: cover;
         }
 
-        /* 4. DRAWER (YON MENYU) - TUZATILDI */
+        /* 4. DRAWER (YON MENYU) */
         .drawer-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 2000;
@@ -86,7 +86,7 @@
         }
         .drawer-item i { width: 25px; text-align: center; color: var(--gold); }
 
-        /* 5. KARTALAR (CARD) - TUZATILDI */
+        /* 5. KARTALAR (CARD) - YANGILANDI */
         .cat-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 15px; scrollbar-width: none; position: sticky; top: 60px; z-index: 900; background: var(--bg); }
         .cat-btn {
             padding: 8px 20px; border-radius: 30px; background: var(--card); border: 1px solid rgba(255,255,255,0.1);
@@ -100,27 +100,23 @@
             display: flex; flex-direction: column; position: relative;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
             animation: fadeInUp 0.5s ease forwards;
-            padding-bottom: 12px; /* Pastdan joy qoldirish */
+            padding-bottom: 12px;
         }
-        .card img { width: 100%; height: 140px; object-fit: cover; }
+        .card img { width: 100%; height: 150px; object-fit: cover; }
         
         .card-body { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; }
         
+        /* Tavsif olib tashlandi, sarlavha uchun joy */
         .card-title { 
-            font-weight: 800; font-size: 14px; margin-bottom: 4px; line-height: 1.2; 
-            min-height: 34px; /* 2 qator joy band qilish */
+            font-weight: 800; font-size: 15px; margin-bottom: 15px; line-height: 1.3; 
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-        }
-        .card-desc { 
-            font-size: 11px; color: var(--text-sec); margin-bottom: 8px; 
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-            height: 2.6em; line-height: 1.3em;
+            flex-grow: 1;
         }
         
         .card-footer { margin-top: auto; }
-        .card-price { color: var(--gold); font-weight: 900; font-size: 15px; margin-bottom: 8px; display: block; }
+        .card-price { color: var(--gold); font-weight: 900; font-size: 16px; margin-bottom: 8px; display: block; }
 
-        /* TUGMALAR (Tuzatildi) */
+        /* TUGMALAR */
         .btn-add {
             width: 100%; padding: 10px; border-radius: 10px; background: var(--gold); color: #000;
             border: none; font-weight: 700; font-size: 13px;
@@ -156,16 +152,24 @@
         .st-road { background: rgba(155,89,182,0.2); color: #9b59b6; }
         .st-done { background: rgba(46,204,113,0.2); color: #2ecc71; }
 
-        /* 8. MODALLAR (MARKAZDA) */
+        /* 8. MODALLAR */
         .modal-wrap {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 5000;
             display: none; align-items: center; justify-content: center;
         }
         .modal-box {
-            background: var(--card); width: 85%; max-width: 320px; padding: 25px;
+            background: var(--card); width: 85%; max-width: 350px; padding: 25px;
             border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1);
             animation: zoomIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* MODAL RASM STILI (YANGILANDI) */
+        .modal-img-container {
+            position: relative; height: 280px; width: 100%; overflow: hidden;
+        }
+        .modal-img-full {
+            width: 100%; height: 100%; object-fit: cover; /* To'liq egallash uchun */
         }
 
         /* Toast Xabarnoma */
@@ -278,13 +282,13 @@
 
     <div id="prodModal" class="modal-wrap" onclick="closeProd()">
         <div class="modal-box" onclick="event.stopPropagation()" style="padding: 0; overflow: hidden; max-width: 350px; width: 90%;">
-            <div style="position: relative; height: 300px; background: #000;">
-                <img id="pm-img" src="" style="width: 100%; height: 100%; object-fit: contain;"> <div style="position: absolute; top: 15px; right: 15px; width: 35px; height: 35px; background: rgba(0,0,0,0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer;" onclick="closeProd()">✕</div>
+            <div class="modal-img-container">
+                <img id="pm-img" src="" class="modal-img-full"> <div style="position: absolute; top: 15px; right: 15px; width: 35px; height: 35px; background: rgba(0,0,0,0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer;" onclick="closeProd()">✕</div>
             </div>
             <div style="padding: 20px; text-align: left;">
                 <h3 id="pm-title" style="margin: 0 0 5px;"></h3>
                 <h4 id="pm-price" style="color: var(--gold); margin: 0 0 10px;"></h4>
-                <p id="pm-desc" style="color: var(--text-sec); font-size: 13px; line-height: 1.4; margin-bottom: 20px;"></p>
+                <p id="pm-desc" style="color: var(--text-sec); font-size: 13px; line-height: 1.5; margin-bottom: 20px;"></p>
                 <button id="pm-btn" class="btn-add click-anim">Savatga qo'shish</button>
             </div>
         </div>
@@ -378,7 +382,7 @@
             });
         }
 
-        // MENU
+        // MENU (Tavsifsiz)
         function loadMenu() {
             const s = document.createElement('script');
             s.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json;responseHandler:hMenu`;
@@ -410,10 +414,7 @@
                 <div class="card click-anim" onclick="openProd(${p.id})" style="animation-delay:${delay}ms">
                     <img src="${p.img}" onerror="this.src='https://via.placeholder.com/200'">
                     <div class="card-body">
-                        <div>
-                            <div class="card-title">${p.name}</div>
-                            <div class="card-desc">${p.desc}</div>
-                        </div>
+                        <div class="card-title">${p.name}</div>
                         <div class="card-footer">
                             <span class="card-price">${p.price.toLocaleString()} so'm</span>
                             <div id="btn-zone-${p.id}">${getBtnHtml(p.id)}</div>
@@ -475,17 +476,16 @@
             }
         }
 
-        // HISTORY SORTING TUZATILDI (REVERSE)
+        // HISTORY SORTING (REVERSE)
         function loadHistory() {
             db.ref('orders').limitToLast(20).on('value', s => {
                 const d = s.val();
                 const l = document.getElementById('historyList');
                 if (!d) { l.innerHTML = "<div style='text-align:center; margin-top:50px; color:var(--text-sec)'>Tarix bo'sh</div>"; return; }
                 
-                // KELGAN MA'LUMOTNI TESKARI AYLANTIRAMIZ (YANGISI TEPADA)
                 const arr = Object.values(d)
                     .filter(o => o.user_id == user.phone)
-                    .reverse(); // <--- MUHIM O'ZGARISH
+                    .reverse();
                 
                 l.innerHTML = arr.map(o => {
                     let st = 'st-new', txt = o.status.toUpperCase();
@@ -569,7 +569,7 @@
         }
         function showProfile() {
             if(!user) return;
-            // Drawerni yopish (agar ochiq bo'lsa)
+            // Drawerni yopish
             document.getElementById('myDrawer').classList.remove('active');
             document.getElementById('drawerOverlay').classList.remove('active');
             
