@@ -3,347 +3,298 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cafe 888 - Premium App</title>
-    <link rel="stylesheet" href="style.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Cafe 888 - Super App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         /* --------------------------------------------------
-           1. ASOSIY SOZLAMALAR VA ANIMATSIYALAR
+           1. PREMIUM DIZAYN TIZIMI (CSS VARIABLES)
            -------------------------------------------------- */
         :root {
-            --primary: #ffbe0b; 
-            --secondary: #fb5607; 
-            --dark: #1a1a1a;
-            --green: #2ecc71; 
-            --red: #ff4757; 
-            --gray: #f8f9fa;
-            --white: #ffffff; 
-            --text: #2d3436; 
-            --shadow: 0 10px 25px rgba(0,0,0,0.08);
+            --primary: #FFB300; /* Tilla rang */
+            --accent: #FF6F00;  /* Olov rang */
+            --dark-bg: #121212;
+            --light-bg: #F4F6F8;
+            --white: #FFFFFF;
+            --text-dark: #2D3436;
+            --text-light: #F1F2F6;
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --glass: rgba(255, 255, 255, 0.95);
+            --radius: 24px;
+            --danger: #FF4757;
+            --success: #2ECC71;
         }
 
-        /* Tungi rejim ranglari */
         body.dark-mode {
-            --gray: #121212; 
-            --white: #1e1e1e; 
-            --text: #f1f2f6; 
-            --dark: #000000;
-            --shadow: 0 10px 30px rgba(0,0,0,0.4);
+            --light-bg: #000000;
+            --white: #1E1E1E;
+            --text-dark: #FFFFFF;
+            --shadow: 0 10px 30px rgba(255,255,255,0.05);
+            --glass: rgba(30, 30, 30, 0.95);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--gray); margin: 0; 
-            padding-top: 65px; padding-bottom: 85px;
-            color: var(--text);
-            transition: background 0.3s, color 0.3s;
-            overflow-x: hidden;
+            background: var(--light-bg); margin: 0; padding-top: 70px; padding-bottom: 90px;
+            color: var(--text-dark); overflow-x: hidden; transition: 0.3s;
         }
 
-        /* Sahifa almashish animatsiyasi */
-        .p-con { animation: slideUp 0.4s ease-out forwards; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        /* ANIMATSIYALAR */
+        @keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* --------------------------------------------------
-           2. HEADER VA DRAWER (YON MENYU)
+           2. HEADER & STORIES
            -------------------------------------------------- */
-        .header-nav {
-            position: fixed; top: 0; width: 100%; height: 60px;
-            background: var(--white); display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; z-index: 3000; box-shadow: var(--shadow);
+        .header {
+            position: fixed; top: 0; left: 0; width: 100%; height: 65px;
+            background: var(--glass); backdrop-filter: blur(20px);
+            z-index: 1000; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: var(--shadow);
         }
-        .menu-icon { font-size: 24px; cursor: pointer; color: var(--text); }
-        .logo { font-weight: 900; font-size: 20px; letter-spacing: 1px; }
-        .logo span { color: var(--primary); }
-        .user-badge {
-            background: var(--gray); padding: 5px 12px; border-radius: 20px;
-            font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 5px;
-            border: 1px solid #ddd;
-        }
+        .brand { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
+        .brand span { color: var(--primary); }
+        .icon-btn { font-size: 22px; cursor: pointer; color: var(--text-dark); transition: 0.2s; }
+        .icon-btn:active { transform: scale(0.9); color: var(--primary); }
 
-        /* Drawer (Yon panel) */
-        .drawer-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 4000; display: none; backdrop-filter: blur(4px);
+        /* STORIES BAR (Instagram Style) */
+        .stories-container {
+            padding: 10px 15px; overflow-x: auto; display: flex; gap: 15px;
+            scrollbar-width: none; background: var(--light-bg);
         }
-        .drawer {
-            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
-            background: var(--white); z-index: 4001; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 20px; box-shadow: 10px 0 30px rgba(0,0,0,0.2);
-            display: flex; flex-direction: column;
+        .story-circle {
+            min-width: 65px; height: 65px; border-radius: 50%;
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            padding: 3px; cursor: pointer; position: relative;
         }
-        .drawer.open { left: 0; }
-        .drawer-header { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
-        .drawer-item {
-            padding: 15px; margin-bottom: 5px; border-radius: 12px;
-            display: flex; align-items: center; gap: 15px; font-weight: 600; cursor: pointer;
-            transition: 0.2s;
+        .story-circle img {
+            width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--white);
+            object-fit: cover;
         }
-        .drawer-item:active { background: var(--gray); transform: scale(0.98); }
-        .drawer-item i { width: 25px; font-size: 18px; color: var(--secondary); }
-
-        /* Tungi rejim tugmasi */
-        .toggle-switch {
-            width: 40px; height: 20px; background: #ccc; border-radius: 20px;
-            position: relative; margin-left: auto; transition: 0.3s;
-        }
-        .toggle-switch::after {
-            content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
-            background: white; border-radius: 50%; transition: 0.3s;
-        }
-        .dark-mode .toggle-switch { background: var(--green); }
-        .dark-mode .toggle-switch::after { left: 22px; }
-
-        /* --------------------------------------------------
-           3. CUSTOM ALERT (CHROYLI OGOHLANTIRISH)
-           -------------------------------------------------- */
-        .custom-alert {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); z-index: 9999; display: none;
-            align-items: center; justify-content: center; backdrop-filter: blur(5px);
-        }
-        .alert-box {
-            background: var(--white); width: 80%; max-width: 320px; padding: 25px;
-            border-radius: 25px; text-align: center; animation: popIn 0.3s;
-        }
-        @keyframes popIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .alert-icon { font-size: 50px; margin-bottom: 15px; display: block; }
-        .alert-btn {
-            background: var(--dark); color: white; border: none; padding: 12px 30px;
-            border-radius: 15px; font-weight: bold; margin-top: 15px; width: 100%;
+        .story-circle p {
+            font-size: 10px; text-align: center; margin: 5px 0 0; font-weight: 600;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 65px;
         }
 
         /* --------------------------------------------------
-           4. MODALLAR (Profile, Product, Info)
+           3. MENU & CARDS (KARTALAR)
            -------------------------------------------------- */
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); z-index: 5000; display: none;
-            align-items: center; justify-content: center; backdrop-filter: blur(5px);
-        }
-        .modal-content {
-            background: var(--white); width: 90%; max-width: 400px; border-radius: 25px;
-            position: relative; overflow: hidden; animation: slideUp 0.3s;
-        }
-        .close-modal {
-            position: absolute; top: 15px; right: 15px; width: 35px; height: 35px;
-            background: rgba(255,255,255,0.8); border-radius: 50%; border: none;
-            font-size: 20px; font-weight: bold; z-index: 10; cursor: pointer;
-        }
-        
-        /* Mahsulot Modali */
-        .modal-img { width: 100%; height: 300px; object-fit: cover; }
-        .modal-body { padding: 25px; }
-        .modal-title { font-size: 22px; margin: 0 0 10px; }
-        .modal-price { color: var(--secondary); font-size: 24px; font-weight: 900; }
-        .modal-desc { color: #777; line-height: 1.6; margin: 15px 0; }
-
-        /* Profil Modali */
-        .profile-header { background: var(--primary); height: 100px; position: relative; }
-        .profile-avatar {
-            width: 80px; height: 80px; background: white; border-radius: 50%;
-            position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%);
-            display: flex; align-items: center; justify-content: center; font-size: 40px; color: #ccc;
-            border: 4px solid var(--white);
-        }
-        .profile-form { padding: 50px 25px 25px; text-align: center; }
-        .inp-group { margin-bottom: 15px; text-align: left; }
-        .inp-group label { font-size: 12px; font-weight: bold; color: #888; margin-left: 10px; }
-        .inp {
-            width: 100%; padding: 15px; border: 2px solid #eee; background: var(--gray);
-            border-radius: 15px; font-size: 16px; margin-top: 5px; color: var(--text);
-        }
-        .inp:focus { border-color: var(--primary); }
-
-        /* --------------------------------------------------
-           5. ASOSIY SAHIFA ELEMENTLARI
-           -------------------------------------------------- */
-        .category-nav {
-            display: flex; gap: 10px; overflow-x: auto; padding: 15px;
-            background: var(--white); position: sticky; top: 60px; z-index: 100;
-            scrollbar-width: none;
+        .cat-scroll {
+            display: flex; gap: 10px; overflow-x: auto; padding: 10px 15px;
+            position: sticky; top: 65px; z-index: 900; background: var(--light-bg);
         }
         .cat-btn {
-            padding: 8px 20px; border-radius: 20px; border: 1px solid #eee;
-            background: transparent; color: var(--text); font-weight: bold; white-space: nowrap;
+            padding: 8px 20px; border-radius: 20px; background: var(--white); border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); font-weight: 700; color: #888;
+            transition: 0.3s; white-space: nowrap;
         }
-        .cat-btn.active { background: var(--dark); color: var(--primary); border-color: var(--dark); }
+        .cat-btn.active { background: var(--text-dark); color: var(--primary); transform: scale(1.05); }
 
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
         
         .card {
-            background: var(--white); border-radius: 20px; overflow: hidden;
-            box-shadow: var(--shadow); position: relative;
+            background: var(--white); border-radius: var(--radius); overflow: hidden;
+            box-shadow: var(--shadow); position: relative; animation: popUp 0.4s ease forwards;
+            display: flex; flex-direction: column;
         }
-        .card img { width: 100%; aspect-ratio: 1; object-fit: cover; }
-        .card-info { padding: 12px; text-align: center; }
-        .card h4 { margin: 5px 0; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-img-box { position: relative; height: 160px; overflow: hidden; }
+        .card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .card:active img { transform: scale(1.1); }
         
-        /* Smart Tugma */
-        .ctrl-btn {
-            width: 100%; padding: 10px; border-radius: 12px; border: none; margin-top: 10px;
-            font-weight: bold; cursor: pointer; transition: 0.2s;
-        }
-        .btn-add { background: var(--gray); color: var(--dark); display: flex; align-items: center; justify-content: center; gap: 5px; }
-        .btn-qty { background: var(--primary); color: white; display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; }
-        .qty-circle { width: 28px; height: 28px; background: rgba(255,255,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-
-        /* Savatcha va Buyurtma */
-        .cart-card { background: var(--white); margin: 15px; padding: 20px; border-radius: 25px; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; }
+        .card-body { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; }
+        .card-title { font-size: 15px; font-weight: 800; margin: 0 0 5px; }
+        .card-price { font-size: 14px; color: var(--accent); font-weight: 700; }
         
-        .location-btn {
-            width: 100%; padding: 15px; border: 2px dashed var(--secondary); border-radius: 15px;
-            background: rgba(251, 86, 7, 0.1); color: var(--secondary); font-weight: bold;
-            margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;
+        /* Chiroyli Tugmalar */
+        .btn {
+            width: 100%; padding: 12px; border-radius: 15px; border: none; margin-top: auto;
+            font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; 
+            align-items: center; justify-content: center; gap: 8px;
         }
-        .order-btn {
-            width: 100%; padding: 16px; background: var(--green); color: white;
-            border: none; border-radius: 18px; font-weight: 900; font-size: 16px;
-            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.4); opacity: 0.5; pointer-events: none;
-        }
-        .order-btn.ready { opacity: 1; pointer-events: all; }
+        .btn-dark { background: var(--text-dark); color: var(--white); }
+        .btn-qty { background: var(--primary); color: var(--white); justify-content: space-between; padding: 8px 15px; }
+        .qty-control { font-size: 18px; width: 30px; text-align: center; }
 
-        /* Toolbar */
-        .toolbar {
+        /* --------------------------------------------------
+           4. MODALLAR (CUSTOM ALERT, PRODUCT, DRAWER)
+           -------------------------------------------------- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+            z-index: 5000; display: none; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; }
+
+        /* Custom Alert Box */
+        .custom-alert {
+            background: var(--white); width: 85%; max-width: 320px; padding: 25px;
+            border-radius: 25px; text-align: center; transform: scale(0.8); transition: 0.3s;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        .modal-overlay.active .custom-alert { transform: scale(1); }
+
+        /* Product Detail Modal */
+        .prod-modal {
+            background: var(--white); width: 100%; height: 80vh; position: fixed; bottom: 0;
+            border-radius: 30px 30px 0 0; padding: 0; display: flex; flex-direction: column;
+            transform: translateY(100%); transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .modal-overlay.active .prod-modal { transform: translateY(0); }
+        .pm-img { width: 100%; height: 300px; object-fit: cover; border-radius: 30px 30px 0 0; }
+        .pm-body { padding: 25px; overflow-y: auto; }
+
+        /* Stories Modal (Full Screen) */
+        .story-viewer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999; display: none; flex-direction: column;
+        }
+        .story-progress { display: flex; gap: 5px; padding: 10px; position: absolute; width: 100%; z-index: 10; }
+        .progress-bar { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 2px; }
+        .progress-fill { height: 100%; background: #fff; width: 0%; transition: width 0.1s linear; }
+        .story-img-view { width: 100%; height: 100%; object-fit: contain; }
+
+        /* Drawer (Yon menyu) */
+        .drawer {
+            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+            background: var(--white); z-index: 6000; transition: 0.3s;
+            padding: 30px 20px; box-shadow: 10px 0 30px rgba(0,0,0,0.2);
+        }
+        .drawer.open { left: 0; }
+        .drawer-item {
+            padding: 15px; margin-bottom: 10px; border-radius: 15px;
+            display: flex; align-items: center; gap: 15px; font-weight: 700;
+            color: var(--text-dark); transition: 0.2s;
+        }
+        .drawer-item:active { background: rgba(0,0,0,0.05); transform: scale(0.98); }
+
+        /* Navbar */
+        .navbar {
             position: fixed; bottom: 0; width: 100%; height: 75px;
-            background: var(--white); display: flex; justify-content: space-around; align-items: center;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 3000;
+            background: var(--white); display: flex; justify-content: space-around;
+            align-items: center; border-radius: 25px 25px 0 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 4000;
         }
-        .tool-item { display: flex; flex-direction: column; align-items: center; color: #ccc; font-size: 11px; font-weight: 600; }
-        .tool-item.active { color: var(--secondary); transform: translateY(-3px); }
-        .tool-item i { font-size: 22px; margin-bottom: 4px; }
-        
+        .nav-icon { display: flex; flex-direction: column; align-items: center; color: #ccc; transition: 0.3s; }
+        .nav-icon.active { color: var(--primary); transform: translateY(-5px); }
+        .nav-icon i { font-size: 24px; margin-bottom: 5px; }
+
+        /* Utilities */
         .hidden { display: none !important; }
+        .inp { width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 15px; margin-bottom: 15px; font-size: 16px; }
     </style>
 </head>
 <body>
 
-    <div id="myAlert" class="custom-alert">
-        <div class="alert-box">
-            <span id="alertIcon" class="alert-icon"></span>
-            <h3 id="alertTitle">Diqqat</h3>
-            <p id="alertMsg" style="color:#666; margin-bottom:20px;">Xabar matni</p>
-            <button class="alert-btn" onclick="closeAlert()">Tushunarli</button>
-        </div>
-    </div>
-
-    <div id="drawerOverlay" class="drawer-overlay" onclick="toggleDrawer()"></div>
-    <div id="myDrawer" class="drawer">
-        <div class="drawer-header">
-            <h2>Cafe 888</h2>
-            <p style="color:#888; font-size:14px;">Premium Mobile App</p>
-        </div>
-        <div class="drawer-item" onclick="toggleMode()">
-            <i class="fa fa-moon"></i> <span>Tungi rejim</span>
-            <div id="modeSwitch" class="toggle-switch"></div>
-        </div>
-        <div class="drawer-item" onclick="showAlert('Bog\'lanish', 'Admin: +998 90 123 45 67\nTelegram: @cafe888admin', '📞')">
-            <i class="fa fa-phone"></i> <span>Biz bilan aloqa</span>
-        </div>
-        <div class="drawer-item" onclick="showAlert('Ilova haqida', 'Cafe 888 v2.0\nPremium Versiya\nDeveloper: Gemini', 'ℹ️')">
-            <i class="fa fa-info-circle"></i> <span>Dastur haqida</span>
-        </div>
-    </div>
-
-    <header class="header-nav">
-        <div class="menu-icon" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
-        <div class="logo">CAFE <span>888</span></div>
-        <div class="user-badge" onclick="openProfile()">
-            <i class="fa fa-user"></i> <span id="headerName">Kirish</span>
-        </div>
+    <header class="header">
+        <div class="icon-btn" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
+        <div class="brand">CAFE <span>888</span></div>
+        <div class="icon-btn" onclick="openProfile()"><i class="fa fa-user-circle"></i></div>
     </header>
 
-    <div id="prodModal" class="modal" onclick="if(event.target === this) closeModal('prodModal')">
-        <div class="modal-content">
-            <button class="close-modal" onclick="closeModal('prodModal')">×</button>
-            <img id="pm-img" class="modal-img" src="">
-            <div class="modal-body">
-                <h3 id="pm-title" class="modal-title"></h3>
-                <div id="pm-price" class="modal-price"></div>
-                <p id="pm-desc" class="modal-desc"></p>
-                <button class="alert-btn" onclick="closeModal('prodModal')">Yopish</button>
+    <div id="drawerOverlay" class="modal-overlay" style="z-index: 5999;" onclick="toggleDrawer()"></div>
+    <div id="myDrawer" class="drawer">
+        <h2 style="margin-top:0;">Sozlamalar</h2>
+        <div class="drawer-item" onclick="toggleMode()">
+            <i class="fa fa-moon"></i> <span>Tungi rejim</span>
+        </div>
+        <div class="drawer-item" onclick="showMyAlert('Aloqa', 'Admin: +998901234567', '📞')">
+            <i class="fa fa-phone"></i> <span>Biz bilan aloqa</span>
+        </div>
+        <div class="drawer-item" onclick="logout()">
+            <i class="fa fa-sign-out-alt"></i> <span>Chiqish</span>
+        </div>
+    </div>
+
+    <div id="storiesBar" class="stories-container hidden">
+        </div>
+
+    <div id="p-menu" class="page">
+        <div class="cat-scroll" id="catNav"></div>
+        <div class="grid" id="menuGrid">
+            <div style="grid-column:1/-1; text-align:center; padding:50px;">
+                <i class="fa fa-spinner fa-spin" style="font-size:30px; color:var(--primary)"></i>
             </div>
         </div>
     </div>
 
-    <div id="profileModal" class="modal">
-        <div class="modal-content">
-            <div class="profile-header">
-                <div class="profile-avatar"><i class="fa fa-user"></i></div>
+    <div id="p-cart" class="page hidden">
+        <h2 style="padding:0 20px;">Savatcha</h2>
+        <div id="cartList" style="padding-bottom:150px;"></div>
+        
+        <div style="position:fixed; bottom:80px; width:100%; padding:20px; background:var(--white); box-shadow:0 -5px 20px rgba(0,0,0,0.1); border-radius:30px 30px 0 0;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:900; font-size:20px;">
+                <span>Jami:</span> <span id="totalPrice">0 so'm</span>
             </div>
-            <div class="profile-form">
-                <h3>Profilingiz</h3>
-                <p style="color:#888; font-size:12px; margin-bottom:20px;">Buyurtma berish uchun to'ldiring</p>
-                
-                <div class="inp-group">
-                    <label>Ismingiz</label>
-                    <input type="text" id="profName" class="inp" placeholder="Ali Valiyev">
-                </div>
-                <div class="inp-group">
-                    <label>Telefon raqam</label>
-                    <input type="tel" id="profPhone" class="inp" placeholder="+998" maxlength="13">
-                </div>
-                
-                <button class="alert-btn" style="background:var(--green)" onclick="saveProfile()">SAQLASH</button>
-            </div>
+            <button id="locBtn" class="btn btn-dark" style="background:transparent; color:var(--text-dark); border:2px dashed #ccc; margin-bottom:10px;" onclick="getLocation()">
+                <i class="fa fa-map-marker-alt"></i> Manzilni aniqlash
+            </button>
+            <button id="orderBtn" class="btn btn-dark" style="background:#ccc; pointer-events:none;" onclick="sendOrder()">
+                BUYURTMA BERISH
+            </button>
         </div>
     </div>
 
-    <main id="p-main" class="p-con">
-        <div id="catNav" class="category-nav"></div>
-        <div id="menuGrid" class="menu-grid"></div>
-    </main>
-
-    <div id="p-cart" class="p-con hidden">
-        <div class="cart-card">
-            <h2>Savat <span style="font-size:16px; color:#888">(<span id="cartCountInner">0</span>)</span></h2>
-            <div id="cartList"></div>
-            
-            <div style="margin-top:20px; border-top:2px dashed #eee; padding-top:15px;">
-                <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:900; margin-bottom:20px;">
-                    <span>Jami:</span> <span id="totalPrice">0 so'm</span>
-                </div>
-                
-                <button id="locBtn" class="location-btn" onclick="getLocation()">
-                    <i class="fa fa-map-marker-alt"></i> MANZILNI ANIQLASH
-                </button>
-                
-                <button id="orderBtn" class="order-btn" onclick="sendOrder()">
-                    BUYURTMANI TASDIQLASH
-                </button>
-            </div>
-        </div>
+    <div id="p-orders" class="page hidden">
+        <h2 style="padding:0 20px;">Buyurtmalar tarixi</h2>
+        <div id="historyList" style="padding:0 20px 100px;"></div>
     </div>
 
-    <div id="p-orders" class="p-con hidden">
-        <div style="padding:20px;">
-            <h2>Buyurtmalarim</h2>
-            <div id="historyList"></div>
-        </div>
-    </div>
-
-    <nav class="toolbar">
-        <div class="tool-item active" onclick="nav('main', this)">
-            <i class="fa fa-utensils"></i><span>Menyu</span>
-        </div>
-        <div class="tool-item" onclick="nav('cart', this)">
-            <i class="fa fa-shopping-cart"></i><span>Savat</span>
-        </div>
-        <div class="tool-item" onclick="nav('orders', this)">
-            <i class="fa fa-clock"></i><span>Tarix</span>
-        </div>
+    <nav class="navbar">
+        <div class="nav-icon active" onclick="nav('menu', this)"><i class="fa fa-utensils"></i><span>Menyu</span></div>
+        <div class="nav-icon" onclick="nav('cart', this)"><i class="fa fa-shopping-bag"></i><span>Savat</span></div>
+        <div class="nav-icon" onclick="nav('orders', this)"><i class="fa fa-clock"></i><span>Tarix</span></div>
     </nav>
 
-        <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <div id="alertModal" class="modal-overlay" style="display:flex;">
+        <div class="custom-alert">
+            <div id="alertIcon" style="font-size:50px; margin-bottom:15px;">👋</div>
+            <h3 id="alertTitle" style="margin:0 0 10px;">Salom</h3>
+            <p id="alertMsg" style="color:#888; margin-bottom:20px;">Dasturga xush kelibsiz</p>
+            <button class="btn btn-dark" onclick="closeMyAlert()">OK</button>
+        </div>
+    </div>
+
+    <div id="prodModalOverlay" class="modal-overlay" onclick="closeProdModal()">
+        <div class="prod-modal" onclick="event.stopPropagation()">
+            <div style="position:relative;">
+                <img id="pm-img" class="pm-img" src="">
+                <button onclick="closeProdModal()" style="position:absolute; top:15px; right:15px; background:white; border:none; width:40px; height:40px; border-radius:50%; font-size:20px;">×</button>
+            </div>
+            <div class="pm-body">
+                <h2 id="pm-title" style="margin:0 0 10px;"></h2>
+                <h3 id="pm-price" style="color:var(--primary); margin:0 0 15px;"></h3>
+                <p id="pm-desc" style="color:#666; line-height:1.6;"></p>
+                <button id="pm-btn" class="btn btn-dark" onclick="">Savatga qo'shish</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="profileModal" class="modal-overlay">
+        <div class="custom-alert">
+            <h3>Ro'yxatdan o'tish</h3>
+            <input id="profName" class="inp" placeholder="Ismingiz">
+            <input id="profPhone" class="inp" type="tel" value="+998" maxlength="13">
+            <button class="btn btn-dark" style="background:var(--primary)" onclick="saveProfile()">SAQLASH</button>
+        </div>
+    </div>
+
+    <div id="storyViewer" class="story-viewer">
+        <div id="storyProgress" class="story-progress"></div>
+        <div style="position:absolute; top:20px; right:20px; z-index:20; color:white; font-size:30px;" onclick="closeStories()">×</div>
+        <img id="storyFullImg" class="story-img-view" src="">
+        <div style="position:absolute; width:50%; height:100%; left:0; z-index:15;" onclick="prevStory()"></div>
+        <div style="position:absolute; width:50%; height:100%; right:0; z-index:15;" onclick="nextStory()"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // --------------------------------------------------
-        // 1. SOZLAMALAR
-        // --------------------------------------------------
+        // --- 1. CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyCVSfWRZ77PFFxip93NcD5QZ9Fc0gMUyW8",
             authDomain: "cafe888-c2d7d.firebaseapp.com",
@@ -353,380 +304,373 @@
             messagingSenderId: "286769489924",
             appId: "1:286769489924:web:f778a8d15d46abaf1b2d51"
         };
-        
-        // Firebaseni xavfsiz ulash
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        
-        const SHEET_ID = "1j6VojbeSYWgYj3UY98xCxHLCzHcGlEg0nXjYwHDkKQk";
+        const MENU_SHEET = "1j6VojbeSYWgYj3UY98xCxHLCzHcGlEg0nXjYwHDkKQk";
+        const ADS_SHEET = "1ENQ4bnzBxj7x5jmrXUwdDZhmEMQ7umPTPwq2bgXfj3k";
 
-        // GLOBAL O'ZGARUVCHILAR
-        let products = [];
-        let cart = {}; // {id: soni}
-        let userLocation = null;
-        let user = JSON.parse(localStorage.getItem('cafe_user'));
+        // --- GLOBAL VARIABLES ---
+        let products = [], cart = {}, user = null, locationData = null;
+        let ads = [], currentAd = 0, adTimer;
 
-        // --------------------------------------------------
-        // 2. DASTUR INIT (Ishga tushirish)
-        // --------------------------------------------------
+        // --- INIT ---
         function init() {
-            checkProfile();
-            loadSheetData(); // Google Sheetsdan yuklash
-
-            // Telefon raqamni formatlash (+998...)
-            const phoneInp = document.getElementById('profPhone');
-            if(phoneInp) {
-                phoneInp.addEventListener('input', (e) => {
-                    let val = e.target.value.replace(/\D/g, ''); 
-                    if(!val.startsWith('998')) val = '998' + val;
-                    e.target.value = '+' + val.substring(0, 12);
-                });
-                phoneInp.value = "+998";
-            }
-        }
-
-        function checkProfile() {
-            if(user) {
-                // Headerda ism
-                const headerName = document.getElementById('headerName');
-                if(headerName) headerName.innerText = user.name.split(' ')[0];
-                
-                // Profil modalida
-                document.getElementById('profName').value = user.name;
-                document.getElementById('profPhone').value = user.phone;
-                
-                // Tarixni yuklash
-                fetchHistory();
-            } else {
-                setTimeout(() => openModal('profileModal'), 1500);
-            }
-        }
-
-        // --------------------------------------------------
-        // 3. GOOGLE SHEETS (JSONP USULI)
-        // --------------------------------------------------
-        function loadSheetData() {
-            const grid = document.getElementById('menuGrid');
-            if(grid) grid.innerHTML = `<div style="text-align:center; grid-column:1/-1; margin-top:50px;"><i class="fa fa-spinner fa-spin" style="font-size:30px"></i><p>Yuklanmoqda...</p></div>`;
-
-            // Eski scriptni tozalash
-            const old = document.getElementById('sheetScript');
-            if(old) old.remove();
-
-            const script = document.createElement('script');
-            script.id = 'sheetScript';
-            script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:handleSheetData`;
-            document.body.appendChild(script);
-        }
-
-        window.handleSheetData = function(json) {
-            try {
-                const rows = json.table.rows;
-                products = rows.map(r => ({
-                    id: r.c[0]?.v, 
-                    cat: r.c[1]?.v || "Boshqa", 
-                    name: r.c[2]?.v || "Nomsiz",
-                    price: r.c[3]?.v || 0, 
-                    img: r.c[4]?.v || "", 
-                    desc: r.c[5]?.v || ""
-                }));
-                renderCats();
-                renderMenu('Barchasi');
-            } catch(e) { console.error(e); }
-        }
-
-        // --------------------------------------------------
-        // 4. RENDERING (MENYU & TUGMALAR)
-        // --------------------------------------------------
-        function renderCats() {
-            const cats = ['Barchasi', ...new Set(products.map(p => p.cat))];
-            const nav = document.getElementById('catNav');
-            if(nav) {
-                nav.innerHTML = cats.map(c => 
-                    `<button class="cat-btn ${c==='Barchasi'?'active':''}" onclick="filter('${c}', this)">${c}</button>`
-                ).join('');
-            }
-        }
-
-        function filter(cat, el) {
-            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-            el.classList.add('active');
-            renderMenu(cat);
-        }
-
-        function renderMenu(cat) {
-            const list = cat === 'Barchasi' ? products : products.filter(p => p.cat === cat);
-            const grid = document.getElementById('menuGrid');
-            if(!grid) return;
+            closeMyAlert(); // Startda yopish
+            if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
             
+            // Profil tekshiruvi (Local -> Server)
+            const localPhone = localStorage.getItem('cafe_phone');
+            if(localPhone) {
+                checkUserStatus(localPhone);
+            } else {
+                document.getElementById('profileModal').style.display = 'flex';
+                setTimeout(()=>document.getElementById('profileModal').classList.add('active'), 10);
+            }
+
+            loadMenu();
+            loadAds(); // Stories
+            
+            // Phone formatting
+            document.getElementById('profPhone').addEventListener('input', e => {
+                let v = e.target.value.replace(/\D/g,'');
+                if(!v.startsWith('998')) v = '998'+v;
+                e.target.value = '+'+v.substring(0,12);
+            });
+        }
+
+        // --- 2. USER & BLOCKING ---
+        function checkUserStatus(phone) {
+            db.ref('users/' + phone).once('value', snap => {
+                const val = snap.val();
+                if(val && val.blocked) {
+                    showMyAlert("Taqiq", "Sizning raqamingiz bloklangan!", "🚫");
+                    localStorage.removeItem('cafe_phone');
+                } else if(val) {
+                    user = val;
+                    localStorage.setItem('cafe_phone', phone);
+                    loadHistory();
+                } else {
+                    // Serverda yo'q, lekin localda bor (qayta ro'yxat)
+                     document.getElementById('profileModal').style.display = 'flex';
+                     setTimeout(()=>document.getElementById('profileModal').classList.add('active'), 10);
+                }
+            });
+        }
+
+        function saveProfile() {
+            const name = document.getElementById('profName').value;
+            const phone = document.getElementById('profPhone').value.replace(/\D/g,'');
+            
+            if(name.length < 3 || phone.length < 12) return showMyAlert("Xato", "To'g'ri to'ldiring", "⚠️");
+            
+            db.ref('users/' + phone).once('value', snap => {
+                if(snap.val() && snap.val().blocked) {
+                    showMyAlert("Bloklangan", "Bu raqam qora ro'yxatda", "🚫");
+                } else {
+                    const newData = { name, phone, blocked: false };
+                    db.ref('users/' + phone).set(newData);
+                    user = newData;
+                    localStorage.setItem('cafe_phone', phone);
+                    document.getElementById('profileModal').classList.remove('active');
+                    setTimeout(()=>document.getElementById('profileModal').style.display='none', 300);
+                    showMyAlert("Xush kelibsiz", name, "🎉");
+                }
+            });
+        }
+
+        // --- 3. STORIES (REKLAMA) ---
+        function loadAds() {
+            const s = document.createElement('script');
+            s.src = `https://docs.google.com/spreadsheets/d/${ADS_SHEET}/gviz/tq?tqx=responseHandler:handleAds`;
+            document.body.appendChild(s);
+        }
+        window.handleAds = function(json) {
+            const seen = JSON.parse(localStorage.getItem('seen_ads') || "[]");
+            const all = json.table.rows.map(r => r.c[0]?.v).filter(u => u);
+            ads = all.filter(u => !seen.includes(u));
+            
+            if(ads.length > 0) {
+                // Stories dumaloqlarini chizish (agar xohlasangiz)
+                // Hozircha avtomatik ochiladigan qilamiz
+                setTimeout(openStories, 2000); 
+            }
+        }
+        function openStories() {
+            if(ads.length === 0) return;
+            document.getElementById('storyViewer').style.display = 'flex';
+            renderStoryProgress();
+            showStory(0);
+        }
+        function renderStoryProgress() {
+            document.getElementById('storyProgress').innerHTML = ads.map(()=>`<div class="progress-bar"><div class="progress-fill"></div></div>`).join('');
+        }
+        function showStory(idx) {
+            if(idx >= ads.length) { closeStories(); return; }
+            currentAd = idx;
+            document.getElementById('storyFullImg').src = ads[idx];
+            
+            const fills = document.querySelectorAll('.progress-fill');
+            fills.forEach((f, i) => {
+                f.style.width = i < idx ? '100%' : '0%';
+                if(i===idx) {
+                    f.style.transition = 'none';
+                    setTimeout(()=> { f.style.transition='width 5s linear'; f.style.width='100%'; }, 10);
+                }
+            });
+            clearTimeout(adTimer);
+            adTimer = setTimeout(()=>nextStory(), 5000);
+        }
+        function nextStory() {
+            markSeen(ads[currentAd]);
+            showStory(currentAd + 1);
+        }
+        function prevStory() {
+            if(currentAd > 0) showStory(currentAd - 1);
+        }
+        function closeStories() {
+            if(ads[currentAd]) markSeen(ads[currentAd]);
+            clearTimeout(adTimer);
+            document.getElementById('storyViewer').style.display='none';
+        }
+        function markSeen(url) {
+            let s = JSON.parse(localStorage.getItem('seen_ads') || "[]");
+            if(!s.includes(url)) s.push(url);
+            localStorage.setItem('seen_ads', JSON.stringify(s));
+        }
+
+        // --- 4. DATA LOADING & UI ---
+        function loadMenu() {
+            const s = document.createElement('script');
+            s.src = `https://docs.google.com/spreadsheets/d/${MENU_SHEET}/gviz/tq?tqx=responseHandler:handleMenu`;
+            document.body.appendChild(s);
+        }
+        window.handleMenu = function(json) {
+            products = json.table.rows.map(r => ({
+                id: r.c[0]?.v, cat: r.c[1]?.v||"Boshqa", name: r.c[2]?.v, 
+                price: r.c[3]?.v||0, img: r.c[4]?.v, desc: r.c[5]?.v||"Tavsif yo'q"
+            }));
+            renderCats(); renderGrid('Barchasi');
+        }
+
+        function renderCats() {
+            const cats = ['Barchasi', ...new Set(products.map(p=>p.cat))];
+            document.getElementById('catNav').innerHTML = cats.map(c => 
+                `<button class="cat-btn ${c==='Barchasi'?'active':''}" onclick="filter('${c}', this)">${c}</button>`
+            ).join('');
+        }
+        function filter(c, el) {
+            document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+            el.classList.add('active');
+            renderGrid(c);
+        }
+        
+        function renderGrid(cat) {
+            const list = cat==='Barchasi' ? products : products.filter(p=>p.cat===cat);
+            const grid = document.getElementById('menuGrid');
             grid.innerHTML = "";
             list.forEach(p => {
-                const qty = cart[p.id] || 0;
+                const q = cart[p.id] || 0;
+                let btnHtml = q===0 
+                    ? `<button class="btn btn-dark" onclick="updateCart(${p.id}, 1); event.stopPropagation()">Savatga</button>`
+                    : `<div class="btn btn-qty" onclick="event.stopPropagation()">
+                        <div class="qty-control" onclick="updateCart(${p.id}, -1)">-</div>
+                        <span>${q}</span>
+                        <div class="qty-control" onclick="updateCart(${p.id}, 1)">+</div>
+                       </div>`;
                 
-                // TUZATILGAN TUGMA LOGIKASI
-                let btnHtml = "";
-                if (qty === 0) {
-                    // Savatga qo'shish tugmasi
-                    btnHtml = `
-                    <button class="ctrl-btn btn-add" onclick="updateCart(${p.id}, 1)">
-                        <i class="fa fa-cart-plus"></i> Savatga
-                    </button>`;
-                } else {
-                    // +/- tugmalari
-                    btnHtml = `
-                    <div class="ctrl-btn btn-qty" style="display:flex; justify-content:space-between; background:var(--primary); color:white; align-items:center; padding:5px 10px; border-radius:10px;">
-                        <div class="qty-circle" onclick="updateCart(${p.id}, -1)" style="font-size:20px; width:30px; text-align:center;">-</div>
-                        <span style="font-weight:bold; font-size:16px;">${qty}</span>
-                        <div class="qty-circle" onclick="updateCart(${p.id}, 1)" style="font-size:20px; width:30px; text-align:center;">+</div>
-                    </div>`;
-                }
-
                 grid.innerHTML += `
-                <div class="card">
-                    <img src="${p.img}" onclick="openProdModal(${p.id})" onerror="this.src='https://via.placeholder.com/300?text=Rasm+Yoq'">
-                    <div class="card-info">
-                        <h4 onclick="openProdModal(${p.id})">${p.name}</h4>
-                        <b style="color:var(--secondary)">${p.price.toLocaleString()} so'm</b>
-                        <div style="margin-top:10px;">${btnHtml}</div>
+                <div class="card" onclick="openProdModal(${p.id})">
+                    <div class="card-img-box"><img src="${p.img}" onerror="this.src='https://via.placeholder.com/300'"></div>
+                    <div class="card-body">
+                        <div class="card-title">${p.name}</div>
+                        <div class="card-price">${p.price.toLocaleString()} so'm</div>
+                        ${btnHtml}
                     </div>
                 </div>`;
             });
         }
 
-        // SAVATNI YANGILASH (MUHIM)
+        // --- 5. CART & ORDERS ---
         function updateCart(id, n) {
-            // Sonini o'zgartirish
             cart[id] = (cart[id] || 0) + n;
-            if (cart[id] <= 0) delete cart[id];
+            if(cart[id] <= 0) delete cart[id];
             
-            // Sahifani zudlik bilan yangilash
+            // Refresh visuals
             const activeCat = document.querySelector('.cat-btn.active')?.innerText || 'Barchasi';
+            if(!document.getElementById('p-menu').classList.contains('hidden')) renderGrid(activeCat);
+            if(!document.getElementById('p-cart').classList.contains('hidden')) renderCart();
             
-            // Agar menyuda bo'lsak, menyuni qayta chizamiz (Tugma o'zgarishi uchun)
-            if(!document.getElementById('p-main').classList.contains('hidden')) {
-                renderMenu(activeCat);
+            // Modalda bo'lsa yangilash
+            const pmBtn = document.getElementById('pm-btn');
+            if(cart[id]) pmBtn.innerText = `Savatda: ${cart[id]} ta`;
+            else pmBtn.innerText = "Savatga qo'shish";
+        }
+
+        function renderCart() {
+            let total = 0, html = "";
+            for(let id in cart) {
+                const p = products.find(x => x.id == id);
+                total += p.price * cart[id];
+                html += `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;">
+                    <div><b style="font-size:16px;">${p.name}</b><br><small style="color:#888">${p.price} x ${cart[id]}</small></div>
+                    <div style="font-weight:bold">${(p.price*cart[id]).toLocaleString()}</div>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                         <button onclick="updateCart(${p.id}, -1)" style="width:30px;height:30px;border-radius:50%;border:none;background:#eee">-</button>
+                         <b>${cart[id]}</b>
+                         <button onclick="updateCart(${p.id}, 1)" style="width:30px;height:30px;border-radius:50%;border:none;background:var(--primary);color:white">+</button>
+                    </div>
+                </div>`;
             }
+            document.getElementById('cartList').innerHTML = html || "<p style='text-align:center; color:#999; margin-top:50px;'>Savatingiz bo'sh</p>";
+            document.getElementById('totalPrice').innerText = total.toLocaleString() + " so'm";
             
-            // Agar savatda bo'lsak, savatni yangilaymiz
-            renderCartList();
-            
-            // Badge (qizil dumaloq) yangilash
-            const count = Object.values(cart).reduce((a,b)=>a+b,0);
-            const badge = document.getElementById('cartCountInner');
-            if(badge) badge.innerText = count; // Savat ichidagi
-            
-            // Asosiy menyudagi badge (agar kerak bo'lsa qo'shish mumkin)
+            const btn = document.getElementById('orderBtn');
+            if(total > 0 && locationData) {
+                btn.style.background = "var(--success)";
+                btn.style.color = "white";
+                btn.style.pointerEvents = "all";
+            } else {
+                btn.style.background = "#ccc";
+                btn.style.pointerEvents = "none";
+            }
         }
 
-        // --------------------------------------------------
-        // 5. BUYURTMALAR TARIXI (FIXED)
-        // --------------------------------------------------
-        function fetchHistory() {
-            if(!user) return;
-            const historyDiv = document.getElementById('historyList');
-            if(historyDiv) historyDiv.innerHTML = '<p style="text-align:center">Yuklanmoqda...</p>';
-
-            const myPhone = user.phone.replace(/\D/g, ''); // 998901234567
-
-            // Index ishlatmasdan oxirgi 50 ta buyurtmani olib, telefonda filter qilamiz
-            db.ref('orders').limitToLast(50).on('value', (snapshot) => {
-                const data = snapshot.val();
-                if(!data) {
-                    if(historyDiv) historyDiv.innerHTML = "<p style='text-align:center; color:#999'>Hali buyurtma bermagansiz</p>";
-                    return;
-                }
-
-                const myOrders = [];
-                Object.entries(data).forEach(([key, val]) => {
-                    // ID tekshirish (String qilib solishtiramiz)
-                    if(String(val.user_id) === String(myPhone)) {
-                        myOrders.push({key, ...val});
-                    }
-                });
-
-                if(myOrders.length === 0) {
-                    if(historyDiv) historyDiv.innerHTML = "<p style='text-align:center; color:#999'>Sizning buyurtmalaringiz yo'q</p>";
-                    return;
-                }
-
-                // Ekranga chizish (Yangi tepada)
-                if(historyDiv) {
-                    historyDiv.innerHTML = myOrders.reverse().map(order => {
-                        let st = "Kutilmoqda", bg = "#3498db";
-                        if(order.status === 'qabul_qilindi') { st = "Qabul qilindi"; bg = "#f1c40f"; }
-                        if(order.status === 'tayyorlanmoqda') { st = "Tayyorlanmoqda"; bg = "#e67e22"; }
-                        if(order.status === 'yetkazilmoqda') { st = "Yetkazilmoqda"; bg = "#9b59b6"; }
-                        if(order.status === 'yetkazildi') { st = "Yetkazildi"; bg = "#2ecc71"; }
-
-                        const itemsHtml = order.items ? order.items.map(i => `<div>• ${i.name} x${i.qty}</div>`).join('') : '';
-
-                        return `
-                        <div style="background:white; padding:15px; margin-bottom:15px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05); position:relative;">
-                            <span style="position:absolute; top:15px; right:15px; background:${bg}; color:white; padding:4px 10px; border-radius:10px; font-size:11px; font-weight:bold;">${st}</span>
-                            <h4 style="margin:0 0 10px 0;">Buyurtma #${order.key.substr(-4)}</h4>
-                            <div style="font-size:13px; color:#555; margin-bottom:10px;">${itemsHtml}</div>
-                            <div style="border-top:1px dashed #eee; padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
-                                <b style="color:var(--dark)">${order.total.toLocaleString()} so'm</b>
-                                <span style="font-size:11px; color:#999;">${order.time.split(',')[0]}</span>
-                            </div>
-                        </div>`;
-                    }).join('');
-                }
-            });
-        }
-
-        // --------------------------------------------------
-        // 6. BUYURTMA YUBORISH
-        // --------------------------------------------------
         function getLocation() {
             const btn = document.getElementById('locBtn');
             btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Aniqlanmoqda...';
-            
-            if(!navigator.geolocation) return showAlert("Xato", "GPS ishlamayapti", "❌");
-
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    userLocation = { lat: pos.coords.latitude, long: pos.coords.longitude };
-                    btn.innerHTML = '<i class="fa fa-check-circle"></i> MANZIL ANIQLANDI';
-                    btn.style.borderColor = "var(--green)";
-                    btn.style.color = "var(--green)";
-                    checkReady();
-                    showAlert("Zo'r!", "Manzil olindi", "📍");
-                },
-                () => {
-                    btn.innerHTML = 'QAYTA URINISH';
-                    showAlert("Xato", "Joylashuvga ruxsat bering", "⚠️");
-                }
-            );
-        }
-
-        function renderCartList() {
-            const list = document.getElementById('cartList');
-            if(!list) return;
-            let total = 0; 
-            let html = "";
-            
-            for(let id in cart) {
-                const p = products.find(x => x.id == id);
-                if(p) {
-                    const sum = p.price * cart[id];
-                    total += sum;
-                    html += `
-                    <div class="cart-item">
-                        <div><b>${p.name}</b><br><small>${p.price} x ${cart[id]}</small></div>
-                        <div style="display:flex; gap:10px; align-items:center;">
-                            <button onclick="updateCart(${p.id}, -1)" style="width:30px; height:30px; border-radius:50%; border:none; background:#eee">-</button>
-                            <b>${cart[id]}</b>
-                            <button onclick="updateCart(${p.id}, 1)" style="width:30px; height:30px; border-radius:50%; border:none; background:var(--primary); color:white">+</button>
-                        </div>
-                    </div>`;
-                }
-            }
-            list.innerHTML = html || "<p style='text-align:center; padding:20px'>Savat bo'sh</p>";
-            document.getElementById('totalPrice').innerText = total.toLocaleString() + " so'm";
-            checkReady();
-        }
-
-        function checkReady() {
-            const btn = document.getElementById('orderBtn');
-            const hasItems = Object.keys(cart).length > 0;
-            const hasLoc = !!userLocation;
-            
-            if(hasItems && hasLoc && user) {
-                btn.classList.add('ready');
-                btn.innerHTML = "BUYURTMANI TASDIQLASH";
-            } else {
-                btn.classList.remove('ready');
-                btn.innerHTML = !hasItems ? "SAVAT BO'SH" : "MANZILNI ANIQLANG";
-            }
+            navigator.geolocation.getCurrentPosition(pos => {
+                locationData = { lat: pos.coords.latitude, long: pos.coords.longitude };
+                btn.innerHTML = '<i class="fa fa-check"></i> Manzil aniqlandi';
+                btn.style.borderColor = "var(--success)";
+                btn.style.color = "var(--success)";
+                renderCart();
+            }, () => {
+                showMyAlert("Xato", "GPS yoqilmagan!", "⚠️");
+                btn.innerHTML = "Qayta urinish";
+            });
         }
 
         function sendOrder() {
-            if(!userLocation || !Object.keys(cart).length) return;
-            if(!user) return openProfile();
-
+            if(!user) return; // Should not happen
             const items = [];
             let total = 0;
             for(let id in cart) {
-                const p = products.find(x => x.id == id);
-                items.push({ name: p.name, qty: cart[id], price: p.price });
+                const p = products.find(x=>x.id==id);
+                items.push({name: p.name, qty: cart[id]});
                 total += p.price * cart[id];
             }
-
-            const order = {
-                user_id: user.phone.replace(/\D/g, ''), // Faqat raqamlar (ID uchun)
-                user_info: `${user.name} (${user.phone})`,
-                items: items,
-                total: total,
-                location: userLocation,
-                status: 'yangi',
-                time: new Date().toLocaleString()
-            };
-
-            db.ref('orders').push(order);
-            showAlert("Qabul qilindi", "Buyurtmangiz yuborildi!", "✅");
             
-            cart = {}; userLocation = null;
-            document.getElementById('locBtn').innerHTML = 'MANZILNI ANIQLASH';
-            document.getElementById('locBtn').style = "";
-            renderCartList();
-            nav('orders', document.querySelectorAll('.tool-item')[2]);
+            const order = {
+                user_id: user.phone,
+                user_info: `${user.name} (${user.phone})`,
+                items: items, total: total, location: locationData,
+                status: 'yangi', time: new Date().toLocaleString()
+            };
+            
+            db.ref('orders').push(order);
+            showMyAlert("Muvaffaqiyatli", "Buyurtmangiz qabul qilindi!", "✅");
+            
+            cart = {}; locationData = null;
+            document.getElementById('locBtn').innerHTML = '<i class="fa fa-map-marker-alt"></i> Manzilni aniqlash';
+            renderCart();
+            nav('orders', document.querySelectorAll('.nav-icon')[2]);
         }
 
-        // UI YORDAMCHILAR
-        function nav(id, el) {
-            document.querySelectorAll('.p-con').forEach(p => p.classList.add('hidden'));
-            document.querySelectorAll('.tool-item').forEach(t => t.classList.remove('active'));
-            document.getElementById('p-'+id).classList.remove('hidden');
+        function loadHistory() {
+             db.ref('orders').orderByChild('user_id').equalTo(user.phone).on('value', snap => {
+                 const d = snap.val();
+                 document.getElementById('historyList').innerHTML = d ? Object.values(d).reverse().map(o => `
+                    <div class="card" style="padding:15px; margin-bottom:15px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                             <span style="background:var(--light-bg); padding:5px 10px; border-radius:10px; font-size:12px; font-weight:bold;">${o.status.toUpperCase()}</span>
+                             <span style="color:#999; font-size:12px;">${o.time.split(',')[0]}</span>
+                        </div>
+                        <div style="font-size:14px; color:#555; margin-bottom:10px;">
+                            ${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}
+                        </div>
+                        <div style="font-weight:900; font-size:16px;">${o.total.toLocaleString()} so'm</div>
+                    </div>
+                 `).join('') : "<p style='text-align:center; padding-top:50px; color:#999'>Tarix bo'sh</p>";
+             });
+        }
+
+        // --- 6. MODALS & NAVIGATIONS ---
+        function nav(page, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.getElementById('p-' + page).classList.remove('hidden');
+            document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
-            if(id === 'cart') renderCartList();
-            if(id === 'main') {
-                const activeCat = document.querySelector('.cat-btn.active')?.innerText || 'Barchasi';
-                renderMenu(activeCat);
-            }
+            if(page === 'cart') renderCart();
         }
 
+        // Product Modal Logic
         function openProdModal(id) {
             const p = products.find(x => x.id == id);
-            if(p) {
-                document.getElementById('pm-img').src = p.img;
-                document.getElementById('pm-title').innerText = p.name;
-                document.getElementById('pm-price').innerText = p.price.toLocaleString();
-                document.getElementById('pm-desc').innerText = p.desc;
-                openModal('prodModal');
-            }
+            document.getElementById('pm-img').src = p.img;
+            document.getElementById('pm-title').innerText = p.name;
+            document.getElementById('pm-price').innerText = p.price.toLocaleString() + " so'm";
+            document.getElementById('pm-desc').innerText = p.desc;
+            
+            const btn = document.getElementById('pm-btn');
+            btn.onclick = () => updateCart(p.id, 1);
+            if(cart[p.id]) btn.innerText = `Savatda: ${cart[p.id]} ta`;
+            else btn.innerText = "Savatga qo'shish";
+            
+            const overlay = document.getElementById('prodModalOverlay');
+            overlay.style.display = 'flex';
+            setTimeout(() => overlay.classList.add('active'), 10);
+        }
+        function closeProdModal() {
+            const overlay = document.getElementById('prodModalOverlay');
+            overlay.classList.remove('active');
+            setTimeout(() => overlay.style.display = 'none', 300);
         }
 
-        function showAlert(title, msg, icon) {
+        // Custom Alert Logic
+        function showMyAlert(title, msg, icon) {
+            document.getElementById('alertIcon').innerText = icon;
             document.getElementById('alertTitle').innerText = title;
             document.getElementById('alertMsg').innerText = msg;
-            document.getElementById('alertIcon').innerText = icon;
-            document.getElementById('myAlert').style.display = 'flex';
+            const modal = document.getElementById('alertModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
         }
-        function closeAlert() { document.getElementById('myAlert').style.display = 'none'; }
-        
-        function openProfile() { openModal('profileModal'); }
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-        function saveProfile() {
-            const name = document.getElementById('profName').value;
-            const phone = document.getElementById('profPhone').value;
-            if(name && phone.length >= 13) {
-                user = { name, phone };
-                localStorage.setItem('cafe_user', JSON.stringify(user));
-                closeModal('profileModal');
-                checkProfile();
-            } else showAlert("Xato", "Ma'lumotlarni to'liq kiriting", "⚠️");
+        function closeMyAlert() {
+            const modal = document.getElementById('alertModal');
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 300);
         }
 
-        function toggleDrawer() { document.getElementById('myDrawer').classList.toggle('open'); document.getElementById('drawerOverlay').style.display = document.getElementById('myDrawer').classList.contains('open') ? 'block' : 'none'; }
-        function toggleMode() { document.body.classList.toggle('dark-mode'); }
+        // Drawer
+        function toggleDrawer() {
+            document.getElementById('myDrawer').classList.toggle('open');
+            const overlay = document.getElementById('drawerOverlay');
+            if(document.getElementById('myDrawer').classList.contains('open')) {
+                overlay.style.display = 'block';
+                setTimeout(()=>overlay.classList.add('active'), 10);
+            } else {
+                overlay.classList.remove('active');
+                setTimeout(()=>overlay.style.display='none', 300);
+            }
+        }
+        function toggleMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        }
+        function logout() {
+            localStorage.removeItem('cafe_phone');
+            location.reload();
+        }
+        function openProfile() {
+            // Profilni qayta ochish (o'zgartirish uchun)
+            document.getElementById('profName').value = user ? user.name : '';
+            document.getElementById('profPhone').value = user ? user.phone : '+998';
+            document.getElementById('profileModal').style.display = 'flex';
+            setTimeout(()=>document.getElementById('profileModal').classList.add('active'), 10);
+        }
 
         window.onload = init;
     </script>
-
 </body>
 </html>
