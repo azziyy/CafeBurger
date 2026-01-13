@@ -8,143 +8,171 @@
     
     <style>
         /* --------------------------------------------------
-           1. PROFESSIONAL DIZAYN (VARIABLES & ANIMATIONS)
+           1. SOZLAMALAR (VARIABLES)
            -------------------------------------------------- */
         :root {
-            --gold: #FFC107;      /* Asosiy rang */
-            --dark: #1e1e24;      /* Fon rangi */
-            --card: #2b2b36;      /* Karta foni */
-            --text: #ffffff;      /* Yozuv rangi */
-            --glass: rgba(43, 43, 54, 0.9); /* Shisha effekti */
-            --radius: 20px;
-            --shadow: 0 10px 30px rgba(0,0,0,0.3);
+            --bg-dark: #0f0f13;
+            --card-dark: #1b1b22;
+            --text-dark: #ffffff;
+            --gold: #FFC107;
+            
+            /* Status Ranglari */
+            --st-new: #3498db;
+            --st-cook: #e67e22;
+            --st-road: #9b59b6;
+            --st-done: #2ecc71;
+            
+            /* Glass Effekt (Shaffoflik) */
+            --glass: rgba(27, 27, 34, 0.7); 
+            --glass-blur: blur(20px);
+            
+            --radius: 24px;
+            --shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
 
-        /* Animatsiyalar */
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(0.95); } 100% { transform: scale(1); } }
-        
+        body.light-mode {
+            --bg-dark: #f0f2f5; --card-dark: #ffffff; --text-dark: #1a1a1a;
+            --glass: rgba(255, 255, 255, 0.85); --shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
         
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--dark); color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-dark); color: var(--text-dark);
             margin: 0; padding: 0; padding-bottom: 90px;
-            overflow-x: hidden;
+            overflow-x: hidden; transition: 0.3s;
+        }
+
+        /* Animatsiyalar */
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        
+        /* Ezilish effekti */
+        button:active, .card:active, .icon-btn:active, .story-circle:active, .nav-item:active {
+            transform: scale(0.95); transition: 0.1s;
         }
 
         /* --------------------------------------------------
-           2. HEADER & STORIES
+           2. HEADER & TOOLBAR (IXCHAM & SHAFFOF)
            -------------------------------------------------- */
         .header {
-            position: fixed; top: 0; left: 0; width: 100%; height: 70px;
-            background: var(--glass); backdrop-filter: blur(15px);
+            position: fixed; top: 0; left: 0; width: 100%; 
+            height: 60px; /* Pasaytirildi */
+            background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; z-index: 1000; box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            padding: 0 20px; z-index: 1000; /* Drawer dan pastda turadi */
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .logo { font-size: 24px; font-weight: 900; letter-spacing: 1px; }
+        .logo { font-size: 22px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase; }
         .logo span { color: var(--gold); }
-        .icon-btn { font-size: 22px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.2s; }
-        .icon-btn:active { background: rgba(255,255,255,0.1); transform: scale(0.9); }
+        .icon-btn { font-size: 22px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: var(--text-dark); }
 
-        /* STORIES */
-        .stories-wrap {
-            margin-top: 80px; padding: 10px 0 20px 0; overflow-x: auto; display: flex; gap: 15px; padding-left: 15px; scrollbar-width: none;
+        /* NAVBAR (PASTKI MENYU) - SHAFFOF VA Drawer ostida */
+        .navbar {
+            position: fixed; bottom: 0; width: 100%; 
+            height: 70px; /* Pasaytirildi */
+            background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            display: flex; justify-content: space-around; align-items: center;
+            border-radius: 25px 25px 0 0; 
+            z-index: 1000; /* Drawer dan pastda */
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.2); border-top: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 5px;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center;
+            color: #777; font-size: 11px; font-weight: 600; transition: 0.3s;
+        }
+        .nav-item.active { color: var(--gold); transform: translateY(-3px); }
+        .nav-item i { font-size: 26px; margin-bottom: 4px; }
+
+        /* --------------------------------------------------
+           3. DRAWER (YON MENYU) - ENG TEPADA
+           -------------------------------------------------- */
+        .drawer-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
+            z-index: 2000; display: none; /* Navbar(1000) dan baland */
+        }
+        .drawer {
+            position: fixed; top: 0; left: -300px; width: 280px; height: 100%;
+            background: var(--card-dark); 
+            z-index: 2001; /* Overlay dan baland */
+            transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            display: flex; flex-direction: column; padding: 40px 25px;
+            box-shadow: 5px 0 30px rgba(0,0,0,0.5);
+        }
+        .drawer.open { left: 0; }
+        
+        .drawer-item {
+            padding: 15px; border-radius: 15px; display: flex; align-items: center; gap: 15px;
+            font-size: 16px; color: var(--text-dark); background: rgba(255,255,255,0.03); margin-bottom: 10px;
+        }
+        .drawer-item:active { background: rgba(255,193,7,0.1); color: var(--gold); }
+
+        /* --------------------------------------------------
+           4. ASOSIY QISMLAR
+           -------------------------------------------------- */
+        .stories-container {
+            padding: 75px 15px 10px 15px; /* Header pasaygani uchun kamaytirildi */
+            display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none;
         }
         .story-circle {
-            min-width: 70px; height: 70px; border-radius: 50%;
+            min-width: 72px; height: 72px; border-radius: 50%;
             background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-            padding: 3px; cursor: pointer; animation: fadeIn 1s ease;
+            padding: 2px; cursor: pointer; animation: zoomIn 0.5s ease;
         }
-        .story-circle img {
-            width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--dark); object-fit: cover;
-        }
-        
-        /* --------------------------------------------------
-           3. MENYU VA KARTALAR
-           -------------------------------------------------- */
-        .cat-nav {
-            display: flex; gap: 10px; overflow-x: auto; padding: 0 15px 15px 15px; position: sticky; top: 70px; z-index: 900; background: var(--dark);
-        }
-        .cat-btn {
-            padding: 10px 25px; border-radius: 30px; background: var(--card); color: #aaa;
-            border: 1px solid rgba(255,255,255,0.05); font-weight: bold; transition: 0.3s;
-        }
-        .cat-btn.active { background: var(--gold); color: #000; border-color: var(--gold); transform: scale(1.05); }
+        .story-circle img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--bg-dark); object-fit: cover; }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 15px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
         .card {
-            background: var(--card); border-radius: var(--radius); overflow: hidden;
-            display: flex; flex-direction: column; box-shadow: var(--shadow);
-            animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-            transition: transform 0.2s;
+            background: var(--card-dark); border-radius: var(--radius); overflow: hidden;
+            box-shadow: var(--shadow); display: flex; flex-direction: column;
+            animation: slideUp 0.6s backwards; position: relative; border: 1px solid rgba(255,255,255,0.03);
         }
-        .card:active { transform: scale(0.97); }
         .card img { width: 100%; height: 150px; object-fit: cover; }
-        .card-body { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
-        .card-title { font-size: 15px; font-weight: bold; margin-bottom: 5px; }
-        .card-price { color: var(--gold); font-weight: 900; font-size: 16px; margin-bottom: 10px; }
+        .card-body { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-title { font-weight: 800; font-size: 15px; margin-bottom: 5px; line-height: 1.3; }
+        .card-price { color: var(--gold); font-weight: 900; font-size: 16px; margin-bottom: 12px; }
+
+        /* TUGMALAR */
+        .btn { width: 100%; padding: 12px; border-radius: 15px; border: none; font-weight: bold; font-size: 14px; margin-top: auto; cursor: pointer; }
+        .btn-gold { background: var(--gold); color: #000; box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3); }
         
-        .btn { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; margin-top: auto; }
-        .btn-add { background: rgba(255,255,255,0.1); color: white; }
-        .btn-primary { background: var(--gold); color: black; box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3); }
-
-        /* --------------------------------------------------
-           4. MODALLAR (BLOCKED, CART, PROFILE)
-           -------------------------------------------------- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
-            z-index: 5000; display: none; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity 0.3s;
+        .btn-qty-wrap {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--gold);
+            border-radius: 15px; padding: 4px; height: 42px; margin-top: auto;
         }
-        .modal-overlay.active { opacity: 1; }
-        
-        .modal-box {
-            background: var(--card); width: 85%; padding: 30px; border-radius: 25px;
-            text-align: center; border: 1px solid rgba(255,255,255,0.1);
-            transform: scale(0.8); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .qty-btn {
+            width: 32px; height: 32px; border-radius: 12px; background: var(--gold); color: black;
+            display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; cursor: pointer;
         }
-        .modal-overlay.active .modal-box { transform: scale(1); }
+        .qty-num { font-size: 18px; font-weight: 800; color: var(--text-dark); }
 
-        /* BLOKLANISH EKRANI (QIZIL) */
-        .blocked-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #1a0000; z-index: 9999; display: none;
-            flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px;
-        }
-        .blocked-icon { font-size: 80px; color: #ff4757; margin-bottom: 20px; animation: pulse 2s infinite; }
+        /* MODALLAR */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 3000; display: none; align-items: center; justify-content: center; }
+        .modal-card { background: var(--card-dark); width: 85%; padding: 0; border-radius: 25px; overflow: hidden; transform: scale(0.9); transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); }
+        .modal-overlay.active .modal-card { transform: scale(1); }
 
-        /* NAVBAR */
-        .navbar {
-            position: fixed; bottom: 0; width: 100%; height: 80px;
-            background: var(--card); display: flex; justify-content: space-around;
-            align-items: center; border-radius: 30px 30px 0 0; z-index: 2000;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #666; font-size: 11px; transition: 0.3s; }
-        .nav-item.active { color: var(--gold); transform: translateY(-5px); }
-        .nav-item i { font-size: 24px; margin-bottom: 5px; }
+        /* Status Badges */
+        .st-badge { padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+        .st-new { background: rgba(52,152,219,0.2); color: var(--st-new); }
+        .st-cook { background: rgba(230,126,34,0.2); color: var(--st-cook); }
+        .st-road { background: rgba(155,89,182,0.2); color: var(--st-road); }
+        .st-done { background: rgba(46,204,113,0.2); color: var(--st-done); }
 
-        /* STORIES VIEWER */
-        .story-viewer { position: fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:6000; display:none; }
-        .story-img { width: 100%; height: 100%; object-fit: contain; }
-        .progress-bar { position: absolute; top: 10px; width: 95%; left: 2.5%; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; display:flex; gap:5px; }
-        .progress-fill { height: 100%; background: #fff; border-radius: 2px; flex:1; }
-
-        /* INPUTS */
-        .inp { width: 100%; padding: 15px; background: rgba(0,0,0,0.3); border: 1px solid #444; border-radius: 12px; color: white; margin-bottom: 15px; font-size: 16px; }
+        .blocked-screen { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
         .hidden { display: none !important; }
+        .inp { width: 100%; padding: 15px; background: rgba(0,0,0,0.3); border: 1px solid #444; border-radius: 12px; color: var(--text-dark); margin-bottom: 10px; font-size: 16px; }
     </style>
 </head>
 <body>
-
     <div id="blockedScreen" class="blocked-screen">
-        <div class="blocked-icon"><i class="fa fa-ban"></i></div>
-        <h1 style="color:#ff4757; margin-bottom:10px;">BLOKLANGAN!</h1>
-        <p style="color:#ccc; line-height:1.6;">Hurmatli foydalanuvchi, sizning raqamingiz tizim qoidalarini buzgani uchun <b>Qora Ro'yxat</b>ga kiritildi.</p>
-        <p style="color:#666; font-size:12px; margin-top:30px;">ID: <span id="blockID"></span></p>
+        <i class="fa fa-ban" style="font-size: 60px; color: #ff4757; margin-bottom: 20px;"></i>
+        <h1 style="color:#ff4757">KIRISH TAQIQLANDI</h1>
+        <p style="color:#aaa;">Sizning raqamingiz bloklangan.</p>
+        <p style="margin-top:20px; color:#555">ID: <span id="blockId"></span></p>
     </div>
 
     <header class="header">
@@ -153,70 +181,90 @@
         <div class="icon-btn" onclick="openProfile()"><i class="fa fa-user"></i></div>
     </header>
 
-    <div id="storiesWrap" class="stories-wrap hidden">
-        </div>
+    <div id="drawerOverlay" class="drawer-overlay" onclick="toggleDrawer()"></div>
+    <div id="myDrawer" class="drawer">
+        <h2 style="color:var(--gold); margin-top:0;">Menyu</h2>
+        <div class="drawer-item" onclick="toggleTheme()"><i class="fa fa-moon"></i> Tungi rejim</div>
+        <div class="drawer-item" onclick="openProfile()"><i class="fa fa-user-pen"></i> Profil</div>
+        <div class="drawer-item" onclick="showAlert('Aloqa', '+998 90 123 45 67')"><i class="fa fa-phone"></i> Bog'lanish</div>
+        <div class="drawer-item" style="margin-top:auto; color:#ff4757" onclick="logout()"><i class="fa fa-sign-out-alt"></i> Chiqish</div>
+    </div>
 
     <div id="p-menu" class="page">
-        <div id="catNav" class="cat-nav"></div>
+        <div id="storiesContainer" class="stories-container hidden"></div>
+        
+        <div id="catNav" style="display:flex; gap:10px; overflow-x:auto; padding:10px 15px; position:sticky; top:60px; z-index:900; background:var(--bg-dark); backdrop-filter:blur(10px);"></div>
+        
         <div id="menuGrid" class="grid"></div>
     </div>
 
-    <div id="p-cart" class="page hidden">
+    <div id="p-cart" class="page hidden" style="padding-top: 80px;">
         <h2 style="padding:0 20px;">Savatcha</h2>
-        <div id="cartList" style="padding:0 20px 150px 20px;"></div>
+        <div id="cartList" style="padding:0 20px 180px 20px;"></div>
         
-        <div style="position:fixed; bottom:90px; left:15px; right:15px; background:var(--card); padding:20px; border-radius:20px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.05);">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:18px; font-weight:bold;">
+        <div style="position:fixed; bottom:80px; left:20px; right:20px; background:var(--card-dark); padding:20px; border-radius:20px; box-shadow: var(--shadow); border:1px solid rgba(255,255,255,0.1); z-index:900;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:900; font-size:18px;">
                 <span>Jami:</span> <span id="totalPrice" style="color:var(--gold)">0 so'm</span>
             </div>
-            <button id="locBtn" class="btn" style="background:rgba(255,255,255,0.05); color:#aaa; margin-bottom:10px; border:1px dashed #555;" onclick="getLocation()">
+            <button id="locBtn" class="btn" style="background:transparent; border:1px dashed #666; color:#888; margin-bottom:10px;" onclick="getLocation()">
                 <i class="fa fa-location-arrow"></i> Manzilni aniqlash
             </button>
-            <button id="orderBtn" class="btn" style="background:#444; color:#777; pointer-events:none;" onclick="sendOrder()">
-                BUYURTMA BERISH
-            </button>
+            <button id="orderBtn" class="btn" style="background:#333; color:#666; pointer-events:none;" onclick="sendOrder()">BUYURTMA BERISH</button>
         </div>
     </div>
 
-    <div id="p-orders" class="page hidden">
-        <h2 style="padding:0 20px;">Buyurtmalar tarixi</h2>
-        <div id="historyList" style="padding:0 20px;"></div>
-    </div>
-
-    <div id="storyViewer" class="story-viewer" onclick="closeStories()">
-        <div id="storyProgress" class="progress-bar"></div>
-        <img id="storyImgFull" class="story-img">
+    <div id="p-orders" class="page hidden" style="padding-top: 80px;">
+        <h2 style="padding:0 20px;">Tarix</h2>
+        <div id="historyList" style="padding:0 20px 100px 20px;"></div>
     </div>
 
     <nav class="navbar">
         <div class="nav-item active" onclick="nav('menu', this)"><i class="fa fa-utensils"></i> Menyu</div>
         <div class="nav-item" onclick="nav('cart', this)"><i class="fa fa-shopping-basket"></i> Savat</div>
-        <div class="nav-item" onclick="nav('orders', this)"><i class="fa fa-history"></i> Tarix</div>
+        <div class="nav-item" onclick="nav('orders', this)"><i class="fa fa-clock-rotate-left"></i> Tarix</div>
     </nav>
 
-    <div id="alertModal" class="modal-overlay">
-        <div class="modal-box">
-            <h3 id="alertTitle" style="margin-top:0">Xabar</h3>
-            <p id="alertMsg" style="color:#ccc; margin-bottom:20px;"></p>
-            <button class="btn btn-primary" onclick="closeAlert()">Tushunarli</button>
+    <div id="prodModal" class="modal-overlay" onclick="closeProd()">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <div style="position:relative">
+                <img id="pm-img" src="" style="width:100%; height:280px; object-fit:cover;">
+                <button onclick="closeProd()" style="position:absolute; top:15px; right:15px; width:35px; height:35px; border-radius:50%; border:none; background:rgba(0,0,0,0.5); color:white; font-size:18px;">✕</button>
+            </div>
+            <div style="padding:25px;">
+                <h2 id="pm-title" style="margin:0 0 5px 0;"></h2>
+                <h3 id="pm-price" style="color:var(--gold); margin:0 0 15px 0;"></h3>
+                <p id="pm-desc" style="color:#888; line-height:1.5; margin-bottom:20px; font-size:14px;"></p>
+                <button id="pm-btn" class="btn btn-gold" onclick="">Savatga qo'shish</button>
+            </div>
         </div>
     </div>
 
+    <div id="alertModal" class="modal-overlay">
+        <div class="modal-card" style="padding:30px; text-align:center;">
+            <h3 id="alertTitle">Xabar</h3> <p id="alertMsg" style="color:#aaa; margin-bottom:20px;"></p>
+            <button class="btn btn-gold" onclick="closeAlert()">OK</button>
+        </div>
+    </div>
     <div id="profModal" class="modal-overlay">
-        <div class="modal-box">
-            <h3>Ro'yxatdan o'tish</h3>
-            <p style="color:#888; font-size:12px; margin-bottom:20px;">Buyurtma berish uchun ma'lumotlaringizni kiriting</p>
+        <div class="modal-card" style="padding:30px;">
+            <h3 style="text-align:center; margin-bottom:20px;">Ro'yxatdan o'tish</h3>
             <input id="profName" class="inp" placeholder="Ismingiz">
             <input id="profPhone" class="inp" type="tel" value="+998">
-            <button class="btn btn-primary" onclick="saveProfile()">SAQLASH</button>
+            <button class="btn btn-gold" onclick="saveProfile()">SAQLASH</button>
         </div>
     </div>
-
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    
+    <div id="storyViewer" style="position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:9000; display:none; flex-direction:column;">
+        <div id="storyProgress" style="padding:15px; display:flex; gap:5px; position:absolute; top:0; width:100%; z-index:10;"></div>
+        <img id="storyImgFull" style="width:100%; height:100%; object-fit:contain;">
+        <div style="position:absolute; top:30px; right:20px; color:white; font-size:30px; z-index:20;" onclick="closeStories()">✕</div>
+        <div style="position:absolute; left:0; top:0; width:30%; height:100%;" onclick="prevStory()"></div>
+        <div style="position:absolute; right:0; top:0; width:70%; height:100%;" onclick="nextStory()"></div>
+    </div>
+        <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyCVSfWRZ77PFFxip93NcD5QZ9Fc0gMUyW8",
             authDomain: "cafe888-c2d7d.firebaseapp.com",
@@ -228,8 +276,6 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        
-        // SIZNING JADVALLARINGIZ
         const MENU_SHEET = "1j6VojbeSYWgYj3UY98xCxHLCzHcGlEg0nXjYwHDkKQk";
         const ADS_SHEET = "1ENQ4bnzBxj7x5jmrXUwdDZhmEMQ7umPTPwq2bgXfj3k";
 
@@ -237,275 +283,250 @@
         let adsList=[], adIdx=0, adTimer;
 
         function init() {
-            // 1. Profil va Bloklashni tekshirish
-            const savedPhone = localStorage.getItem('cafe_phone');
-            if(savedPhone) {
-                checkUserStatus(savedPhone);
-            } else {
-                openProfile();
-            }
+            if(localStorage.getItem('theme')==='light') document.body.classList.add('light-mode');
+            const phone = localStorage.getItem('cafe_phone');
+            if(phone) checkUser(phone); else openProfile();
 
-            // 2. Input formatlash
+            loadMenu(); loadAds();
+
             document.getElementById('profPhone').addEventListener('input', e => {
-                let v = e.target.value.replace(/\D/g,'');
-                if(!v.startsWith('998')) v='998'+v;
-                e.target.value = '+'+v.substring(0,12);
+                let v=e.target.value.replace(/\D/g,''); if(!v.startsWith('998')) v='998'+v;
+                e.target.value='+'+v.substring(0,12);
             });
-
-            // 3. Ma'lumotlarni yuklash
-            loadMenu();
-            loadAds();
         }
 
-        // --- USER & BLOCKING SYSTEM ---
-        function checkUserStatus(phone) {
+        // USER
+        function checkUser(phone) {
             db.ref('users/'+phone).on('value', snap => {
                 const val = snap.val();
-                
-                // AGAR BLOKLANGAN BO'LSA
-                if(val && val.blocked === true) {
-                    document.getElementById('blockID').innerText = phone;
-                    document.getElementById('blockedScreen').style.display = 'flex'; // Qutulib bo'lmas oyna
-                    localStorage.removeItem('cafe_phone'); // Sessiyani o'chirish
-                    return; // Dasturni to'xtatish
-                }
-                
-                // Agar hammasi joyida bo'lsa
-                if(val) {
-                    user = val;
-                    localStorage.setItem('cafe_phone', phone);
-                    document.getElementById('blockedScreen').style.display = 'none'; // Blokni olish (agar ochilgan bo'lsa)
+                if(val && val.blocked) {
+                    document.getElementById('blockId').innerText = phone;
+                    document.getElementById('blockedScreen').style.display = 'flex';
+                    localStorage.removeItem('cafe_phone');
+                } else if(val) {
+                    user=val; localStorage.setItem('cafe_phone', phone);
+                    document.getElementById('blockedScreen').style.display = 'none';
                     loadHistory();
-                } else {
-                    openProfile();
-                }
+                } else openProfile();
             });
         }
-
         function saveProfile() {
-            const name = document.getElementById('profName').value;
-            const phone = document.getElementById('profPhone').value.replace(/\D/g,'');
-            if(name.length<3 || phone.length<12) return showAlert("Xatolik", "Ism va raqamni to'g'ri kiriting");
-
-            const newUser = { name, phone, blocked: false };
-            
-            // Avval bloklanganligini tekshiramiz
+            const name=document.getElementById('profName').value;
+            const phone=document.getElementById('profPhone').value.replace(/\D/g,'');
+            if(name.length<3 || phone.length<12) return showAlert("Xato","Ma'lumot xato");
             db.ref('users/'+phone).once('value', s => {
-                if(s.val() && s.val().blocked) {
-                    checkUserStatus(phone); // Blok oynasini chiqaradi
-                } else {
-                    db.ref('users/'+phone).set(newUser);
-                    user = newUser;
-                    localStorage.setItem('cafe_phone', phone);
+                if(s.val() && s.val().blocked) checkUser(phone);
+                else {
+                    const u={name, phone, blocked:false};
+                    db.ref('users/'+phone).set(u);
+                    user=u; localStorage.setItem('cafe_phone', phone);
                     document.getElementById('profModal').classList.remove('active');
                     setTimeout(()=>document.getElementById('profModal').style.display='none',300);
-                    showAlert("Xush kelibsiz", `Salom, ${name}!`);
+                    showAlert("Xush kelibsiz", name); loadHistory();
                 }
             });
         }
 
-        // --- STORIES (REKLAMA) ---
-        function loadAds() {
-            const s = document.createElement('script');
-            s.src = `https://docs.google.com/spreadsheets/d/${ADS_SHEET}/gviz/tq?tqx=responseHandler:handleAds`;
-            document.body.appendChild(s);
-        }
-        window.handleAds = json => {
-            const rows = json.table.rows.map(r => r.c[0]?.v).filter(u => u);
-            adsList = rows;
-            
-            if(adsList.length > 0) {
-                document.getElementById('storiesWrap').classList.remove('hidden');
-                document.getElementById('storiesWrap').innerHTML = adsList.map((u, i) => `
-                    <div class="story-circle" onclick="openStory(${i})">
-                        <img src="${u}">
-                    </div>
-                `).join('');
-            }
-        }
-        function openStory(i) {
-            adIdx = i;
-            document.getElementById('storyViewer').style.display = 'block';
-            showStoryImg();
-        }
-        function showStoryImg() {
-            if(adIdx >= adsList.length) { closeStories(); return; }
-            document.getElementById('storyImgFull').src = adsList[adIdx];
-            
-            // Progress
-            const bar = document.getElementById('storyProgress');
-            bar.innerHTML = adsList.map((_, idx) => 
-                `<div class="progress-fill" style="background:${idx < adIdx ? '#fff' : (idx==adIdx?'#fff':'rgba(255,255,255,0.3)')}; width:${idx==adIdx?'0%':'100%'}"></div>`
-            ).join('');
-            
-            // Animatsiya
-            setTimeout(() => {
-                const activeFill = document.querySelectorAll('.progress-fill')[adIdx];
-                if(activeFill) {
-                    activeFill.style.transition = 'width 5s linear';
-                    activeFill.style.width = '100%';
-                }
-            }, 50);
-
-            clearTimeout(adTimer);
-            adTimer = setTimeout(() => { adIdx++; showStoryImg(); }, 5000);
-        }
-        function closeStories() { clearTimeout(adTimer); document.getElementById('storyViewer').style.display = 'none'; }
-
-        // --- MENU & CART ---
+        // MENU & ADS
         function loadMenu() {
-            const s = document.createElement('script');
-            s.src = `https://docs.google.com/spreadsheets/d/${MENU_SHEET}/gviz/tq?tqx=responseHandler:handleMenu`;
+            const s=document.createElement('script');
+            s.src=`https://docs.google.com/spreadsheets/d/${MENU_SHEET}/gviz/tq?tqx=responseHandler:handleMenu`;
             document.body.appendChild(s);
         }
         window.handleMenu = json => {
             products = json.table.rows.map(r => ({
                 id: r.c[0]?.v, cat: r.c[1]?.v||"Boshqa", name: r.c[2]?.v, 
-                price: r.c[3]?.v||0, img: r.c[4]?.v
+                price: r.c[3]?.v||0, img: r.c[4]?.v, desc: r.c[5]?.v||"Tarif yo'q"
             }));
             renderCats(); renderGrid('Barchasi');
         }
         function renderCats() {
             const cats = ['Barchasi', ...new Set(products.map(p=>p.cat))];
             document.getElementById('catNav').innerHTML = cats.map(c => `
-                <button class="cat-btn ${c==='Barchasi'?'active':''}" onclick="filter('${c}', this)">${c}</button>
+                <button class="cat-btn ${c==='Barchasi'?'active':''}" onclick="filter('${c}', this)" 
+                style="padding:8px 20px; border-radius:20px; border:1px solid rgba(255,255,255,0.1); background:${c==='Barchasi'?'var(--gold)':'var(--card-dark)'}; 
+                color:${c==='Barchasi'?'black':'#888'}; font-weight:bold; white-space:nowrap; margin-right:5px;">${c}</button>
             `).join('');
         }
         function filter(c, el) {
-            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-            el.classList.add('active');
             renderGrid(c);
+            const btns=document.querySelectorAll('#catNav button');
+            btns.forEach(b => { b.style.background='var(--card-dark)'; b.style.color='#888'; });
+            el.style.background='var(--gold)'; el.style.color='black';
         }
         function renderGrid(c) {
             const list = c==='Barchasi' ? products : products.filter(p=>p.cat===c);
-            document.getElementById('menuGrid').innerHTML = list.map(p => {
+            document.getElementById('menuGrid').innerHTML = list.map((p,i) => {
                 const q = cart[p.id] || 0;
-                const btn = q===0 
-                    ? `<button class="btn btn-add" onclick="upd(${p.id}, 1)">Savatga</button>`
-                    : `<div style="display:flex; justify-content:space-between; align-items:center; background:var(--gold); border-radius:10px; padding:8px;">
-                        <i class="fa fa-minus" onclick="upd(${p.id}, -1)" style="color:black; width:30px; text-align:center;"></i>
-                        <span style="font-weight:bold; color:black;">${q}</span>
-                        <i class="fa fa-plus" onclick="upd(${p.id}, 1)" style="color:black; width:30px; text-align:center;"></i>
-                       </div>`;
+                const delay = i * 50;
+                const btnHtml = q === 0 ? 
+                    `<button class="btn btn-gold" onclick="upd(${p.id}, 1); event.stopPropagation()">Savatga</button>` :
+                    `<div class="btn-qty-wrap" onclick="event.stopPropagation()">
+                        <div class="qty-btn" onclick="upd(${p.id}, -1)">-</div>
+                        <span class="qty-num">${q}</span>
+                        <div class="qty-btn" onclick="upd(${p.id}, 1)">+</div>
+                    </div>`;
+
                 return `
-                <div class="card">
+                <div class="card" onclick="openProd(${p.id})" style="animation-delay:${delay}ms">
                     <img src="${p.img}" onerror="this.src='https://via.placeholder.com/200'">
                     <div class="card-body">
                         <div class="card-title">${p.name}</div>
                         <div class="card-price">${p.price.toLocaleString()} so'm</div>
-                        ${btn}
+                        ${btnHtml}
                     </div>
                 </div>`;
             }).join('');
         }
 
         function upd(id, n) {
-            cart[id] = (cart[id] || 0) + n;
+            cart[id] = (cart[id]||0) + n;
             if(cart[id] <= 0) delete cart[id];
             
-            const active = document.querySelector('.cat-btn.active')?.innerText || 'Barchasi';
-            if(!document.getElementById('p-menu').classList.contains('hidden')) renderGrid(active);
+            if(!document.getElementById('p-menu').classList.contains('hidden')) {
+                 const activeBtn = Array.from(document.querySelectorAll('#catNav button')).find(b => b.style.background.includes('rgb(255, 193, 7)') || b.style.background.includes('gold'));
+                 renderGrid(activeBtn ? activeBtn.innerText : 'Barchasi');
+            }
             if(!document.getElementById('p-cart').classList.contains('hidden')) renderCart();
+            
+            const btn = document.getElementById('pm-btn');
+            if(btn) {
+                if(cart[id]) btn.innerText = `Savatda: ${cart[id]} ta`; else btn.innerText = "Savatga qo'shish";
+            }
         }
 
         function renderCart() {
-            let t = 0, h = '';
+            let t=0, h='';
             for(let id in cart) {
-                const p = products.find(x => x.id == id);
-                t += p.price * cart[id];
+                const p = products.find(x => x.id == id); t += p.price * cart[id];
                 h += `
-                <div style="background:var(--card); padding:15px; border-radius:15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <div style="font-weight:bold;">${p.name}</div>
-                        <div style="font-size:12px; color:#888;">${p.price} x ${cart[id]}</div>
-                    </div>
-                    <div style="font-weight:bold; color:var(--gold);">${(p.price*cart[id]).toLocaleString()}</div>
-                    <div style="background:#444; border-radius:10px; padding:5px 10px; display:flex; gap:10px;">
-                        <span onclick="upd(${p.id}, -1)">-</span>
-                        <b>${cart[id]}</b>
-                        <span onclick="upd(${p.id}, 1)">+</span>
+                <div style="background:var(--card-dark); padding:15px; border-radius:18px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <div><b>${p.name}</b><br><small style="color:#666">${p.price} x ${cart[id]}</small></div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span onclick="upd(${p.id}, -1)" class="qty-btn" style="width:28px; height:28px;">-</span>
+                        <b style="color:var(--text-dark); font-size:16px;">${cart[id]}</b>
+                        <span onclick="upd(${p.id}, 1)" class="qty-btn" style="width:28px; height:28px;">+</span>
                     </div>
                 </div>`;
             }
-            document.getElementById('cartList').innerHTML = h || "<div style='text-align:center; margin-top:50px; color:#666'>Savat bo'sh</div>";
+            document.getElementById('cartList').innerHTML = h || "<div style='text-align:center; color:#666; margin-top:50px'>Savat bo'sh</div>";
             document.getElementById('totalPrice').innerText = t.toLocaleString() + " so'm";
-            
             const btn = document.getElementById('orderBtn');
-            if(t > 0 && loc) { btn.style.background = "var(--gold)"; btn.style.color = "black"; btn.style.pointerEvents = "all"; }
-            else { btn.style.background = "#444"; btn.style.color = "#777"; btn.style.pointerEvents = "none"; }
+            if(t>0 && loc) { btn.style.background="var(--gold)"; btn.style.color="black"; btn.style.pointerEvents="all"; }
+            else { btn.style.background="#333"; btn.style.color="#666"; btn.style.pointerEvents="none"; }
         }
+
+        function loadAds() {
+            const s=document.createElement('script');
+            s.src=`https://docs.google.com/spreadsheets/d/${ADS_SHEET}/gviz/tq?tqx=responseHandler:handleAds`;
+            document.body.appendChild(s);
+        }
+        window.handleAds = j => {
+            adsList = j.table.rows.map(r => r.c[0]?.v).filter(u => u);
+            if(adsList.length>0) {
+                document.getElementById('storiesContainer').classList.remove('hidden');
+                document.getElementById('storiesContainer').innerHTML = adsList.map((u, i) => `
+                    <div class="story-circle" onclick="openStory(${i})"><img src="${u}"></div>
+                `).join('');
+            }
+        }
+        function openStory(i) { adIdx=i; document.getElementById('storyViewer').style.display='flex'; showStoryImg(); }
+        function showStoryImg() {
+            if(adIdx>=adsList.length) { closeStories(); return; }
+            document.getElementById('storyImgFull').src=adsList[adIdx];
+            const bar=document.getElementById('storyProgress');
+            bar.innerHTML=adsList.map((_, idx)=>`
+                <div style="flex:1; height:3px; background:rgba(255,255,255,0.3); border-radius:2px;">
+                    <div style="height:100%; background:#fff; width:${idx<adIdx?'100%':'0%'}; transition:${idx===adIdx?'width 5s linear':'none'}" id="pfill-${idx}"></div>
+                </div>
+            `).join('');
+            setTimeout(()=>{const f=document.getElementById(`pfill-${adIdx}`); if(f) f.style.width='100%';},50);
+            clearTimeout(adTimer); adTimer=setTimeout(nextStory,5000);
+        }
+        function nextStory() { adIdx++; showStoryImg(); }
+        function prevStory() { if(adIdx>0) adIdx--; showStoryImg(); }
+        function closeStories() { clearTimeout(adTimer); document.getElementById('storyViewer').style.display='none'; }
 
         function getLocation() {
-            const btn = document.getElementById('locBtn');
-            btn.innerHTML = "<i class='fa fa-spinner fa-spin'></i> Aniqlanmoqda...";
-            navigator.geolocation.getCurrentPosition(p => {
-                loc = { lat: p.coords.latitude, long: p.coords.longitude };
-                btn.innerHTML = "<i class='fa fa-check'></i> Manzil olindi";
-                btn.style.borderColor = "var(--gold)"; btn.style.color = "var(--gold)";
+            const btn=document.getElementById('locBtn');
+            btn.innerHTML="<i class='fa fa-spinner fa-spin'></i> Aniqlanmoqda...";
+            navigator.geolocation.getCurrentPosition(p=>{
+                loc={lat:p.coords.latitude, long:p.coords.longitude};
+                btn.innerHTML="<i class='fa fa-check'></i> Manzil olindi";
+                btn.style.color="var(--gold)"; btn.style.borderColor="var(--gold)";
                 renderCart();
-            }, () => { showAlert("Xato", "GPS yoqilmadi!"); btn.innerHTML = "Qayta urinish"; });
+            }, ()=>{ showAlert("Xato","GPS yoqing"); btn.innerHTML="Qayta urinish"; });
         }
-
         function sendOrder() {
-            const items = []; let total = 0;
-            for(let id in cart) {
-                const p = products.find(x => x.id == id);
-                items.push({name: p.name, qty: cart[id]});
-                total += p.price * cart[id];
-            }
+            const items=[]; let t=0;
+            for(let id in cart) { const p=products.find(x=>x.id==id); items.push({name:p.name, qty:cart[id]}); t+=p.price*cart[id]; }
             db.ref('orders').push({
                 user_id: user.phone, user_info: `${user.name} (${user.phone})`,
-                items, total, location: loc, status: 'yangi', time: new Date().toLocaleString()
+                items, total: t, location: loc, status: 'yangi', time: new Date().toLocaleString()
             });
-            showAlert("Qabul qilindi", "Buyurtmangiz yuborildi. Tez orada aloqaga chiqamiz!");
-            cart = {}; loc = null;
-            document.getElementById('locBtn').innerHTML = "Manzilni aniqlash";
-            renderCart();
-            nav('orders', document.querySelectorAll('.nav-item')[2]);
+            showAlert("Rahmat", "Buyurtma qabul qilindi!");
+            cart={}; loc=null; document.getElementById('locBtn').innerHTML="Manzilni aniqlash";
+            renderCart(); nav('orders', document.querySelectorAll('.nav-item')[2]);
         }
-
+        
+        // --- RANGLI TARI X ---
         function loadHistory() {
             db.ref('orders').limitToLast(20).on('value', snap => {
-                const data = snap.val();
-                if(!data) { document.getElementById('historyList').innerHTML = "<div style='text-align:center; margin-top:50px; color:#666'>Tarix bo'sh</div>"; return; }
+                const data=snap.val();
+                const list=document.getElementById('historyList');
+                if(!data) { list.innerHTML="<div style='text-align:center; color:#666; margin-top:50px'>Bo'sh</div>"; return; }
+                const myOrders=Object.values(data).filter(o=>o.user_id==user.phone).sort((a,b)=>new Date(b.time)-new Date(a.time));
                 
-                const myOrders = Object.values(data).filter(o => o.user_id == user.phone).reverse();
-                document.getElementById('historyList').innerHTML = myOrders.map(o => `
-                    <div style="background:var(--card); padding:20px; border-radius:20px; margin-bottom:15px; border:1px solid rgba(255,255,255,0.05);">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                            <span style="background:rgba(255,255,255,0.1); padding:4px 10px; border-radius:8px; font-size:12px; font-weight:bold;">${o.status.toUpperCase()}</span>
-                            <span style="color:#666; font-size:12px;">${o.time.split(',')[0]}</span>
+                list.innerHTML=myOrders.map(o=> {
+                    let badgeClass = 'st-new';
+                    const s = o.status.toLowerCase();
+                    if(s.includes('tayyor') || s.includes('pish')) badgeClass='st-cook';
+                    else if(s.includes('yo\'l') || s.includes('yetkazil')) badgeClass='st-road';
+                    else if(s.includes('yetdi') || s.includes('tamom')) badgeClass='st-done';
+
+                    return `
+                    <div style="background:var(--card-dark); padding:20px; border-radius:18px; margin-bottom:15px; border:1px solid rgba(255,255,255,0.05); box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
+                            <span class="st-badge ${badgeClass}">${o.status.toUpperCase()}</span>
+                            <span style="color:#666; font-size:11px;">${o.time.split(',')[0]}</span>
                         </div>
-                        <div style="color:#ccc; margin-bottom:10px; font-size:14px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div>
+                        <div style="margin-bottom:12px; color:#ccc; font-size:14px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div>
                         <div style="font-weight:900; color:var(--gold); font-size:18px;">${o.total.toLocaleString()} so'm</div>
-                    </div>
-                `).join('');
+                    </div>`;
+                }).join('');
             });
         }
 
-        // UTILS
         function nav(page, el) {
-            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
             document.getElementById('p-'+page).classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
             el.classList.add('active');
             if(page==='cart') renderCart();
         }
-        function toggleDrawer() { /* Drawer kodi soddalashtirildi, zarurat bo'lsa qo'shiladi */ }
-        function showAlert(t, m) {
-            document.getElementById('alertTitle').innerText = t;
-            document.getElementById('alertMsg').innerText = m;
-            const o = document.getElementById('alertModal');
-            o.style.display = 'flex'; setTimeout(()=>o.classList.add('active'), 10);
+        function toggleDrawer() {
+            const d=document.getElementById('myDrawer'); d.classList.toggle('open');
+            const o=document.getElementById('drawerOverlay');
+            if(d.classList.contains('open')) { o.style.display='block'; setTimeout(()=>o.classList.add('active'),10); }
+            else { o.classList.remove('active'); setTimeout(()=>o.style.display='none',300); }
         }
-        function closeAlert() {
-            const o = document.getElementById('alertModal');
-            o.classList.remove('active'); setTimeout(()=>o.style.display='none', 300);
+        function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('theme', document.body.classList.contains('light-mode')?'light':'dark'); }
+        function openProd(id) {
+            const p=products.find(x=>x.id==id);
+            document.getElementById('pm-img').src=p.img;
+            document.getElementById('pm-title').innerText=p.name;
+            document.getElementById('pm-price').innerText=p.price.toLocaleString()+" so'm";
+            document.getElementById('pm-desc').innerText=p.desc;
+            const btn=document.getElementById('pm-btn');
+            btn.onclick=()=>{ upd(id, 1); closeProd(); };
+            if(cart[id]) btn.innerText=`Savatda: ${cart[id]} ta`; else btn.innerText="Savatga qo'shish";
+            const o=document.getElementById('prodModal'); o.style.display='flex'; setTimeout(()=>o.classList.add('active'),10);
         }
-        function openProfile() {
-            const o = document.getElementById('profModal');
-            o.style.display = 'flex'; setTimeout(()=>o.classList.add('active'), 10);
-        }
+        function closeProd() { const o=document.getElementById('prodModal'); o.classList.remove('active'); setTimeout(()=>o.style.display='none',300); }
+        function showAlert(t, m) { document.getElementById('alertTitle').innerText=t; document.getElementById('alertMsg').innerText=m; const o=document.getElementById('alertModal'); o.style.display='flex'; setTimeout(()=>o.classList.add('active'),10); }
+        function closeAlert() { const o=document.getElementById('alertModal'); o.classList.remove('active'); setTimeout(()=>o.style.display='none',300); }
+        function openProfile() { const o=document.getElementById('profModal'); o.style.display='flex'; setTimeout(()=>o.classList.add('active'),10); }
+        function logout() { localStorage.removeItem('cafe_phone'); location.reload(); }
 
         window.onload = init;
     </script>
