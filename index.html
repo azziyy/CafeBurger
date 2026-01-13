@@ -545,12 +545,37 @@
             }
         }
         function openS(i) { adIdx = i; document.getElementById('storyViewer').style.display = 'flex'; showS(); }
-        function showS() {
+                function showS() {
+            // 1. Agar stories tugagan bo'lsa, yopamiz
             if (adIdx >= ads.length) { closeStories(); return; }
+            
+            // 2. Rasmni yuklaymiz
             document.getElementById('storyImg').src = ads[adIdx];
-            document.getElementById('storyProg').innerHTML = ads.map((_, x) => `<div style="flex:1; height:3px; background:${x < adIdx ? '#fff' : (x == adIdx ? '#fff' : 'rgba(255,255,255,0.3)')}"></div>`).join('');
-            clearTimeout(adTimer); adTimer = setTimeout(() => { adIdx++; showS(); }, 5000);
+            
+            // 3. Progress Barlarni chizamiz
+            document.getElementById('storyProg').innerHTML = ads.map((_, i) => {
+                // Agar o'tib ketgan bo'lsa to'liq (100%), hali kelmagan bo'lsa bo'sh (0%)
+                let w = i < adIdx ? '100%' : '0%';
+                // Hozirgi aktiv story uchun transition (animatsiya) yoqamiz, boshqalariga kerak emas
+                let transition = i === adIdx ? 'width 5s linear' : 'none';
+                
+                return `
+                <div style="flex:1; height:3px; background:rgba(255,255,255,0.3); border-radius:2px; overflow:hidden;">
+                    <div id="bar-${i}" style="height:100%; background:#fff; width:${w}; transition:${transition}; border-radius:2px;"></div>
+                </div>`;
+            }).join('');
+
+            // 4. Animatsiyani ishga tushirish (ozgina kechikish bilan)
+            setTimeout(() => {
+                const cur = document.getElementById(`bar-${adIdx}`);
+                if (cur) cur.style.width = '100%'; // 0% dan 100% ga 5 sekundda to'ladi
+            }, 10);
+
+            // 5. Keyingi storyga o'tish taymeri
+            clearTimeout(adTimer);
+            adTimer = setTimeout(() => { adIdx++; showS(); }, 5000);
         }
+
         function nextStory() { adIdx++; showS(); }
         function prevStory() { if (adIdx > 0) adIdx--; showS(); }
         function closeStories() { clearTimeout(adTimer); document.getElementById('storyViewer').style.display = 'none'; }
