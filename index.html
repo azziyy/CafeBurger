@@ -505,18 +505,25 @@
 
         // UTILS
         function getLocation() {
-            const b = document.getElementById('locBtn'); b.innerHTML = "<i class='fa fa-circle-notch fa-spin'></i> Aniqlanmoqda...";
-            navigator.geolocation.getCurrentPosition(p => {
-                loc = { lat: p.coords.latitude, long: p.coords.longitude };
-                b.innerHTML = "<i class='fa fa-check'></i> Manzil olindi"; 
-                b.style.color = "var(--gold)"; b.style.borderColor = "var(--gold)";
-                renderCart();
-                showToast('success', 'Manzil olindi', 'Joylashuvingiz aniqlandi');
-            }, () => {
-                showToast('error', 'Xatolik', 'GPS yoqilganligini tekshiring');
-                b.innerHTML = "Qayta urinish";
-            });
-        }
+    // 1. Androidga signal beramiz (GPS ni tekshir!)
+    if(window.Android && window.Android.checkGPS) {
+        window.Android.checkGPS();
+    }
+
+    const b = document.getElementById('locBtn'); b.innerHTML = "<i class='fa fa-circle-notch fa-spin'></i> Aniqlanmoqda...";
+    navigator.geolocation.getCurrentPosition(p => {
+        loc = { lat: p.coords.latitude, long: p.coords.longitude };
+        b.innerHTML = "<i class='fa fa-check'></i> Manzil olindi"; 
+        b.style.color = "var(--gold)"; b.style.borderColor = "var(--gold)";
+        renderCart();
+        showToast('success', 'Manzil olindi', 'Joylashuvingiz aniqlandi');
+    }, () => {
+        // Agar GPS o'chiq bo'lsa yoki ruxsat berilmasa
+        showToast('error', 'Xatolik', 'GPS yoqilganligini tekshiring');
+        b.innerHTML = "Qayta urinish";
+    });
+}
+
 
         function sendOrder() {
             const items = []; let t = 0;
