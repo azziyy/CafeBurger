@@ -528,44 +528,58 @@
         }
 
         // HISTORY (BU YERDA TRACKING BUTTON QO'SHILDI)
-        function loadHistory() {
-            db.ref('orders').limitToLast(20).on('value', s => {
-                const d = s.val();
-                const l = document.getElementById('historyList');
-                if (!d) { l.innerHTML = "<div style='text-align:center; margin-top:50px; color:var(--text-sec)'>Tarix bo'sh</div>"; return; }
-                
-                const arr = Object.values(d)
-                    .filter(o => o.user_id == user.phone)
-                    .reverse();
-                
-                l.innerHTML = arr.map(o => {
-                    let st = 'st-new', txt = o.status.toUpperCase();
-                    let trackBtn = "";
-                    
-                    if (txt.includes('PISH') || txt.includes('TAYYOR')) st = 'st-cook';
-                    else if (txt.includes('YETDI') || txt.includes('TAMOM')) st = 'st-done';
-                    else if (txt.includes('YETKAZIL') || txt.includes('KURYER')) {
-                        st = 'st-road';
-                        // 4. KURYERNI KUZATISH TUGMASI QO'SHILDI
-                        if(o.courier_id) {
-                            trackBtn = `<button class="track-btn click-anim" onclick="openTracking('${o.courier_id}')">
-                                <i class="fa fa-map-location-dot"></i> KURYERNI KUZATISH
-                            </button>`;
-                        }
-                    }
-                    
-                    return `<div class="history-item">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                            <span class="st-badge ${st}">${txt}</span>
-                            <span style="font-size:11px; color:var(--text-sec)">${o.time}</span>
-                        </div>
-                        <div style="color:var(--text-sec); font-size:13px; margin-bottom:10px;">${o.items.map(i => `${i.name} x${i.qty}`).join(', ')}</div>
-                        <div style="font-weight:900; color:var(--gold);">${o.total.toLocaleString()} so'm</div>
-                        ${trackBtn}
-                    </div>`;
-                }).join('');
-            });
+        // --- TARIX VA TRACKING (TUZATILDI) ---
+function loadHistory() {
+    db.ref('orders').limitToLast(20).on('value', s => {
+        const d = s.val(); 
+        // Agar tarix bo'sh bo'lsa
+        if(!d) {
+             document.getElementById('historyList').innerHTML = "<div style='text-align:center; color:#666; margin-top:20px;'>Buyurtmalar yo'q</div>";
+             return;
         }
+
+        const list = Object.values(d).filter(o => o.user_id == user.phone).reverse();
+        
+        document.getElementById('historyList').innerHTML = list.map(o => {
+            // Statusni katta harf qilamiz
+            let st = o.status.toUpperCase();
+            let color = "#3498db"; // Default: Ko'k (Yangi)
+            let trackBtn = "";
+
+            // 1. AGAR BUYURTMA YOPILGAN BO'LSA (YETKAZILDI) -> TUGMA YO'Q
+            if (st === 'YETKAZILDI' || st === 'YETDI' || st.includes('TAMOM') || st.includes('YOPIL')) {
+                color = "#2ecc71"; // Yashil rang
+                // trackBtn BO'SH qoladi, shuning uchun tugma chiqmaydi!
+            }
+            
+            // 2. AGAR KURYERDA BO'LSA -> TUGMA CHIQADI
+            else if (st === 'YETKAZILMOQDA' || st === 'KURYERDA' || st.includes('KURYER')) {
+                color = "#f39c12"; // Sariq/Olovrang
+                if(o.courier_id) {
+                    trackBtn = `<button class="track-btn" onclick="openTracking('${o.courier_id}')">
+                        <i class="fa fa-map-location-dot"></i> KURYERNI KUZATISH
+                    </button>`;
+                }
+            }
+            
+            // 3. PISHIRISH JARAYONI
+            else if (st.includes('PISH') || st.includes('TAYYOR')) {
+                color = "#e67e22"; // Olovrang
+            }
+
+            return `<div class="history-item">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <span class="st-badge" style="background:${color}20; color:${color}">${st}</span>
+                    <small style="color:#666">${o.time.split(',')[0]}</small>
+                </div>
+                <div style="color:#aaa; font-size:13px; margin-bottom:8px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div>
+                <div style="font-weight:bold; color:var(--gold);">${o.total.toLocaleString()} so'm</div>
+                ${trackBtn}
+            </div>`;
+        }).join('');
+    });
+}
+
 
         // ----------------------------------------------------
         // 5. YANGI QO'SHILGAN: XARITA MANTIQI (LEAFLET)
