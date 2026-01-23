@@ -657,20 +657,49 @@
         }
 
         // UTILS
-        function getLocation() {
-            if(window.Android && window.Android.checkGPS) { window.Android.checkGPS(); }
-            const b = document.getElementById('locBtn'); b.innerHTML = "<i class='fa fa-circle-notch fa-spin'></i> Aniqlanmoqda...";
-            navigator.geolocation.getCurrentPosition(p => {
-                loc = { lat: p.coords.latitude, long: p.coords.longitude };
-                b.innerHTML = "<i class='fa fa-check'></i> Manzil olindi"; 
-                b.style.color = "var(--gold)"; b.style.borderColor = "var(--gold)";
-                renderCart();
-                showToast('success', 'Manzil olindi', 'Joylashuvingiz aniqlandi');
-            }, () => {
-                showToast('error', 'Xatolik', 'GPS yoqilganligini tekshiring');
-                b.innerHTML = "Qayta urinish";
-            });
-        }
+        // --- KUCHAYTIRILGAN GPS ANIQLASH ---
+function getLocation() {
+    // 1. Androiddan GPS yoqilganini tekshirish
+    if(window.Android && window.Android.checkGPS) { 
+        window.Android.checkGPS(); 
+    }
+
+    const b = document.getElementById('locBtn'); 
+    b.innerHTML = "<i class='fa fa-circle-notch fa-spin'></i> GPS qidirilmoqda...";
+
+    // 2. ENG MUHIM JOYI: SOZLAMALAR
+    const gpsOptions = {
+        enableHighAccuracy: true, // ⚠️ BU SHART! (Faqat GPS sun'iy yo'ldoshidan oladi)
+        timeout: 20000,           // 20 soniyagacha kutadi (Aniq signal ushlash uchun)
+        maximumAge: 0             // Eski (kesh)dagi lokatsiyani umuman ishlatmaydi
+    };
+
+    navigator.geolocation.getCurrentPosition(
+        // A) Muvaffaqiyatli topildi
+        (p) => {
+            // Koordinata aniqligini tekshirish (metrda)
+            const accuracy = p.coords.accuracy; 
+            
+            loc = { lat: p.coords.latitude, long: p.coords.longitude };
+            
+            b.innerHTML = `<i class='fa fa-check'></i> Manzil olindi (±${Math.round(accuracy)}m)`; 
+            b.style.color = "var(--gold)"; 
+            b.style.borderColor = "var(--gold)";
+            
+            renderCart();
+            showToast('success', 'Manzil aniqlandi', `Aniqlik: ${Math.round(accuracy)} metr`);
+        }, 
+        // B) Xatolik bo'lsa
+        (err) => {
+            console.warn(`ERROR(${err.code}): ${err.message}`);
+            showToast('error', 'GPS xatosi', 'Ochiq havoga chiqing yoki qayta urinib ko\'ring');
+            b.innerHTML = "Qayta urinish";
+        }, 
+        // C) Sozlamalarni kiritamiz
+        gpsOptions 
+    );
+}
+
 
         function sendOrder() {
             const items = []; let t = 0;
