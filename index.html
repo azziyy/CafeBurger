@@ -9,9 +9,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     
     <style>
-        /* ----------------------------------------------------
-           1. ASOSIY DIZAYN (ESKI KODDAN)
-           ---------------------------------------------------- */
+        /* 1. ASOSIY DIZAYN */
         :root {
             --bg: #0f0f12; 
             --card: #1c1c24; 
@@ -183,9 +181,7 @@
         .hidden { display: none !important; }
         .blocked-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; text-align: center; }
 
-        /* ----------------------------------------------------
-           2. YANGI QO'SHILGAN: XARITA OYNASI (TRACKING CSS)
-           ---------------------------------------------------- */
+        /* TRACKING CSS */
         #trackingModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #fff; z-index: 9999;
@@ -215,23 +211,23 @@
             animation: pulse 2s infinite; cursor: pointer;
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+
+        /* ----------------------------------------------------
+           3. YANGI: ALOQA OYNASI STILLARI
+           ---------------------------------------------------- */
         .contact-row {
-    background: rgba(255,255,255,0.05);
-    border-radius: 12px;
-    padding: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    border: 1px solid rgba(255,255,255,0.05);
-}
-.c-info { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 15px; }
-.copy-btn {
-    width: 35px; height: 35px; background: rgba(255, 193, 7, 0.1);
-    border-radius: 8px; display: flex; align-items: center; justify-content: center;
-    color: var(--gold); cursor: pointer;
-}
-        
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px; padding: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .c-info { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 15px; }
+        .copy-btn {
+            width: 35px; height: 35px; background: rgba(255, 193, 7, 0.1);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            color: var(--gold); cursor: pointer;
+        }
+        .copy-btn:active { background: var(--gold); color: black; }
     </style>
 </head>
 <body>
@@ -353,6 +349,42 @@
         <div style="position: absolute; right: 0; top: 0; width: 70%; height: 100%; z-index: 5;" onclick="nextStory()"></div>
     </div>
 
+    <div id="contactModal" class="modal-wrap" style="display:none;" onclick="closeContact()">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <h3 style="margin: 0 0 20px; color: var(--gold);">Biz bilan aloqa</h3>
+
+            <div class="contact-row">
+                <div class="c-info">
+                    <i class="fa fa-phone-alt" style="color:var(--text-sec)"></i>
+                    <span>+998 93 978 29 26</span>
+                </div>
+                <div class="copy-btn click-anim" onclick="copyText('+998939782926')">
+                    <i class="fa fa-copy"></i>
+                </div>
+            </div>
+
+            <div class="contact-row">
+                <div class="c-info">
+                    <i class="fa fa-phone-alt" style="color:var(--text-sec)"></i>
+                    <span>+998 94 207 75 15</span>
+                </div>
+                <div class="copy-btn click-anim" onclick="copyText('+998942077515')">
+                    <i class="fa fa-copy"></i>
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+
+            <button class="btn-add click-anim" style="background: #2AABEE; color: white; margin-bottom: 10px; width: 100%; height: 45px; border-radius: 12px; border:none; font-weight: bold; display:flex; align-items:center; justify-content:center; gap:10px;" onclick="window.location.href='https://t.me/freestyle_beat'">
+                <i class="fab fa-telegram-plane"></i> Telegram Kanal
+            </button>
+
+            <button class="btn-add click-anim" style="background: transparent; border: 1px solid #2AABEE; color: #2AABEE; width: 100%; height: 45px; border-radius: 12px; font-weight: bold; display:flex; align-items:center; justify-content:center; gap:10px;" onclick="window.location.href='https://t.me/Azikking'">
+                <i class="fa fa-user-shield"></i> Admin bilan yozishish
+            </button>
+        </div>
+    </div>
+
     <div id="trackingModal">
         <div class="map-header">
             <button class="back-btn" onclick="closeTracking()">⬅️ Orqaga</button>
@@ -363,51 +395,12 @@
             <p id="trackInfo" style="margin:5px 0 0; color:green; font-weight:bold;">Bog'lanmoqda...</p>
         </div>
     </div>
-    <div id="contactModal" class="modal-wrap" style="display:none;" onclick="closeContact()">
-    <div class="modal-box" onclick="event.stopPropagation()">
-        <h3 style="margin: 0 0 20px; color: var(--gold);">Biz bilan aloqa</h3>
-
-        <div class="contact-row">
-            <div class="c-info">
-                <i class="fa fa-phone-alt" style="color:var(--text-sec)"></i>
-                <span>+998 93 978 29 26</span>
-            </div>
-            <div class="copy-btn click-anim" onclick="copyText('+998939782926')">
-                <i class="fa fa-copy"></i>
-            </div>
-        </div>
-
-        <div class="contact-row">
-            <div class="c-info">
-                <i class="fa fa-phone-alt" style="color:var(--text-sec)"></i>
-                <span>+998 94 207 75 15</span>
-            </div>
-            <div class="copy-btn click-anim" onclick="copyText('+998942077515')">
-                <i class="fa fa-copy"></i>
-            </div>
-        </div>
-
-        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
-
-        <button class="btn-add click-anim" style="background: #2AABEE; color: white; margin-bottom: 10px; width: 100%; height: 45px; border-radius: 12px; border:none; font-weight: bold; display:flex; align-items:center; justify-content:center; gap:10px;" onclick="window.location.href='https://t.me/freestyle_beat'">
-            <i class="fab fa-telegram-plane"></i> Telegram Kanal
-        </button>
-
-        <button class="btn-add click-anim" style="background: transparent; border: 1px solid #2AABEE; color: #2AABEE; width: 100%; height: 45px; border-radius: 12px; font-weight: bold; display:flex; align-items:center; justify-content:center; gap:10px;" onclick="window.location.href='https://t.me/Azikking'">
-            <i class="fa fa-user-shield"></i> Admin bilan yozishish
-        </button>
-    </div>
-    </div>
-    
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // ----------------------------------------------------
-        // SOZLAMALAR VA INIT
-        // ----------------------------------------------------
         const BOT_USER = "Cafe888adminbot"; 
         const firebaseConfig = {
             apiKey: "AIzaSyCVSfWRZ77PFFxip93NcD5QZ9Fc0gMUyW8",
@@ -424,7 +417,6 @@
         const ADS_ID = "1ENQ4bnzBxj7x5jmrXUwdDZhmEMQ7umPTPwq2bgXfj3k";
 
         let products=[], cart={}, user=null, loc=null, ads=[], adIdx=0, adTimer;
-        // Xarita uchun
         let map = null, courierMarker = null, trackingListener = null;
 
         function init() {
@@ -452,23 +444,6 @@
             cont.appendChild(div);
             setTimeout(() => { div.style.opacity='0'; setTimeout(()=>div.remove(),300); }, 3000);
         }
-        function contactAdmin() {
-    toggleDrawer(); // Menyuni yopish
-    document.getElementById('contactModal').style.display = 'flex';
-}
-function closeContact() {
-    document.getElementById('contactModal').style.display = 'none';
-}
-function copyText(text) {
-    const el = document.createElement('textarea');
-    el.value = text;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-    showToast('success', 'Nusxalandi', text);
-}
-        
 
         // LOGIN
         function startLogin() {
@@ -597,63 +572,51 @@ function copyText(text) {
             }
         }
 
-        // HISTORY (BU YERDA TRACKING BUTTON QO'SHILDI)
-        // --- TARIX VA TRACKING (TUZATILDI) ---
-function loadHistory() {
-    db.ref('orders').limitToLast(20).on('value', s => {
-        const d = s.val(); 
-        // Agar tarix bo'sh bo'lsa
-        if(!d) {
-             document.getElementById('historyList').innerHTML = "<div style='text-align:center; color:#666; margin-top:20px;'>Buyurtmalar yo'q</div>";
-             return;
+        // HISTORY
+        function loadHistory() {
+            db.ref('orders').limitToLast(20).on('value', s => {
+                const d = s.val(); 
+                if(!d) {
+                    document.getElementById('historyList').innerHTML = "<div style='text-align:center; color:#666; margin-top:20px;'>Buyurtmalar yo'q</div>";
+                    return;
+                }
+
+                const list = Object.values(d).filter(o => o.user_id == user.phone).reverse();
+                
+                document.getElementById('historyList').innerHTML = list.map(o => {
+                    let st = o.status.toUpperCase();
+                    let color = "#3498db";
+                    let trackBtn = "";
+
+                    if (st === 'YETKAZILDI' || st === 'YETDI' || st.includes('TAMOM') || st.includes('YOPIL')) {
+                        color = "#2ecc71";
+                    }
+                    else if (st === 'YETKAZILMOQDA' || st === 'KURYERDA' || st.includes('KURYER')) {
+                        color = "#f39c12";
+                        if(o.courier_id) {
+                            trackBtn = `<button class="track-btn" onclick="openTracking('${o.courier_id}')">
+                                <i class="fa fa-map-location-dot"></i> KURYERNI KUZATISH
+                            </button>`;
+                        }
+                    }
+                    else if (st.includes('PISH') || st.includes('TAYYOR')) {
+                        color = "#e67e22";
+                    }
+
+                    return `<div class="history-item">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                            <span class="st-badge" style="background:${color}20; color:${color}">${st}</span>
+                            <small style="color:#666">${o.time.split(',')[0]}</small>
+                        </div>
+                        <div style="color:#aaa; font-size:13px; margin-bottom:8px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div>
+                        <div style="font-weight:bold; color:var(--gold);">${o.total.toLocaleString()} so'm</div>
+                        ${trackBtn}
+                    </div>`;
+                }).join('');
+            });
         }
 
-        const list = Object.values(d).filter(o => o.user_id == user.phone).reverse();
-        
-        document.getElementById('historyList').innerHTML = list.map(o => {
-            // Statusni katta harf qilamiz
-            let st = o.status.toUpperCase();
-            let color = "#3498db"; // Default: Ko'k (Yangi)
-            let trackBtn = "";
-
-            // 1. AGAR BUYURTMA YOPILGAN BO'LSA (YETKAZILDI) -> TUGMA YO'Q
-            if (st === 'YETKAZILDI' || st === 'YETDI' || st.includes('TAMOM') || st.includes('YOPIL')) {
-                color = "#2ecc71"; // Yashil rang
-                // trackBtn BO'SH qoladi, shuning uchun tugma chiqmaydi!
-            }
-            
-            // 2. AGAR KURYERDA BO'LSA -> TUGMA CHIQADI
-            else if (st === 'YETKAZILMOQDA' || st === 'KURYERDA' || st.includes('KURYER')) {
-                color = "#f39c12"; // Sariq/Olovrang
-                if(o.courier_id) {
-                    trackBtn = `<button class="track-btn" onclick="openTracking('${o.courier_id}')">
-                        <i class="fa fa-map-location-dot"></i> KURYERNI KUZATISH
-                    </button>`;
-                }
-            }
-            
-            // 3. PISHIRISH JARAYONI
-            else if (st.includes('PISH') || st.includes('TAYYOR')) {
-                color = "#e67e22"; // Olovrang
-            }
-
-            return `<div class="history-item">
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                    <span class="st-badge" style="background:${color}20; color:${color}">${st}</span>
-                    <small style="color:#666">${o.time.split(',')[0]}</small>
-                </div>
-                <div style="color:#aaa; font-size:13px; margin-bottom:8px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div>
-                <div style="font-weight:bold; color:var(--gold);">${o.total.toLocaleString()} so'm</div>
-                ${trackBtn}
-            </div>`;
-        }).join('');
-    });
-}
-
-
-        // ----------------------------------------------------
-        // 5. YANGI QO'SHILGAN: XARITA MANTIQI (LEAFLET)
-        // ----------------------------------------------------
+        // TRACKING
         const motoIcon = L.icon({
             iconUrl: 'https://cdn-icons-png.flaticon.com/512/7541/7541900.png', 
             iconSize: [50, 50],
@@ -662,12 +625,9 @@ function loadHistory() {
 
         function openTracking(courierId) {
             document.getElementById('trackingModal').style.display = 'block';
-            
             if (!map) {
                 map = L.map('map').setView([41.311, 69.240], 13);
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                    attribution: 'OSM'
-                }).addTo(map);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: 'OSM' }).addTo(map);
             }
             setTimeout(() => map.invalidateSize(), 300);
 
@@ -684,7 +644,6 @@ function loadHistory() {
                     
                     if (courierMarker) courierMarker.setLatLng([lat, long]);
                     else courierMarker = L.marker([lat, long], {icon: motoIcon}).addTo(map);
-                    
                     map.panTo([lat, long]);
                 } else {
                     document.getElementById('trackInfo').innerText = "Kuryer lokatsiyasi o'chiq";
@@ -785,7 +744,24 @@ function loadHistory() {
             if(isLight) { icon.className = 'fa fa-sun'; text.innerText = 'Kunduzgi rejim'; }
             else { icon.className = 'fa fa-moon'; text.innerText = 'Tungi rejim'; }
         }
-        function contactAdmin() { window.location.href = "tel:+998901234567"; }
+        
+        // --- 4. ALOQA FUNKSIYALARI ---
+        function contactAdmin() {
+            toggleDrawer(); // Menyuni yopish
+            document.getElementById('contactModal').style.display = 'flex';
+        }
+        function closeContact() {
+            document.getElementById('contactModal').style.display = 'none';
+        }
+        function copyText(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast('success', 'Nusxalandi', text);
+        }
         
         function openProd(id) {
             const p = products.find(x => x.id == id);
