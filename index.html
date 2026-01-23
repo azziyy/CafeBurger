@@ -215,6 +215,23 @@
             animation: pulse 2s infinite; cursor: pointer;
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        .contact-row {
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+.c-info { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 15px; }
+.copy-btn {
+    width: 35px; height: 35px; background: rgba(255, 193, 7, 0.1);
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    color: var(--gold); cursor: pointer;
+}
+        
     </style>
 </head>
 <body>
@@ -346,6 +363,42 @@
             <p id="trackInfo" style="margin:5px 0 0; color:green; font-weight:bold;">Bog'lanmoqda...</p>
         </div>
     </div>
+    <div id="contactModal" class="modal-wrap" style="display:none;" onclick="closeContact()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <h3 style="margin: 0 0 20px; color: var(--gold);">Biz bilan aloqa</h3>
+
+        <div class="contact-row">
+            <div class="c-info">
+                <i class="fa fa-phone-alt" style="color:var(--text-sec)"></i>
+                <span>+998 93 978 29 26</span>
+            </div>
+            <div class="copy-btn click-anim" onclick="copyText('+998939782926')">
+                <i class="fa fa-copy"></i>
+            </div>
+        </div>
+
+        <div class="contact-row">
+            <div class="c-info">
+                <i class="fa fa-phone-alt" style="color:var(--text-sec)"></i>
+                <span>+998 94 207 75 15</span>
+            </div>
+            <div class="copy-btn click-anim" onclick="copyText('+998942077515')">
+                <i class="fa fa-copy"></i>
+            </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+
+        <button class="btn-add click-anim" style="background: #2AABEE; color: white; margin-bottom: 10px; width: 100%; height: 45px; border-radius: 12px; border:none; font-weight: bold; display:flex; align-items:center; justify-content:center; gap:10px;" onclick="window.location.href='https://t.me/freestyle_beat'">
+            <i class="fab fa-telegram-plane"></i> Telegram Kanal
+        </button>
+
+        <button class="btn-add click-anim" style="background: transparent; border: 1px solid #2AABEE; color: #2AABEE; width: 100%; height: 45px; border-radius: 12px; font-weight: bold; display:flex; align-items:center; justify-content:center; gap:10px;" onclick="window.location.href='https://t.me/Azikking'">
+            <i class="fa fa-user-shield"></i> Admin bilan yozishish
+        </button>
+    </div>
+    </div>
+    
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -399,6 +452,23 @@
             cont.appendChild(div);
             setTimeout(() => { div.style.opacity='0'; setTimeout(()=>div.remove(),300); }, 3000);
         }
+        function contactAdmin() {
+    toggleDrawer(); // Menyuni yopish
+    document.getElementById('contactModal').style.display = 'flex';
+}
+function closeContact() {
+    document.getElementById('contactModal').style.display = 'none';
+}
+function copyText(text) {
+    const el = document.createElement('textarea');
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    showToast('success', 'Nusxalandi', text);
+}
+        
 
         // LOGIN
         function startLogin() {
