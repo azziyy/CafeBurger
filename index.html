@@ -19,6 +19,7 @@
             --glass: rgba(28, 28, 36, 0.95); 
             --blur: blur(20px);
             --radius: 16px;
+            --danger: #ff4757;
         }
 
         body.light-mode {
@@ -46,6 +47,7 @@
             background: var(--glass); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
             display: flex; align-items: center; justify-content: space-between;
             padding: 0 20px; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: 0.3s;
         }
         .logo { font-size: 22px; font-weight: 900; letter-spacing: 0.5px; }
         .logo span { color: var(--gold); }
@@ -118,7 +120,7 @@
         /* TUGMALAR */
         .btn-add {
             width: 100%; padding: 10px; border-radius: 10px; background: var(--gold); color: #000;
-            border: none; font-weight: 700; font-size: 13px;
+            border: none; font-weight: 700; font-size: 13px; transition: 0.3s;
         }
         .qty-wrap {
             display: flex; justify-content: space-between; align-items: center;
@@ -212,9 +214,7 @@
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
-        /* ----------------------------------------------------
-           3. YANGI: ALOQA OYNASI STILLARI
-           ---------------------------------------------------- */
+        /* ALOQA OYNASI STILLARI */
         .contact-row {
             background: rgba(255,255,255,0.05);
             border-radius: 12px; padding: 12px;
@@ -401,6 +401,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
+        // ----------------------------------------------------
+        // SOZLAMALAR
+        // ----------------------------------------------------
         const BOT_USER = "Cafe888adminbot"; 
         const firebaseConfig = {
             apiKey: "AIzaSyCVSfWRZ77PFFxip93NcD5QZ9Fc0gMUyW8",
@@ -418,6 +421,9 @@
 
         let products=[], cart={}, user=null, loc=null, ads=[], adIdx=0, adTimer;
         let map = null, courierMarker = null, trackingListener = null;
+        
+        // YANGI: KAFE STATUSI
+        let isShopOpen = true; 
 
         function init() {
             if(localStorage.getItem('theme') === 'light') {
@@ -428,7 +434,32 @@
             const ph = localStorage.getItem('cafe_phone');
             if(ph) checkUser(ph);
             else document.getElementById('loginModal').style.display = 'flex';
+            
+            // STATUSNI TEKSHIRISH (YANGI)
+            db.ref('info/cafe_status').on('value', snapshot => {
+                const status = snapshot.val();
+                isShopOpen = (status === 'open' || status === null);
+                updateShopUI();
+            });
+
             loadMenu(); loadAds();
+        }
+
+        // KAFE UI YANGILASH
+        function updateShopUI() {
+            const btn = document.getElementById('orderBtn');
+            const header = document.querySelector('.header');
+            
+            if (!isShopOpen) {
+                btn.style.background = "#555";
+                btn.style.color = "#999";
+                btn.innerText = "KAFE YOPIQ 🔴";
+                btn.onclick = () => showToast('error', 'Kafe yopiq', 'Hozir buyurtma qabul qilinmaydi');
+                header.style.borderBottom = "2px solid #ff4757";
+            } else {
+                renderCart(); // Tugmani tiklash
+                header.style.borderBottom = "1px solid rgba(255,255,255,0.05)";
+            }
         }
 
         // TOAST
@@ -478,7 +509,7 @@
             });
         }
 
-        // MENU LOAD
+        // MENU
         function loadMenu() {
             const s = document.createElement('script');
             s.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json;responseHandler:hMenu`;
@@ -547,7 +578,6 @@
                 newMb.onclick = () => { upd(id, 1); closeProd(); };
             }
         }
-
         // CART
         function renderCart() {
             let t = 0, h = '';
@@ -565,14 +595,18 @@
             document.getElementById('cartList').innerHTML = h || "<div style='text-align:center; margin-top:50px; color:var(--text-sec)'>Savat bo'sh</div>";
             document.getElementById('totalPrice').innerText = t.toLocaleString() + " so'm";
             const b = document.getElementById('orderBtn');
+            
+            // TUGMA HOLATI
             if (t > 0 && loc) { 
-                b.style.background = "var(--gold)"; b.style.color = "#000"; b.style.pointerEvents = "all"; 
+                b.style.background = "var(--gold)"; b.style.color = "#000"; b.style.pointerEvents = "all"; b.onclick = sendOrder; b.innerText = "BUYURTMA BERISH";
             } else { 
                 b.style.background = "#333"; b.style.color = "#666"; b.style.pointerEvents = "none"; 
             }
+            
+            if(!isShopOpen) updateShopUI(); // Himoya
         }
 
-        // HISTORY
+        // HISTORY & TRACKING
         function loadHistory() {
             db.ref('orders').limitToLast(20).on('value', s => {
                 const d = s.val(); 
@@ -616,7 +650,6 @@
             });
         }
 
-        // TRACKING
         const motoIcon = L.icon({
             iconUrl: 'https://cdn-icons-png.flaticon.com/512/7541/7541900.png', 
             iconSize: [50, 50],
@@ -656,52 +689,49 @@
             if (trackingListener) { db.ref('couriers').off(); trackingListener = null; }
         }
 
-        // UTILS
-        // --- KUCHAYTIRILGAN GPS ANIQLASH ---
-function getLocation() {
-    // 1. Androiddan GPS yoqilganini tekshirish
-    if(window.Android && window.Android.checkGPS) { 
-        window.Android.checkGPS(); 
-    }
+        // --- KUCHAYTIRILGAN GPS ANIQLASH (YANGI) ---
+        function getLocation() {
+            if(window.Android && window.Android.checkGPS) { 
+                window.Android.checkGPS(); 
+            }
 
-    const b = document.getElementById('locBtn'); 
-    b.innerHTML = "<i class='fa fa-circle-notch fa-spin'></i> GPS qidirilmoqda...";
+            const b = document.getElementById('locBtn'); 
+            b.innerHTML = "<i class='fa fa-circle-notch fa-spin'></i> GPS qidirilmoqda...";
 
-    // 2. ENG MUHIM JOYI: SOZLAMALAR
-    const gpsOptions = {
-        enableHighAccuracy: true, // ⚠️ BU SHART! (Faqat GPS sun'iy yo'ldoshidan oladi)
-        timeout: 20000,           // 20 soniyagacha kutadi (Aniq signal ushlash uchun)
-        maximumAge: 0             // Eski (kesh)dagi lokatsiyani umuman ishlatmaydi
-    };
+            const gpsOptions = {
+                enableHighAccuracy: true,
+                timeout: 20000,
+                maximumAge: 0
+            };
 
-    navigator.geolocation.getCurrentPosition(
-        // A) Muvaffaqiyatli topildi
-        (p) => {
-            // Koordinata aniqligini tekshirish (metrda)
-            const accuracy = p.coords.accuracy; 
-            
-            loc = { lat: p.coords.latitude, long: p.coords.longitude };
-            
-            b.innerHTML = `<i class='fa fa-check'></i> Manzil olindi (±${Math.round(accuracy)}m)`; 
-            b.style.color = "var(--gold)"; 
-            b.style.borderColor = "var(--gold)";
-            
-            renderCart();
-            showToast('success', 'Manzil aniqlandi', `Aniqlik: ${Math.round(accuracy)} metr`);
-        }, 
-        // B) Xatolik bo'lsa
-        (err) => {
-            console.warn(`ERROR(${err.code}): ${err.message}`);
-            showToast('error', 'GPS xatosi', 'Ochiq havoga chiqing yoki qayta urinib ko\'ring');
-            b.innerHTML = "Qayta urinish";
-        }, 
-        // C) Sozlamalarni kiritamiz
-        gpsOptions 
-    );
-}
-
+            navigator.geolocation.getCurrentPosition(
+                (p) => {
+                    const accuracy = p.coords.accuracy; 
+                    loc = { lat: p.coords.latitude, long: p.coords.longitude };
+                    
+                    b.innerHTML = `<i class='fa fa-check'></i> Manzil olindi (±${Math.round(accuracy)}m)`; 
+                    b.style.color = "var(--gold)"; 
+                    b.style.borderColor = "var(--gold)";
+                    
+                    renderCart();
+                    showToast('success', 'Manzil aniqlandi', `Aniqlik: ${Math.round(accuracy)} metr`);
+                }, 
+                (err) => {
+                    console.warn(`ERROR(${err.code}): ${err.message}`);
+                    showToast('error', 'GPS xatosi', 'Ochiq havoga chiqing yoki qayta urinib ko\'ring');
+                    b.innerHTML = "Qayta urinish";
+                }, 
+                gpsOptions 
+            );
+        }
 
         function sendOrder() {
+            // HIMOYA
+            if (!isShopOpen) {
+                showToast('error', 'Uzr', 'Kafe hozir yopiq. Ish vaqti tugadi.');
+                return;
+            }
+
             const items = []; let t = 0;
             for (let id in cart) { const p = products.find(x => x.id == id); items.push({ name: p.name, qty: cart[id] }); t += p.price * cart[id]; }
             db.ref('orders').push({ user_id: user.phone, user_info: `${user.name} (${user.phone})`, items, total: t, location: loc, status: 'yangi', time: new Date().toLocaleString() });
@@ -774,9 +804,9 @@ function getLocation() {
             else { icon.className = 'fa fa-moon'; text.innerText = 'Tungi rejim'; }
         }
         
-        // --- 4. ALOQA FUNKSIYALARI ---
+        // ALOQA FUNKSIYALARI
         function contactAdmin() {
-            toggleDrawer(); // Menyuni yopish
+            toggleDrawer(); 
             document.getElementById('contactModal').style.display = 'flex';
         }
         function closeContact() {
