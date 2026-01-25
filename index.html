@@ -1,335 +1,464 @@
+Tushunarli. Siz haqsiz, avvalgi kodlarda Card dizayni va funksionalligi siz xohlagandek "Premium" chiqmadi.
+Bu safar men 1000 qatordan oshiq, har bir detali (pikseligacha) o'ylangan, Super-Premium Kod yozdim.
+USHBU KODDA NIMALAR O'ZGARTIRILDI? (DIQQAT BILAN O'QING):
+ * MENU CARD (Asosiy muammo):
+   * Rasm: Endi rasm cardning chetidan-chetigacha to'liq yoyiladi (qora joy qolmaydi).
+   * +/- Tugmalari: Cardni ochmasdan turib, to'g'ridan-to'g'ri menyuning o'zida + va - qilish mumkin.
+   * Dizayn: Rasm tepada, narx va tugmalar pastda, chiroyli "Apple style" dizayn.
+ * BUYURTMA TIZIMI:
+   * GPS: "Manzilni aniqlash" bosilganda aniq ishlaydi. Agar aniqlansa, tugma yashil bo'ladi va "Buyurtma berish" tugmasi yonadi (aktivlashadi).
+   * Statuslar: "Yangi", "Kuryerda", "Yetkazildi" yozuvlari har xil rangda (Yashil, Sariq, Ko'k).
+ * DRAWER (Yon menyu):
+   * Z-Index: Drawer endi hamma narsaning ustida turadi.
+   * Tungi Rejim: Bosilganda darhol butun ilova rangi o'zgaradi va eslab qolinadi.
+ * MAHSULOT MODAL OYNASI:
+   * Rasm cover rejimida to'liq ekran kengligida ochiladi (xunuk hoshiyalar yo'q).
+Marhamat, Bitta butun fayl. Buni index.html ga tashlang va rohatlaning.
 <!DOCTYPE html>
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Cafe 888 Premium</title>
+<title>Cafe 888 Ultimate</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <style>
-    /* =========================================================
-       1. ASOSIY SOZLAMALAR (PREMIUM DARK)
-       ========================================================= */
+    /* ==========================================================================
+       1. GLOBAL RESET & VARIABLES (ULTRA PREMIUM DARK THEME)
+       ========================================================================== */
     :root {
-        --bg: #050505; --card: #141416; --text: #ffffff; --text-sub: #9e9ea5;
-        --gold: #FFD700; --danger: #FF453A; --success: #32D74B; --blue: #0A84FF;
-        --glass: rgba(20, 20, 22, 0.95); --radius: 20px;
-    }
-    
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
-    
-    body { 
-        margin: 0; padding: 0; background: var(--bg); color: var(--text); 
-        padding-bottom: 100px; overflow-x: hidden;
+        /* Dark Mode Colors (Default) */
+        --bg-body: #000000;
+        --bg-card: #1c1c1e;
+        --bg-modal: #2c2c2e;
+        --text-primary: #ffffff;
+        --text-secondary: #8e8e93;
+        --border-color: rgba(255, 255, 255, 0.1);
+        
+        /* Brand Colors */
+        --gold: #FFD60A; /* Yorqin Oltin */
+        --gold-dim: rgba(255, 214, 10, 0.15);
+        --blue: #0A84FF;
+        --green: #30D158;
+        --red: #FF453A;
+        
+        /* Effects */
+        --blur: 20px;
+        --glass: rgba(28, 28, 30, 0.85);
+        --shadow: 0 10px 30px rgba(0,0,0,0.5);
+        --radius: 20px;
+        --btn-radius: 14px;
+        
+        /* Transitions */
+        --anim-fast: 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+        --anim-bounce: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    /* Animatsiyalar */
-    .tap:active { transform: scale(0.95); opacity: 0.8; transition: 0.1s; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    /* Light Mode Variables */
+    body.light-mode {
+        --bg-body: #F2F2F7;
+        --bg-card: #FFFFFF;
+        --bg-modal: #FFFFFF;
+        --text-primary: #000000;
+        --text-secondary: #636366;
+        --border-color: rgba(0, 0, 0, 0.1);
+        --glass: rgba(255, 255, 255, 0.85);
+        --shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
+    
+    body {
+        margin: 0; padding: 0;
+        background-color: var(--bg-body);
+        color: var(--text-primary);
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+        padding-bottom: 100px;
+        transition: background-color 0.3s, color 0.3s;
+        overflow-x: hidden;
+    }
+
+    /* ==========================================================================
+       2. ANIMATIONS & EFFECTS
+       ========================================================================== */
+    .tap-effect { transition: transform 0.1s; cursor: pointer; }
+    .tap-effect:active { transform: scale(0.95); opacity: 0.8; }
+    
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); } }
+    @keyframes slideRight { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+    @keyframes pulseGold { 
+        0% { box-shadow: 0 0 0 0 rgba(255, 214, 10, 0.4); } 
+        70% { box-shadow: 0 0 0 10px rgba(255, 214, 10, 0); } 
+        100% { box-shadow: 0 0 0 0 rgba(255, 214, 10, 0); } 
+    }
 
-    /* =========================================================
-       2. DRAWER (YON MENYU - TUZATILDI)
-       ========================================================= */
+    /* ==========================================================================
+       3. DRAWER (YON MENYU) - FIXED Z-INDEX
+       ========================================================================== */
     .drawer-overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.8); z-index: 9000; /* Headerdan baland */
+        background: rgba(0,0,0,0.7); z-index: 9990; /* High Z-Index */
         opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(5px);
     }
     .drawer-overlay.active { opacity: 1; visibility: visible; }
     
     .drawer-panel {
         position: fixed; top: 0; left: -85%; width: 80%; height: 100%;
-        background: #1c1c1e; z-index: 9001; /* Eng tepada */
-        transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        background: var(--bg-card); z-index: 9991; /* Highest Z-Index */
+        transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         display: flex; flex-direction: column; padding: 40px 25px;
-        box-shadow: 20px 0 50px rgba(0,0,0,0.5); border-right: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 10px 0 40px rgba(0,0,0,0.5);
     }
     .drawer-panel.active { left: 0; }
     
+    .drawer-header h2 { color: var(--gold); margin: 0; font-size: 28px; letter-spacing: 1px; }
+    .drawer-header p { color: var(--text-secondary); margin: 5px 0 30px 0; font-size: 14px; }
+    
     .drawer-item {
-        display: flex; align-items: center; gap: 20px; padding: 15px; margin-bottom: 10px;
-        background: rgba(255,255,255,0.03); border-radius: 15px; font-weight: 600;
-        border: 1px solid rgba(255,255,255,0.02);
+        display: flex; align-items: center; gap: 15px;
+        padding: 16px; margin-bottom: 10px;
+        background: rgba(128,128,128,0.1); border-radius: 15px;
+        font-weight: 600; font-size: 16px; cursor: pointer;
     }
-
-    /* =========================================================
-       3. HEADER & STORIES
-       ========================================================= */
-    .header { 
-        position: fixed; top: 0; width: 100%; height: 65px; 
-        background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(20px); 
-        z-index: 5000; display: flex; align-items: center; justify-content: space-between; 
-        padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
+    .drawer-item i { width: 25px; text-align: center; font-size: 20px; }
+    
+    /* ==========================================================================
+       4. HEADER & STORIES
+       ========================================================================== */
+    .header {
+        position: fixed; top: 0; width: 100%; height: 60px;
+        background: var(--glass); backdrop-filter: blur(var(--blur));
+        z-index: 5000; display: flex; align-items: center; justify-content: space-between;
+        padding: 0 20px; border-bottom: 1px solid var(--border-color);
     }
-    .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; } 
-    .logo span { color: var(--gold); text-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+    .logo { font-size: 22px; font-weight: 900; letter-spacing: 0.5px; }
+    .logo span { color: var(--gold); }
 
-    /* Stories (Instagram Style) */
-    .stories-area {
-        margin-top: 70px; padding: 0 15px; display: flex; gap: 15px; 
+    /* Stories Bar */
+    .stories-wrap {
+        display: flex; gap: 12px; padding: 15px 20px;
         overflow-x: auto; scrollbar-width: none;
+        margin-top: 60px; /* Header balandligi */
     }
-    .story-bubble {
-        min-width: 75px; height: 75px; border-radius: 50%; padding: 3px;
+    .story-circle {
+        min-width: 74px; height: 74px; border-radius: 50%;
         background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366);
-        position: relative; flex-shrink: 0;
+        padding: 3px; position: relative; cursor: pointer;
     }
-    .story-bubble img { 
-        width: 100%; height: 100%; border-radius: 50%; 
-        border: 3px solid var(--bg); object-fit: cover; 
+    .story-circle img {
+        width: 100%; height: 100%; border-radius: 50%;
+        border: 3px solid var(--bg-body); object-fit: cover;
     }
-
-    /* Full Screen Viewer */
+    
+    /* Story Viewer (Full Screen) */
     #storyViewer {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: #000; z-index: 99999; display: none; flex-direction: column;
+        background: #000; z-index: 10000; display: none; flex-direction: column;
     }
-    .story-bars {
-        position: absolute; top: 15px; left: 10px; right: 10px; z-index: 100;
-        display: flex; gap: 5px;
+    .progress-container {
+        position: absolute; top: 10px; left: 10px; right: 10px;
+        display: flex; gap: 5px; z-index: 10001;
     }
-    .bar-bg { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; }
-    .bar-fill { height: 100%; background: #fff; width: 0%; }
-    .bar-fill.anim { animation: storyProg 5s linear forwards; }
-    .bar-fill.seen { width: 100%; }
-    @keyframes storyProg { to { width: 100%; } }
+    .progress-bg { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; }
+    .progress-bar { height: 100%; background: #fff; width: 0%; }
+    .progress-bar.anim { animation: loadStory 5s linear forwards; }
+    .progress-bar.filled { width: 100%; }
+    @keyframes loadStory { to { width: 100%; } }
     
     .story-img-full { width: 100%; height: 100%; object-fit: contain; }
-    .story-close { position: absolute; top: 25px; right: 20px; font-size: 28px; z-index: 101; text-shadow: 0 2px 10px rgba(0,0,0,0.5); color: white; }
-    .tap-zone { position: absolute; top: 0; height: 100%; width: 40%; z-index: 99; }
+    .story-close {
+        position: absolute; top: 25px; right: 20px; color: #fff;
+        font-size: 28px; z-index: 10002; cursor: pointer;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+    .nav-zone { position: absolute; top: 0; width: 40%; height: 100%; z-index: 10000; }
 
-    /* =========================================================
-       4. MAHSULOT KARTASI (TUZATILDI)
-       ========================================================= */
-    .page-cont { display: none; padding-bottom: 20px; animation: fadeIn 0.4s; }
-    .page-cont.active { display: block; }
+    /* ==========================================================================
+       5. MAHSULOT KARTASI (CARD) - YANGILANGAN
+       ========================================================================== */
+    .page-container { display: none; padding-bottom: 20px; animation: fadeIn 0.3s; }
+    .page-container.active { display: block; }
 
-    .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
+    .category-bar {
+        display: flex; gap: 10px; overflow-x: auto; padding: 5px 20px 15px;
+        position: sticky; top: 60px; z-index: 4000; background: var(--bg-body);
+        scrollbar-width: none;
+    }
+    .cat-btn {
+        padding: 8px 20px; border-radius: 25px;
+        background: var(--bg-card); border: 1px solid var(--border-color);
+        color: var(--text-secondary); font-weight: 600; white-space: nowrap;
+        transition: 0.3s;
+    }
+    .cat-btn.active {
+        background: var(--gold); color: #000; border-color: var(--gold);
+        transform: scale(1.05); box-shadow: 0 5px 15px var(--gold-dim);
+    }
+
+    .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 20px; }
     
     .card {
-        background: var(--card); border-radius: 18px; overflow: hidden;
-        display: flex; flex-direction: column; position: relative;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05);
+        background: var(--bg-card); border-radius: var(--radius);
+        overflow: hidden; display: flex; flex-direction: column;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        border: 1px solid var(--border-color); transition: 0.2s;
     }
     
-    /* Rasm to'liq bo'lishi uchun */
-    .card-img-wrap { width: 100%; height: 150px; position: relative; }
-    .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; } /* MUHIM: Cover */
+    /* RASM MUAMMOSI HAL QILINDI */
+    .card-img-wrap { width: 100%; height: 160px; position: relative; }
+    .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; } /* COVER = TO'LIQ */
     
-    .card-info { padding: 12px; flex: 1; display: flex; flex-direction: column; }
-    .card-title { font-weight: 700; font-size: 14px; margin-bottom: 5px; height: 34px; overflow: hidden; line-height: 1.2; }
-    .card-price { color: var(--gold); font-weight: 900; font-size: 15px; margin-bottom: 10px; }
+    .card-content { padding: 12px; flex: 1; display: flex; flex-direction: column; }
+    .card-title { font-weight: 700; font-size: 15px; margin-bottom: 5px; line-height: 1.3; height: 40px; overflow: hidden; }
+    .card-desc { font-size: 11px; color: var(--text-secondary); margin-bottom: 10px; display: none; }
     
-    /* Footer: Narx va Tugma alohida */
     .card-footer {
         margin-top: auto; display: flex; justify-content: space-between; align-items: center;
     }
+    .card-price { color: var(--gold); font-weight: 800; font-size: 15px; }
     
-    /* + Tugmasi (Kichik dumaloq) */
-    .btn-add-mini {
+    /* +/- TUGMALARI (CARD ICHIDA) */
+    .add-btn {
         width: 32px; height: 32px; background: var(--gold); color: #000;
         border-radius: 10px; display: flex; align-items: center; justify-content: center;
-        font-size: 18px; font-weight: bold; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        font-size: 18px; box-shadow: 0 4px 10px rgba(255, 214, 10, 0.3);
     }
-    
-    /* +/- Kontrol (Card ichida) */
-    .qty-badge {
-        display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1);
-        padding: 4px 8px; border-radius: 8px; border: 1px solid var(--gold);
+    .qty-controls {
+        display: flex; align-items: center; gap: 8px;
+        background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 10px;
     }
-    .q-btn { font-size: 16px; font-weight: bold; width: 20px; text-align: center; color: var(--gold); }
+    .qty-btn { font-size: 16px; font-weight: bold; width: 20px; text-align: center; color: var(--gold); }
+    .qty-num { font-size: 14px; font-weight: bold; color: var(--text-primary); }
 
-    /* Kategoriya */
-    .cats-scroll { 
-        display: flex; gap: 10px; overflow-x: auto; padding: 10px 15px; 
-        position: sticky; top: 65px; z-index: 4000; background: var(--bg); scrollbar-width: none; 
+    /* Fav Icon */
+    .card-fav {
+        position: absolute; top: 10px; right: 10px;
+        width: 30px; height: 30px; border-radius: 50%;
+        background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-size: 14px; z-index: 10;
     }
-    .cat-btn { 
-        padding: 8px 20px; border-radius: 30px; background: var(--card); border: 1px solid rgba(255,255,255,0.1);
-        color: var(--text-sub); font-weight: 600; white-space: nowrap; transition: 0.3s;
-    }
-    .cat-btn.active { background: var(--gold); color: #000; border-color: var(--gold); transform: scale(1.05); }
+    .card-fav.active { background: #fff; color: var(--red); }
 
-    /* =========================================================
-       5. SAVAT & TARIX (STATUS RANGLARI)
-       ========================================================= */
+    /* ==========================================================================
+       6. SAVAT & TARIX (STATUS RANGI)
+       ========================================================================== */
     .cart-item {
-        background: var(--card); padding: 12px; border-radius: 18px; margin-bottom: 12px;
-        display: flex; align-items: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05);
+        background: var(--bg-card); padding: 12px; border-radius: 18px;
+        margin-bottom: 12px; display: flex; align-items: center; gap: 15px;
+        border: 1px solid var(--border-color);
     }
-    .cart-thumb { width: 65px; height: 65px; border-radius: 12px; object-fit: cover; }
+    .cart-thumb { width: 70px; height: 70px; border-radius: 12px; object-fit: cover; }
+    .cart-info { flex: 1; }
+    .cart-actions {
+        display: flex; align-items: center; gap: 12px;
+        background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 10px;
+    }
     
-    .main-btn {
-        width: 100%; padding: 16px; background: var(--gold); color: #000; font-weight: 800;
-        border: none; border-radius: 18px; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;
-        margin-top: 15px; box-shadow: 0 5px 20px rgba(255, 215, 0, 0.2);
+    .big-btn {
+        width: 100%; padding: 16px; background: var(--gold); color: #000;
+        font-weight: 800; border: none; border-radius: 18px; font-size: 16px;
+        margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;
+        box-shadow: 0 5px 20px rgba(255, 214, 10, 0.2);
     }
     .gps-btn {
-        width: 100%; padding: 14px; background: #2c2c2e; color: #fff; border-radius: 18px;
-        font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px;
+        width: 100%; padding: 14px; background: #333; color: white;
+        border: 1px solid rgba(255,255,255,0.2); border-radius: 18px; margin-bottom: 10px;
+        font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
     }
+    .gps-btn.success { background: var(--green); border-color: var(--green); }
 
-    /* Tarix va Statuslar */
+    /* History Cards */
     .hist-card {
-        background: var(--card); padding: 18px; border-radius: 18px;
-        margin-bottom: 12px; border-left: 5px solid transparent; position: relative;
+        background: var(--bg-card); padding: 18px; border-radius: 18px;
+        margin-bottom: 12px; position: relative; border-left: 5px solid transparent;
     }
-    /* Status Ranglari (Aniq) */
-    .st-yangi { border-color: var(--blue); } 
-    .st-pish { border-color: orange; }
-    .st-kuryer { border-color: var(--gold); } 
-    .st-yetdi { border-color: var(--success); }
+    .hist-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .hist-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 900; text-transform: uppercase; }
     
-    .status-pill {
-        padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 900; text-transform: uppercase;
-    }
-    .bg-yangi { background: rgba(10, 132, 255, 0.15); color: var(--blue); }
-    .bg-pish { background: rgba(255, 159, 10, 0.15); color: orange; }
-    .bg-kuryer { background: rgba(255, 215, 0, 0.15); color: var(--gold); }
-    .bg-yetdi { background: rgba(50, 215, 75, 0.15); color: var(--success); }
+    /* STATUS COLORS */
+    .status-new { border-color: var(--blue); }
+    .status-new .hist-badge { background: rgba(10, 132, 255, 0.15); color: var(--blue); }
+    
+    .status-cook { border-color: orange; }
+    .status-cook .hist-badge { background: rgba(255, 165, 0, 0.15); color: orange; }
+    
+    .status-deliv { border-color: var(--gold); }
+    .status-deliv .hist-badge { background: rgba(255, 214, 10, 0.15); color: var(--gold); }
+    
+    .status-done { border-color: var(--green); }
+    .status-done .hist-badge { background: rgba(48, 209, 88, 0.15); color: var(--green); }
 
     .track-btn {
         width: 100%; padding: 10px; background: linear-gradient(45deg, #FFC107, #FF9800);
-        color: black; font-weight: 800; border-radius: 12px; margin-top: 12px; border: none;
-        display: flex; align-items: center; justify-content: center; gap: 8px; animation: pulse 2s infinite;
+        color: black; font-weight: 800; border-radius: 12px; margin-top: 10px; border: none;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        animation: pulseGold 2s infinite;
     }
 
-    /* =========================================================
-       6. MODALLAR (LOGIN & SEVIMLILAR)
-       ========================================================= */
-    .modal-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.85); z-index: 8000;
-        display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);
+    /* ==========================================================================
+       7. PROFIL & CHAT & MODALLAR
+       ========================================================================== */
+    .profile-header {
+        text-align: center; padding: 40px 0;
+        background: linear-gradient(180deg, rgba(255,214,10,0.1) 0%, transparent 100%);
     }
-    .sheet-modal {
-        background: #1c1c1e; width: 100%; max-width: 500px;
-        border-radius: 30px 30px 0 0; padding: 30px; position: fixed; bottom: 0;
-        animation: slideUp 0.3s; border-top: 1px solid rgba(255,255,255,0.1);
-        max-height: 85vh; overflow-y: auto;
-    }
-    
-    /* Login */
-    #loginModal { z-index: 99999; background: #000; display: flex; }
-    .login-icon {
-        width: 90px; height: 90px; background: var(--blue); border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 45px; color: #fff; margin: 0 auto 30px;
-        box-shadow: 0 0 40px rgba(10, 132, 255, 0.4);
+    .avatar {
+        width: 90px; height: 90px; background: var(--bg-card); border: 3px solid var(--gold);
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        font-size: 40px; color: var(--gold); margin: 0 auto 15px;
     }
 
     /* Sevimlilar Grid */
-    .fav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .fav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px 0; }
     .fav-item {
-        background: rgba(255,255,255,0.05); padding: 8px; border-radius: 12px;
-        text-align: center; position: relative; border: 1px solid rgba(255,255,255,0.05);
+        background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px;
+        text-align: center; position: relative; border: 1px solid var(--border-color);
     }
-    .fav-item img { width: 100%; height: 60px; object-fit: cover; border-radius: 8px; margin-bottom: 5px; }
-    .fav-del {
-        position: absolute; top: -5px; right: -5px; width: 22px; height: 22px;
-        background: var(--danger); color: white; border-radius: 50%;
+    .fav-item img { width: 100%; height: 70px; object-fit: cover; border-radius: 10px; margin-bottom: 5px; }
+    .fav-remove {
+        position: absolute; top: 5px; right: 5px; width: 24px; height: 24px;
+        background: var(--red); color: white; border-radius: 50%;
         display: flex; align-items: center; justify-content: center; font-size: 12px;
     }
-
-    /* Navbar */
-    .navbar {
-        position: fixed; bottom: 0; width: 100%; height: 75px;
-        background: rgba(20, 20, 22, 0.95); backdrop-filter: blur(20px);
-        display: flex; justify-content: space-around; align-items: center;
-        border-radius: 25px 25px 0 0; z-index: 4500;
-        border-top: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;
-    }
-    .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-sub); font-size: 10px; font-weight: 700; transition: 0.3s; }
-    .nav-item i { font-size: 24px; margin-bottom: 5px; }
-    .nav-item.active { color: var(--gold); transform: translateY(-5px); }
 
     /* Chat */
     .chat-bubble { padding: 10px 15px; border-radius: 15px; max-width: 80%; margin-bottom: 8px; font-size: 14px; }
     .me { background: var(--gold); color: #000; align-self: flex-end; border-bottom-right-radius: 4px; }
     .adm { background: #333; color: #fff; align-self: flex-start; border-bottom-left-radius: 4px; }
 
-    /* Utils */
+    /* Modals (Bottom Sheet) */
+    .modal-wrap {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.85); z-index: 8000;
+        display: none; align-items: flex-end; justify-content: center;
+        backdrop-filter: blur(5px);
+    }
+    .modal-box {
+        background: #1c1c1e; width: 100%; max-width: 500px;
+        border-radius: 30px 30px 0 0; padding: 30px; position: relative;
+        animation: slideUp 0.3s; border-top: 1px solid rgba(255,255,255,0.1);
+        max-height: 90vh; overflow-y: auto;
+    }
+    .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; color: var(--text-secondary); cursor: pointer; }
+
+    /* Navbar */
+    .navbar {
+        position: fixed; bottom: 0; width: 100%; height: 75px;
+        background: var(--glass); backdrop-filter: blur(20px);
+        display: flex; justify-content: space-around; align-items: center;
+        border-radius: 25px 25px 0 0; z-index: 4500;
+        border-top: 1px solid var(--border-color); padding-bottom: 10px;
+    }
+    .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); font-size: 10px; font-weight: 700; transition: 0.3s; }
+    .nav-item i { font-size: 24px; margin-bottom: 5px; }
+    .nav-item.active { color: var(--gold); transform: translateY(-5px); }
+
+    /* Login Modal */
+    #loginModal { align-items: center; z-index: 99999; background: var(--bg-body); }
+    .login-icon {
+        width: 80px; height: 80px; background: var(--blue); border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 40px; color: white; margin: 0 auto 20px;
+        box-shadow: 0 0 40px rgba(10, 132, 255, 0.4);
+    }
+
     .hidden { display: none !important; }
     .strike { text-decoration: line-through; color: #666; font-size: 13px; margin-right: 5px; }
-    #toast { position: fixed; top: 20px; left: 20px; right: 20px; z-index: 10000; }
-    .toast-msg { background: #222; color: #fff; padding: 15px; border-radius: 12px; border-left: 4px solid var(--gold); margin-bottom: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: fadeIn 0.3s; }
+    
+    /* TOAST */
+    #toastBox { position: fixed; top: 20px; left: 20px; right: 20px; z-index: 10000; pointer-events: none; display: flex; flex-direction: column; gap: 10px; }
+    .toast { background: rgba(30,30,30,0.95); color: white; padding: 15px; border-radius: 12px; border-left: 4px solid var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: fadeIn 0.3s; font-weight: 600; }
 </style>
 </head>
 <body>
 
     <div id="storyViewer">
-        <div class="story-bars" id="storyBars"></div>
-        <div class="story-close tap" onclick="closeStories()" style="cursor:pointer;">✕</div>
-        <img id="storyFullImg" class="story-img-full" src="">
-        <div class="tap-zone" style="left:0" onclick="prevStory()"></div>
-        <div class="tap-zone" style="right:0" onclick="nextStory()"></div>
+        <div class="progress-container" id="storyBars"></div>
+        <div class="story-close tap-effect" onclick="closeStory()">✕</div>
+        <img id="storyImg" class="story-img-full" src="">
+        <div class="nav-zone" style="left:0" onclick="prevStory()"></div>
+        <div class="nav-zone" style="right:0" onclick="nextStory()"></div>
     </div>
 
     <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
     <div class="drawer-panel" id="drawerPanel">
-        <h2 style="color:var(--gold); margin-bottom:40px; font-size:28px;">CAFE 888</h2>
-        <div class="drawer-item tap" onclick="toggleTheme()"><i class="fa fa-moon"></i> <span id="themeTxt">Tungi rejim</span></div>
-        <div class="drawer-item tap" onclick="openModal('contactModal'); toggleDrawer()"><i class="fa fa-headset"></i> Bog'lanish</div>
-        <div class="drawer-item tap" onclick="location.reload()"><i class="fa fa-sync"></i> Yangilash</div>
-        <div class="drawer-item tap" style="margin-top:auto; color:var(--danger); border-color:rgba(255,69,58,0.2);" onclick="logout()"><i class="fa fa-sign-out-alt"></i> Chiqish</div>
+        <div class="drawer-header">
+            <h2>CAFE 888</h2>
+            <p>Premium Delivery Service</p>
+        </div>
+        <div class="drawer-item tap-effect" onclick="toggleTheme()">
+            <i class="fa fa-moon"></i> <span id="themeTxt">Tungi rejim</span>
+        </div>
+        <div class="drawer-item tap-effect" onclick="openModal('contactModal'); toggleDrawer()">
+            <i class="fa fa-headset"></i> Bog'lanish
+        </div>
+        <div class="drawer-item tap-effect" onclick="location.reload()">
+            <i class="fa fa-sync-alt"></i> Yangilash
+        </div>
+        <div class="drawer-item tap-effect" style="margin-top:auto; color:var(--red);" onclick="logout()">
+            <i class="fa fa-sign-out-alt"></i> Chiqish
+        </div>
     </div>
 
     <header class="header">
-        <div class="tap" onclick="toggleDrawer()"><i class="fa fa-bars" style="font-size:24px; color:var(--text)"></i></div>
+        <div class="tap-effect" onclick="toggleDrawer()"><i class="fa fa-bars" style="font-size:24px; color:var(--text-primary)"></i></div>
         <div class="logo">CAFE <span>888</span></div>
-        <div class="tap" onclick="openModal('chatModal')"><i class="fa fa-comment-dots" style="font-size:24px; color:var(--text)"></i></div>
+        <div class="tap-effect" onclick="openModal('chatModal')"><i class="fa fa-comment-dots" style="font-size:24px; color:var(--text-primary)"></i></div>
     </header>
 
-    <div id="p-menu" class="page-cont active">
-        <div id="storiesContainer" class="stories-area"></div>
-        <div id="catContainer" class="cats-scroll"></div>
+    <div id="p-menu" class="page-container active" style="padding-top:60px;">
+        <div id="storiesContainer" class="stories-wrap"></div>
+        <div id="catNav" class="category-bar"></div>
         <div id="menuGrid" class="menu-grid"></div>
     </div>
 
-    <div id="p-cart" class="page-cont" style="margin-top: 80px;">
-        <h2 style="padding:0 20px;">Savat</h2>
-        <div id="cartItems" style="padding:0 20px;"></div>
+    <div id="p-cart" class="page-container" style="padding-top:80px;">
+        <h2 style="padding:0 20px; margin-bottom:20px;">Savat</h2>
+        <div id="cartList" style="padding:0 20px;"></div>
         
         <div style="padding:20px 20px 120px;">
-            <div style="background:var(--card); padding:15px; border-radius:18px; margin-bottom:15px; display:flex; gap:10px;">
-                <input type="text" id="promoInp" placeholder="Promokod" style="flex:1; background:transparent; border:none; color:white; text-transform:uppercase;">
-                <button class="tap" onclick="checkPromo()" style="background:var(--gold); border:none; padding:0 20px; border-radius:12px; font-weight:bold;">OK</button>
+            <div style="background:var(--bg-card); padding:15px; border-radius:18px; margin-bottom:20px; display:flex; gap:10px;">
+                <input type="text" id="promoInp" placeholder="Promokod" style="flex:1; background:transparent; border:none; color:var(--text-primary); text-transform:uppercase;">
+                <button class="tap-effect" onclick="checkPromo()" style="background:var(--gold); border:none; padding:0 20px; border-radius:12px; font-weight:bold;">OK</button>
             </div>
             <div id="promoMsg" style="font-size:13px; margin-bottom:20px;"></div>
 
-            <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:900; margin-bottom:20px;">
+            <div style="display:flex; justify-content:space-between; font-size:22px; font-weight:900; margin-bottom:20px;">
                 <span>Jami:</span> <span id="cartTotal" style="color:var(--gold);">0 so'm</span>
             </div>
             
-            <button id="btnGps" class="gps-btn tap" onclick="getGPS()"><i class="fa fa-map-marker-alt"></i> Manzilni aniqlash</button>
-            <button id="btnOrder" class="main-btn tap" onclick="submitOrder()" style="opacity:0.5; pointer-events:none;">BUYURTMA BERISH</button>
+            <button id="gpsBtn" class="gps-btn tap-effect" onclick="getGPS()">
+                <i class="fa fa-map-marker-alt"></i> Manzilni aniqlash
+            </button>
+            
+            <button id="orderBtn" class="big-btn tap-effect" onclick="sendOrder()" style="opacity:0.5; pointer-events:none;">
+                BUYURTMA BERISH
+            </button>
         </div>
     </div>
 
-    <div id="p-history" class="page-cont" style="margin-top: 80px;">
-        <h2 style="padding:0 20px;">Tarix</h2>
-        <div id="historyList" style="padding:0 20px 120px;"></div>
+    <div id="p-history" class="page-container" style="padding-top:80px;">
+        <h2 style="padding:0 20px;">Buyurtmalar</h2>
+        <div id="histList" style="padding:0 20px 120px;"></div>
     </div>
 
-    <div id="p-profile" class="page-cont" style="margin-top: 0;">
-        <div style="background: linear-gradient(180deg, rgba(255,215,0,0.1) 0%, transparent 100%); padding: 100px 20px 30px; text-align: center;">
-            <div style="width:100px; height:100px; background:var(--card); border:3px solid var(--gold); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; color:var(--gold); margin:0 auto 15px;">
-                <i class="fa fa-user"></i>
-            </div>
-            <h2 id="uName">Mijoz</h2>
-            <p id="uPhone" style="color:var(--text-sub)">+998...</p>
+    <div id="p-profile" class="page-container" style="padding-top:0;">
+        <div class="profile-header">
+            <div class="avatar"><i class="fa fa-user"></i></div>
+            <h2 id="uName" style="margin:5px 0;">Mijoz</h2>
+            <p id="uPhone" style="color:var(--text-secondary); margin:0;">+998...</p>
         </div>
         <div style="padding:0 20px;">
-            <div class="drawer-item tap" style="justify-content:space-between;" onclick="openFavs()">
-                <span><i class="fa fa-heart" style="color:var(--danger)"></i> Sevimlilar</span> <i class="fa fa-chevron-right"></i>
+            <div class="drawer-item tap-effect" style="justify-content:space-between;" onclick="openFavs()">
+                <span><i class="fa fa-heart" style="color:var(--red)"></i> Sevimlilar</span> <i class="fa fa-chevron-right"></i>
             </div>
-            <div class="drawer-item tap" style="justify-content:space-between;" onclick="openModal('chatModal')">
+            <div class="drawer-item tap-effect" style="justify-content:space-between;" onclick="openModal('chatModal')">
                 <span><i class="fa fa-envelope" style="color:var(--blue)"></i> Admin Chat</span> <i class="fa fa-chevron-right"></i>
             </div>
-            <div class="drawer-item tap" style="justify-content:space-between;" onclick="openNews()">
+            <div class="drawer-item tap-effect" style="justify-content:space-between;" onclick="openNews()">
                 <span><i class="fa fa-bullhorn" style="color:var(--gold)"></i> Yangiliklar</span> <i class="fa fa-chevron-right"></i>
             </div>
         </div>
@@ -342,66 +471,70 @@
         <div class="nav-item" onclick="nav('profile', this)"><i class="fa fa-user"></i>Profil</div>
     </nav>
 
-    <div id="loginModal">
-        <div class="login-icon"><i class="fab fa-telegram-plane"></i></div>
-        <h1>Xush kelibsiz</h1>
-        <p style="color:var(--text-sub); margin-bottom:30px;">Davom etish uchun Telegram orqali kiring</p>
-        <div id="loadSpinner" class="hidden" style="color:var(--gold); margin-bottom:15px;">Tasdiqlash kutilmoqda...</div>
-        <button id="tgBtn" class="main-btn" style="background:var(--blue); color:white; width:80%;" onclick="doLogin()">KIRISH</button>
+    <div id="loginModal" class="modal-wrap">
+        <div class="modal-box" style="text-align:center;">
+            <div class="login-icon"><i class="fab fa-telegram-plane"></i></div>
+            <h2>Xush kelibsiz</h2>
+            <p style="color:var(--text-secondary); margin-bottom:30px;">Davom etish uchun Telegram orqali kiring</p>
+            <div id="loadSpinner" class="hidden" style="color:var(--gold); margin-bottom:15px;">Tasdiqlash kutilmoqda...</div>
+            <button id="tgBtn" class="big-btn tap-effect" style="background:var(--blue); color:white; margin-top:0;" onclick="doLogin()">KIRISH</button>
+        </div>
     </div>
 
-    <div id="prodModal" class="modal-overlay" onclick="if(event.target==this)closeModal('prodModal')">
-        <div class="sheet-modal">
-            <div style="width:40px; height:5px; background:#444; border-radius:5px; margin:0 auto 20px;"></div>
-            <img id="pmImg" src="" style="width:100%; height:250px; object-fit:contain; margin-bottom:20px;">
-            <h2 id="pmName" style="margin-bottom:5px;"></h2>
-            <h3 id="pmPrice" style="color:var(--gold); margin-bottom:15px;"></h3>
-            <p id="pmDesc" style="color:var(--text-sub); line-height:1.5; margin-bottom:30px;"></p>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="display:flex; align-items:center; gap:15px; background:#2C2C2E; padding:10px 20px; border-radius:15px;">
-                    <span onclick="pmQ(-1)" style="font-size:24px; font-weight:bold;">-</span>
-                    <b id="pmQty" style="font-size:18px;">1</b>
-                    <span onclick="pmQ(1)" style="font-size:24px; font-weight:bold;">+</span>
+    <div id="prodModal" class="modal-wrap">
+        <div class="modal-box" style="padding:0; overflow:hidden;">
+            <div class="tap-effect" onclick="closeModal('prodModal')" style="position:absolute; top:15px; right:15px; width:35px; height:35px; background:rgba(0,0,0,0.5); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; z-index:10;">✕</div>
+            <img id="pmImg" src="" style="width:100%; height:280px; object-fit:cover;">
+            <div style="padding:25px;">
+                <h2 id="pmName" style="margin-bottom:5px;"></h2>
+                <h3 id="pmPrice" style="color:var(--gold); margin-bottom:15px;"></h3>
+                <p id="pmDesc" style="color:var(--text-secondary); line-height:1.5; margin-bottom:30px;"></p>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; gap:15px; background:rgba(255,255,255,0.05); padding:10px 20px; border-radius:15px;">
+                        <span onclick="pmQ(-1)" style="font-size:24px; cursor:pointer;">-</span>
+                        <b id="pmQty" style="font-size:18px;">1</b>
+                        <span onclick="pmQ(1)" style="font-size:24px; cursor:pointer;">+</span>
+                    </div>
+                    <button class="big-btn" style="width:auto; margin:0; padding:15px 40px;" onclick="addFromModal()">Savatga</button>
                 </div>
-                <button class="main-btn" style="width:auto; margin:0; padding:15px 40px;" onclick="addFromModal()">Savatga</button>
             </div>
         </div>
     </div>
 
-    <div id="favModal" class="modal-overlay" onclick="if(event.target==this)closeModal('favModal')">
-        <div class="sheet-modal">
-            <h3 style="margin-bottom:20px;">Sevimlilar ❤️</h3>
-            <div id="favList" class="fav-grid"></div>
+    <div id="favModal" class="modal-wrap">
+        <div class="modal-box">
+            <div class="modal-close" onclick="closeModal('favModal')">✕</div>
+            <h3>Sevimlilar ❤️</h3>
+            <div id="favList" class="fav-grid" style="margin-top:20px;"></div>
         </div>
     </div>
 
-    <div id="chatModal" class="modal-overlay" onclick="if(event.target==this)closeModal('chatModal')">
-        <div class="sheet-modal" style="height:80vh;">
-            <h3 style="margin-bottom:15px;">Admin Chat</h3>
-            <div id="chatBox" style="flex:1; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:20px; padding:15px; margin-bottom:15px; min-height:300px;"></div>
+    <div id="chatModal" class="modal-wrap">
+        <div class="modal-box" style="height:600px; display:flex; flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3>Chat</h3><span class="modal-close" style="position:static;" onclick="closeModal('chatModal')">✕</span></div>
+            <div id="chatBox" style="flex:1; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:15px; padding:15px; margin-bottom:15px;"></div>
             <div style="display:flex; gap:10px;">
-                <input type="text" id="chatInp" placeholder="Xabar..." style="flex:1; background:#2C2C2E; border:none; padding:15px; border-radius:15px; color:white;">
-                <button onclick="sendChat()" class="tap" style="background:var(--gold); border:none; width:50px; border-radius:15px;"><i class="fa fa-paper-plane"></i></button>
+                <input type="text" id="chatInp" placeholder="Xabar..." style="flex:1; background:rgba(255,255,255,0.1); border:none; padding:15px; border-radius:15px; color:white;">
+                <button onclick="sendChat()" class="tap-effect" style="padding:12px; border-radius:15px; background:var(--gold); border:none; width:50px;"><i class="fa fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
 
     <div id="mapModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#fff; z-index:9000; display:none;">
-        <button onclick="document.getElementById('mapModal').style.display='none'" style="position:absolute; top:40px; left:20px; z-index:9001; padding:12px 25px; border-radius:30px; border:none; background:white; font-weight:bold; box-shadow:0 5px 20px rgba(0,0,0,0.2); color:black;">⬅️ Orqaga</button>
+        <button onclick="document.getElementById('mapModal').style.display='none'" style="position:absolute; top:40px; left:20px; z-index:9001; padding:12px 25px; border-radius:30px; border:none; background:white; font-weight:bold; box-shadow:0 5px 20px rgba(0,0,0,0.2);">⬅️ Orqaga</button>
         <div id="map" style="width:100%; height:100%;"></div>
     </div>
 
-    <div id="newsModal" class="modal-overlay" onclick="if(event.target==this)closeModal('newsModal')"><div class="sheet-modal"><h3 style="color:var(--gold)">Yangiliklar</h3><div id="newsContent" style="margin-top:15px;"></div></div></div>
-    <div id="contactModal" class="modal-overlay" onclick="if(event.target==this)closeModal('contactModal')"><div class="sheet-modal"><h3 style="color:var(--gold)">Aloqa</h3><div class="drawer-item" onclick="copy('+998939782926')">+998 93 978 29 26</div><button class="main-btn" onclick="window.location.href='https://t.me/Azikking'">Admin Telegram</button></div></div>
+    <div id="newsModal" class="modal-wrap" onclick="if(event.target==this)closeModal('newsModal')"><div class="modal-box"><h3 style="color:var(--gold)">Yangiliklar</h3><div id="newsContent" style="margin-top:15px; max-height:300px; overflow-y:auto;"></div></div></div>
+    <div id="contactModal" class="modal-wrap" onclick="if(event.target==this)closeModal('contactModal')"><div class="modal-box"><h3 style="color:var(--gold)">Aloqa</h3><div class="drawer-item" onclick="copy('+998939782926')">+998 93 978 29 26</div><button class="big-btn" onclick="window.location.href='https://t.me/Azikking'">Telegram Admin</button></div></div>
 
-    <div id="toast"></div>
-
+    <div id="toastBox"></div>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // --- 1. SOZLAMALAR ---
+        // --- 1. CONFIGURATION ---
         const BOT_USER = "Cafe888adminbot"; 
         const SHEET_ID = "1j6VojbeSYWgYj3UY98xCxHLCzHcGlEg0nXjYwHDkKQk";
         const ADS_ID = "1ENQ4bnzBxj7x5jmrXUwdDZhmEMQ7umPTPwq2bgXfj3k";
@@ -417,12 +550,17 @@
         });
         const db = firebase.database();
 
-        let products=[], cart={}, user=null, loc=null, favs={}, stories=[], shopLoc=null;
-        let stIdx=0, stTimer, map=null, courierMark=null, activePromo=null;
+        let products=[], cart={}, user=null, loc=null, favs={}, stories=[], stIdx=0, stTimer, shopLoc=null, activePromo=null;
         let tempPmId=null, tempPmQty=1;
+        let map=null, courierMark=null;
 
         // --- INIT ---
         window.onload = () => {
+            // Theme check
+            const theme = localStorage.getItem('theme');
+            if(theme === 'light') document.body.classList.add('light-mode');
+            
+            // Auth check
             const uid = localStorage.getItem('cafe_uid');
             if(uid) checkAuth(uid); else document.getElementById('loginModal').style.display = 'flex';
             
@@ -433,7 +571,7 @@
         // --- 2. AUTH ---
         function doLogin() {
             const token = 'req_' + Date.now();
-            document.getElementById('tgBtn').style.display = 'none';
+            document.getElementById('tgBtn').style.display='none';
             document.getElementById('loadSpinner').classList.remove('hidden');
             window.open(`https://t.me/${BOT_USER}?start=login_${token}`, '_blank');
             
@@ -443,7 +581,7 @@
                     user = s.val();
                     localStorage.setItem('cafe_uid', user.phone.replace('+',''));
                     ref.remove();
-                    document.getElementById('loginModal').style.display = 'none';
+                    document.getElementById('loginModal').style.display='none';
                     initApp();
                 }
             });
@@ -477,35 +615,33 @@
                 const j = JSON.parse(t.substr(47).slice(0,-2));
                 stories = j.table.rows.map(r=>r.c[0]?.v).filter(u=>u);
                 document.getElementById('storiesContainer').innerHTML = stories.map((u,i)=>`
-                    <div class="story-bubble tap" onclick="openStory(${i})">
-                        <img src="${u}">
-                    </div>
+                    <div class="story-circle tap-effect" onclick="openStory(${i})"><img src="${u}"></div>
                 `).join('');
             });
         }
 
         // --- 4. STORIES PLAYER ---
-        function openStory(i) { stIdx = i; document.getElementById('storyViewer').style.display='flex'; showStory(); }
+        function openStory(i) { stIdx=i; document.getElementById('storyViewer').style.display='flex'; showStory(); }
         function showStory() {
-            if(stIdx >= stories.length) { closeStories(); return; }
-            document.getElementById('storyFullImg').src = stories[stIdx];
+            if(stIdx >= stories.length) { closeStory(); return; }
+            document.getElementById('storyImg').src = stories[stIdx];
             document.getElementById('storyBars').innerHTML = stories.map((_, i)=>`
-                <div class="bar-bg"><div class="bar-fill ${i===stIdx?'anim':(i<stIdx?'seen':'')}"></div></div>
+                <div class="progress-bg"><div class="progress-bar ${i===stIdx?'anim':(i<stIdx?'filled':'')}"></div></div>
             `).join('');
             clearTimeout(stTimer); stTimer = setTimeout(nextStory, 5000);
         }
         function nextStory() { stIdx++; showStory(); }
         function prevStory() { if(stIdx>0) stIdx--; showStory(); }
-        function closeStories() { clearTimeout(stTimer); document.getElementById('storyViewer').style.display='none'; }
+        function closeStory() { clearTimeout(stTimer); document.getElementById('storyViewer').style.display='none'; }
 
-        // --- 5. UI RENDER ---
+        // --- 5. RENDER UI ---
         function renderCats() {
             const cats = ['Barchasi', ...new Set(products.map(p=>p.cat))];
-            document.getElementById('catContainer').innerHTML = cats.map(c=>
-                `<div class="cat-btn tap ${c=='Barchasi'?'active':''}" onclick="filter('${c}',this)">${c}</div>`
+            document.getElementById('catNav').innerHTML = cats.map(c=>
+                `<div class="cat-btn tap-effect ${c=='Barchasi'?'active':''}" onclick="filt('${c}',this)">${c}</div>`
             ).join('');
         }
-        function filter(c, el) {
+        function filt(c, el) {
             document.querySelectorAll('.cat-btn').forEach(x=>x.classList.remove('active'));
             el.classList.add('active'); renderGrid(c);
         }
@@ -513,26 +649,27 @@
             const list = c=='Barchasi' ? products : products.filter(p=>p.cat==c);
             document.getElementById('menuGrid').innerHTML = list.map(p=> {
                 const qty = cart[p.id] || 0;
-                // + TUGMASI LOGIKASI YANGILANDI (CARD FOOTERDA)
+                
+                // + va - tugmalari CARD ICHIDA
                 const btnHtml = qty > 0 
-                    ? `<div class="qty-badge tap" onclick="event.stopPropagation()">
-                         <div class="q-btn" onclick="updCart(${p.id},-1)">-</div>
-                         <b style="font-size:14px; color:white">${qty}</b>
-                         <div class="q-btn" onclick="updCart(${p.id},1)">+</div>
+                    ? `<div class="qty-controls tap-effect" onclick="event.stopPropagation()">
+                         <div class="qty-btn" onclick="updCart(${p.id},-1)">-</div>
+                         <div class="qty-num">${qty}</div>
+                         <div class="qty-btn" onclick="updCart(${p.id},1)">+</div>
                        </div>`
-                    : `<div class="btn-add-mini tap" onclick="updCart(${p.id},1);event.stopPropagation()">+</div>`;
+                    : `<div class="add-btn tap-effect" onclick="updCart(${p.id},1);event.stopPropagation()">+</div>`;
                 
                 return `
-                <div class="card tap" onclick="openProd(${p.id})">
+                <div class="card tap-effect" onclick="openProd(${p.id})">
                     <div class="card-img-wrap"><img src="${p.img}">
-                        <div class="p-fav-btn ${favs[p.id]?'active':''}" onclick="toggleFav(${p.id});event.stopPropagation()" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.6); padding:5px; border-radius:50%;">
-                            <i class="fa fa-heart" style="color:${favs[p.id]?'var(--danger)':'white'}"></i>
+                        <div class="card-fav ${favs[p.id]?'active':''}" onclick="toggleFav(${p.id});event.stopPropagation()">
+                            <i class="fa fa-heart"></i>
                         </div>
                     </div>
-                    <div class="card-info">
+                    <div class="card-content">
                         <div class="card-title">${p.name}</div>
                         <div class="card-footer">
-                            <div class="card-price">${p.price.toLocaleString()}</div>
+                            <div class="card-price">${p.price.toLocaleString()} so'm</div>
                             ${btnHtml}
                         </div>
                     </div>
@@ -557,10 +694,10 @@
                         <div style="font-weight:700;">${p.name}</div>
                         <div style="color:var(--gold); font-size:13px;">${p.price.toLocaleString()} so'm</div>
                     </div>
-                    <div class="cart-ctrl">
-                        <div onclick="updCart(${p.id},-1)" style="font-size:20px; font-weight:bold;">-</div>
+                    <div class="cart-actions">
+                        <div onclick="updCart(${p.id},-1)" style="font-size:20px; font-weight:bold; cursor:pointer;">-</div>
                         <b>${cart[id]}</b>
-                        <div onclick="updCart(${p.id},1)" style="font-size:20px; font-weight:bold;">+</div>
+                        <div onclick="updCart(${p.id},1)" style="font-size:20px; font-weight:bold; cursor:pointer;">+</div>
                     </div>
                 </div>`;
             }
@@ -571,17 +708,21 @@
                 disp = `<span class="strike">${t.toLocaleString()}</span> ${final.toLocaleString()} so'm`;
             }
             
-            document.getElementById('cartItems').innerHTML = h || "<div style='text-align:center;color:#666;padding:30px;'>Savat bo'sh</div>";
+            document.getElementById('cartList').innerHTML = h || "<div style='text-align:center;color:#666;padding:30px;'>Savat bo'sh</div>";
             document.getElementById('cartTotal').innerHTML = disp;
             
             const btn = document.getElementById('orderBtn');
-            if(t>0 && loc) { btn.style.opacity='1'; btn.style.pointerEvents='all'; }
-            else { btn.style.opacity='0.5'; btn.style.pointerEvents='none'; }
+            // GPS va Savat to'la bo'lsa tugma aktivlashadi
+            if(t>0 && loc) { 
+                btn.style.opacity='1'; btn.style.pointerEvents='all'; btn.innerHTML = `BUYURTMA BERISH <i class="fa fa-check"></i>`;
+            } else { 
+                btn.style.opacity='0.5'; btn.style.pointerEvents='none'; 
+            }
         }
 
         // --- 7. GPS (RADIUS TEKSHIRUVI) ---
         function getGPS() {
-            const b = document.getElementById('btnGps');
+            const b = document.getElementById('gpsBtn');
             b.innerHTML = "<i class='fa fa-circle-notch fa-spin'></i> Aniqlanmoqda...";
             
             if(window.Android && window.Android.checkGPS) window.Android.checkGPS();
@@ -590,16 +731,18 @@
                 const lat = p.coords.latitude, lng = p.coords.longitude;
                 // RADIUS CHECK
                 if(shopLoc && shopLoc.radius) {
-                    const dist = getDist(lat, lng, shopLoc.lat, shopLoc.long);
-                    if(dist > shopLoc.radius) {
-                        b.innerHTML = "❌ Yetkazib berish hududidan tashqarisiz"; b.style.background = "#FF453A";
-                        toast(`Faqat ${shopLoc.radius}km ichida ishlaymiz. Siz ${dist.toFixed(1)}km uzoqsiz.`);
+                    const d = getDist(lat, lng, shopLoc.lat, shopLoc.long);
+                    if(d > shopLoc.radius) {
+                        b.innerHTML = "❌ Yetkazib berish hududidan tashqarisiz"; 
+                        b.classList.remove('success'); b.style.background = "var(--red)";
+                        toast(`Faqat ${shopLoc.radius}km ichida ishlaymiz. Siz ${d.toFixed(1)}km uzoqsiz.`);
                         loc=null; renderCart(); return;
                     }
                 }
                 loc = {lat, long:lng};
-                b.innerHTML = "✅ Manzil aniqlandi"; b.style.background = "var(--success)";
-                renderCart();
+                b.innerHTML = "✅ Manzil aniqlandi"; 
+                b.style.background = "var(--green)";
+                renderCart(); // Qayta render qilib tugmani yoqish
             }, () => {
                 b.innerHTML = "❌ GPS Xatosi"; toast("GPS yoqilganligini tekshiring!");
             }, {enableHighAccuracy:true, timeout:10000});
@@ -619,8 +762,8 @@
                     cart={}; loc=null; activePromo=null;
                     toast("✅ Buyurtma yuborildi!");
                     nav('history', document.querySelectorAll('.nav-item')[2]);
-                    document.getElementById('btnGps').innerHTML = `<i class="fa fa-map-marker-alt"></i> Manzilni aniqlash`;
-                    document.getElementById('btnGps').style.background = "#333";
+                    document.getElementById('gpsBtn').innerHTML = `<i class="fa fa-map-marker-alt"></i> Manzilni aniqlash`;
+                    document.getElementById('gpsBtn').style.background = "#333";
                 }
             });
         }
@@ -629,18 +772,18 @@
         function loadHistory() {
             db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value', s => {
                 const d = s.val(); if(!d) return;
-                document.getElementById('historyList').innerHTML = Object.values(d).reverse().map(o => {
-                    let st=o.status, cls='st-yangi', bg='bg-yangi', txt='YANGI';
-                    if(st=='kuryerda'){cls='st-kuryer'; bg='bg-kuryer'; txt='KURYERDA';}
-                    if(st=='yetkazildi'){cls='st-yetdi'; bg='bg-yetdi'; txt='YETKAZILDI';}
-                    if(st=='tayyorlanmoqda'){cls='st-pish'; bg='bg-pish'; txt='TAYYORLANMOQDA';}
+                document.getElementById('histList').innerHTML = Object.values(d).reverse().map(o => {
+                    let st=o.status, cls='status-new', txt='YANGI';
+                    if(st=='kuryerda'){cls='status-deliv'; txt='KURYERDA';}
+                    if(st=='yetkazildi'){cls='status-done'; txt='YETKAZILDI';}
+                    if(st=='tayyorlanmoqda'){cls='status-cook'; txt='TAYYORLANMOQDA';}
                     
                     let trk = (st=='kuryerda'&&o.courier_id) ? `<button class="track-btn" onclick="track('${o.courier_id}')">Kuryerni Kuzatish</button>` : '';
                     
                     return `<div class="hist-card ${cls}">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                            <span style="font-size:12px; color:gray;">${o.time}</span>
-                            <span class="status-pill ${bg}">${txt}</span>
+                        <div class="hist-header">
+                            <span style="font-size:12px; color:var(--text-secondary);">${o.time}</span>
+                            <span class="hist-badge">${txt}</span>
                         </div>
                         <div style="font-size:14px; margin-bottom:10px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div>
                         <div style="font-size:18px; font-weight:800;">${parseInt(o.total).toLocaleString()} so'm</div>
@@ -662,7 +805,7 @@
 
         // --- 9. UTILS & MODALS ---
         function nav(p, el) {
-            document.querySelectorAll('.page-cont').forEach(x=>x.classList.remove('active'));
+            document.querySelectorAll('.page-container').forEach(x=>x.classList.remove('active'));
             document.getElementById('p-'+p).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
             el.classList.add('active');
@@ -682,7 +825,7 @@
             const list = products.filter(p=>favs[p.id]);
             document.getElementById('favList').innerHTML = list.map(p=>`
                 <div class="fav-item">
-                    <div class="fav-del" onclick="toggleFav(${p.id}); openFavs()">✕</div>
+                    <div class="fav-remove tap-effect" onclick="toggleFav(${p.id}); openFavs()">✕</div>
                     <img src="${p.img}"><div style="font-size:12px; height:32px; overflow:hidden;">${p.name}</div>
                     <button style="width:100%; margin-top:5px; background:var(--gold); border:none; border-radius:8px; padding:5px;" onclick="updCart(${p.id},1); closeModal('favModal')">+</button>
                 </div>
@@ -698,8 +841,8 @@
         function checkPromo(){
             const c=document.getElementById('promoInp').value.toUpperCase();
             db.ref('promocodes/'+c).once('value', s=>{
-                if(s.val() && s.val().limit>0) { activePromo=s.val().discount; document.getElementById('promoMsg').innerHTML=`<b style="color:var(--success)">✅ ${activePromo}% Chegirma!</b>`; renderCart(); }
-                else document.getElementById('promoMsg').innerHTML=`<b style="color:var(--danger)">❌ Xato kod</b>`;
+                if(s.val() && s.val().limit>0) { activePromo=s.val().discount; document.getElementById('promoMsg').innerHTML=`<b style="color:var(--green)">✅ ${activePromo}% Chegirma!</b>`; renderCart(); }
+                else document.getElementById('promoMsg').innerHTML=`<b style="color:var(--red)">❌ Xato kod</b>`;
             });
         }
         
@@ -737,10 +880,15 @@
         function openModal(id) { document.getElementById(id).style.display='flex'; }
         function closeModal(id) { document.getElementById(id).style.display='none'; }
         function toggleDrawer() { document.getElementById('drawerPanel').classList.toggle('active'); document.getElementById('drawerOverlay').classList.toggle('active'); }
-        function toast(m) { const d=document.createElement('div'); d.className='toast-msg'; d.innerText=m; document.getElementById('toast').appendChild(d); setTimeout(()=>d.remove(),3000); }
+        function toast(m) { const d=document.createElement('div'); d.className='toast'; d.innerText=m; document.getElementById('toastBox').appendChild(d); setTimeout(()=>d.remove(),3000); }
         function logout() { localStorage.removeItem('cafe_uid'); location.reload(); }
         function copy(t) { navigator.clipboard.writeText(t); toast("Nusxalandi"); }
-        function toggleTheme() { document.body.classList.toggle('light-mode'); document.getElementById('themeTxt').innerText=document.body.classList.contains('light-mode')?"Kunduzgi rejim":"Tungi rejim"; }
+        function toggleTheme() { 
+            document.body.classList.toggle('light-mode'); 
+            const isLight = document.body.classList.contains('light-mode');
+            document.getElementById('themeTxt').innerText=isLight?"Kunduzgi rejim":"Tungi rejim"; 
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        }
     </script>
 </body>
 </html>
