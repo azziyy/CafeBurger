@@ -9,314 +9,223 @@
 
 <style>
     /* ==========================================================================
-       1. GLOBAL RESET & VARIABLES (ULTRA PREMIUM DARK THEME)
+       1. GLOBAL O'ZGARUVCHILAR VA RESET
        ========================================================================== */
     :root {
-        /* Dark Mode Colors (Default) */
-        --bg-body: #000000;
-        --bg-card: #1c1c1e;
-        --bg-modal: #2c2c2e;
-        --text-primary: #ffffff;
-        --text-secondary: #8e8e93;
-        --border-color: rgba(255, 255, 255, 0.1);
+        --bg-body: #050505;
+        --bg-card: #141416;
+        --bg-glass: rgba(20, 20, 20, 0.95);
+        --text-main: #ffffff;
+        --text-sub: #8e8e93;
         
-        /* Brand Colors */
-        --gold: #FFD60A; /* Yorqin Oltin */
-        --gold-dim: rgba(255, 214, 10, 0.15);
+        --primary: #FFD700;
+        --primary-dim: rgba(255, 215, 0, 0.15);
+        --danger: #FF3B30;
+        --success: #30D158;
         --blue: #0A84FF;
-        --green: #30D158;
-        --red: #FF453A;
         
-        /* Effects */
-        --blur: 20px;
-        --glass: rgba(28, 28, 30, 0.85);
-        --shadow: 0 10px 30px rgba(0,0,0,0.5);
         --radius: 20px;
-        --btn-radius: 14px;
-        
-        /* Transitions */
-        --anim-fast: 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
-        --anim-bounce: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        --shadow: 0 10px 30px rgba(0,0,0,0.5);
+        --header-h: 60px;
     }
 
-    /* Light Mode Variables */
     body.light-mode {
-        --bg-body: #F2F2F7;
-        --bg-card: #FFFFFF;
-        --bg-modal: #FFFFFF;
-        --text-primary: #000000;
-        --text-secondary: #636366;
-        --border-color: rgba(0, 0, 0, 0.1);
-        --glass: rgba(255, 255, 255, 0.85);
-        --shadow: 0 5px 20px rgba(0,0,0,0.1);
+        --bg-body: #F2F2F7; --bg-card: #FFFFFF; --text-main: #000; --text-sub: #666;
+        --bg-glass: rgba(255,255,255,0.95);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
     
     body {
-        margin: 0; padding: 0;
-        background-color: var(--bg-body);
-        color: var(--text-primary);
-        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-        padding-bottom: 100px;
-        transition: background-color 0.3s, color 0.3s;
-        overflow-x: hidden;
+        margin: 0; padding: 0; background: var(--bg-body); color: var(--text-main);
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Roboto, sans-serif;
+        padding-bottom: 90px; overflow-x: hidden;
     }
 
     /* ==========================================================================
-       2. ANIMATIONS & EFFECTS
+       2. ANIMATSIYALAR (FULL PACK)
        ========================================================================== */
-    .tap-effect { transition: transform 0.1s; cursor: pointer; }
-    .tap-effect:active { transform: scale(0.95); opacity: 0.8; }
+    .tap:active { transform: scale(0.94); opacity: 0.8; transition: 0.1s; }
     
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    @keyframes slideRight { from { transform: translateX(-100%); } to { transform: translateX(0); } }
-    @keyframes pulseGold { 
-        0% { box-shadow: 0 0 0 0 rgba(255, 214, 10, 0.4); } 
-        70% { box-shadow: 0 0 0 10px rgba(255, 214, 10, 0); } 
-        100% { box-shadow: 0 0 0 0 rgba(255, 214, 10, 0); } 
+    @keyframes fadeIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
+    @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 59, 48, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); } }
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+    /* Skeleton Loading */
+    .skeleton {
+        background: linear-gradient(90deg, #1c1c1e 25%, #2c2c2e 50%, #1c1c1e 75%);
+        background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 10px;
     }
 
     /* ==========================================================================
-       3. DRAWER (YON MENYU) - FIXED Z-INDEX
-       ========================================================================== */
-    .drawer-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.7); z-index: 9990; /* High Z-Index */
-        opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(5px);
-    }
-    .drawer-overlay.active { opacity: 1; visibility: visible; }
-    
-    .drawer-panel {
-        position: fixed; top: 0; left: -85%; width: 80%; height: 100%;
-        background: var(--bg-card); z-index: 9991; /* Highest Z-Index */
-        transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        display: flex; flex-direction: column; padding: 40px 25px;
-        box-shadow: 10px 0 40px rgba(0,0,0,0.5);
-    }
-    .drawer-panel.active { left: 0; }
-    
-    .drawer-header h2 { color: var(--gold); margin: 0; font-size: 28px; letter-spacing: 1px; }
-    .drawer-header p { color: var(--text-secondary); margin: 5px 0 30px 0; font-size: 14px; }
-    
-    .drawer-item {
-        display: flex; align-items: center; gap: 15px;
-        padding: 16px; margin-bottom: 10px;
-        background: rgba(128,128,128,0.1); border-radius: 15px;
-        font-weight: 600; font-size: 16px; cursor: pointer;
-    }
-    .drawer-item i { width: 25px; text-align: center; font-size: 20px; }
-    
-    /* ==========================================================================
-       4. HEADER & STORIES
+       3. HEADER VA CHAT BADGE
        ========================================================================== */
     .header {
-        position: fixed; top: 0; width: 100%; height: 60px;
-        background: var(--glass); backdrop-filter: blur(var(--blur));
+        position: fixed; top: 0; width: 100%; height: var(--header-h);
+        background: var(--bg-glass); backdrop-filter: blur(20px);
         z-index: 5000; display: flex; align-items: center; justify-content: space-between;
-        padding: 0 20px; border-bottom: 1px solid var(--border-color);
+        padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
     }
-    .logo { font-size: 22px; font-weight: 900; letter-spacing: 0.5px; }
-    .logo span { color: var(--gold); }
+    .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; }
+    .logo span { color: var(--primary); text-shadow: 0 0 15px var(--primary-dim); }
 
-    /* Stories Bar */
+    /* Chat Icon with Badge */
+    .chat-icon-wrap { position: relative; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; }
+    .chat-badge {
+        position: absolute; top: -2px; right: -2px;
+        width: 16px; height: 16px; background: var(--danger);
+        border-radius: 50%; border: 2px solid var(--bg-body);
+        font-size: 10px; font-weight: bold; color: white;
+        display: none; align-items: center; justify-content: center;
+        animation: pulseRed 2s infinite;
+    }
+    .chat-badge.show { display: flex; }
+
+    /* ==========================================================================
+       4. DRAWER (YON MENYU)
+       ========================================================================== */
+    .drawer-bg {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8); z-index: 5001; opacity: 0; visibility: hidden;
+        transition: 0.3s; backdrop-filter: blur(5px);
+    }
+    .drawer-bg.active { opacity: 1; visibility: visible; }
+    
+    .drawer {
+        position: fixed; top: 0; left: -85%; width: 85%; height: 100%;
+        background: var(--bg-card); z-index: 5002; transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        display: flex; flex-direction: column; padding: 40px 25px;
+        box-shadow: 10px 0 50px rgba(0,0,0,0.5);
+    }
+    .drawer.active { left: 0; }
+    
+    .d-item {
+        display: flex; align-items: center; gap: 15px; padding: 15px;
+        margin-bottom: 10px; border-radius: 15px; background: rgba(255,255,255,0.03);
+        font-weight: 600; font-size: 16px;
+    }
+    .d-item i { width: 25px; text-align: center; color: var(--primary); }
+
+    /* ==========================================================================
+       5. SAHIFALAR VA TARKIB
+       ========================================================================== */
+    .page { display: none; padding-top: var(--header-h); } /* 60px padding */
+    .page.active { display: block; animation: fadeIn 0.4s; }
+
+    /* Stories (Instagram Style) */
     .stories-wrap {
-        display: flex; gap: 12px; padding: 15px 20px;
+        display: flex; gap: 12px; padding: 10px 15px; /* Kamroq padding */
         overflow-x: auto; scrollbar-width: none;
-        margin-top: 60px; /* Header balandligi */
+        margin-bottom: 10px; /* Bo'shliq kamaytirildi */
     }
-    .story-circle {
-        min-width: 74px; height: 74px; border-radius: 50%;
+    .story-c {
+        min-width: 72px; height: 72px; border-radius: 50%; padding: 2px;
         background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366);
-        padding: 3px; position: relative; cursor: pointer;
+        position: relative; cursor: pointer;
     }
-    .story-circle img {
+    .story-c img {
         width: 100%; height: 100%; border-radius: 50%;
         border: 3px solid var(--bg-body); object-fit: cover;
     }
-    
-    /* Story Viewer (Full Screen) */
-    #storyViewer {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: #000; z-index: 10000; display: none; flex-direction: column;
-    }
-    .progress-container {
-        position: absolute; top: 10px; left: 10px; right: 10px;
-        display: flex; gap: 5px; z-index: 10001;
-    }
-    .progress-bg { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; }
-    .progress-bar { height: 100%; background: #fff; width: 0%; }
-    .progress-bar.anim { animation: loadStory 5s linear forwards; }
-    .progress-bar.filled { width: 100%; }
-    @keyframes loadStory { to { width: 100%; } }
-    
-    .story-img-full { width: 100%; height: 100%; object-fit: contain; }
-    .story-close {
-        position: absolute; top: 25px; right: 20px; color: #fff;
-        font-size: 28px; z-index: 10002; cursor: pointer;
-        text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-    }
-    .nav-zone { position: absolute; top: 0; width: 40%; height: 100%; z-index: 10000; }
 
-    /* ==========================================================================
-       5. MAHSULOT KARTASI (CARD) - YANGILANGAN
-       ========================================================================== */
-    .page-container { display: none; padding-bottom: 20px; animation: fadeIn 0.3s; }
-    .page-container.active { display: block; }
-
-    .category-bar {
-        display: flex; gap: 10px; overflow-x: auto; padding: 5px 20px 15px;
-        position: sticky; top: 60px; z-index: 4000; background: var(--bg-body);
-        scrollbar-width: none;
+    /* Kategoriya */
+    .cat-scroll {
+        display: flex; gap: 8px; overflow-x: auto; padding: 0 15px 15px;
+        position: sticky; top: var(--header-h); z-index: 1000;
+        background: var(--bg-body); scrollbar-width: none;
     }
     .cat-btn {
-        padding: 8px 20px; border-radius: 25px;
-        background: var(--bg-card); border: 1px solid var(--border-color);
-        color: var(--text-secondary); font-weight: 600; white-space: nowrap;
-        transition: 0.3s;
+        padding: 8px 20px; border-radius: 30px; background: var(--bg-card);
+        color: var(--text-sub); border: 1px solid rgba(255,255,255,0.05);
+        font-weight: 600; white-space: nowrap; transition: 0.3s;
     }
     .cat-btn.active {
-        background: var(--gold); color: #000; border-color: var(--gold);
-        transform: scale(1.05); box-shadow: 0 5px 15px var(--gold-dim);
+        background: var(--primary); color: #000; transform: scale(1.05);
+        box-shadow: 0 5px 15px var(--primary-dim); border-color: var(--primary);
     }
 
-    .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 20px; }
-    
+    /* Grid va Cards */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 15px 20px; }
     .card {
         background: var(--bg-card); border-radius: var(--radius);
-        overflow: hidden; display: flex; flex-direction: column;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        border: 1px solid var(--border-color); transition: 0.2s;
+        overflow: hidden; position: relative; display: flex; flex-direction: column;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: 0.2s;
     }
+    .card-img-box { width: 100%; height: 150px; position: relative; }
+    .card-img-box img { width: 100%; height: 100%; object-fit: cover; } /* TO'LIQ RASM */
     
-    /* RASM MUAMMOSI HAL QILINDI */
-    .card-img-wrap { width: 100%; height: 160px; position: relative; }
-    .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; } /* COVER = TO'LIQ */
-    
-    .card-content { padding: 12px; flex: 1; display: flex; flex-direction: column; }
-    .card-title { font-weight: 700; font-size: 15px; margin-bottom: 5px; line-height: 1.3; height: 40px; overflow: hidden; }
-    .card-desc { font-size: 11px; color: var(--text-secondary); margin-bottom: 10px; display: none; }
-    
-    .card-footer {
-        margin-top: auto; display: flex; justify-content: space-between; align-items: center;
-    }
-    .card-price { color: var(--gold); font-weight: 800; font-size: 15px; }
-    
-    /* +/- TUGMALARI (CARD ICHIDA) */
-    .add-btn {
-        width: 32px; height: 32px; background: var(--gold); color: #000;
-        border-radius: 10px; display: flex; align-items: center; justify-content: center;
-        font-size: 18px; box-shadow: 0 4px 10px rgba(255, 214, 10, 0.3);
-    }
-    .qty-controls {
-        display: flex; align-items: center; gap: 8px;
-        background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 10px;
-    }
-    .qty-btn { font-size: 16px; font-weight: bold; width: 20px; text-align: center; color: var(--gold); }
-    .qty-num { font-size: 14px; font-weight: bold; color: var(--text-primary); }
+    .card-body { padding: 12px; flex: 1; display: flex; flex-direction: column; }
+    .card-title { font-weight: 700; font-size: 14px; margin-bottom: 5px; height: 34px; overflow: hidden; line-height: 1.2; }
+    .card-price { color: var(--primary); font-weight: 800; font-size: 15px; margin-top: auto; }
 
-    /* Fav Icon */
-    .card-fav {
-        position: absolute; top: 10px; right: 10px;
-        width: 30px; height: 30px; border-radius: 50%;
-        background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
-        display: flex; align-items: center; justify-content: center;
-        color: white; font-size: 14px; z-index: 10;
+    /* + Tugmasi va Badge */
+    .add-btn {
+        position: absolute; bottom: 10px; right: 10px; width: 34px; height: 34px;
+        background: var(--primary); color: #000; border-radius: 10px;
+        display: flex; align-items: center; justify-content: center; font-size: 20px;
+        box-shadow: 0 4px 10px var(--primary-dim); z-index: 2;
     }
-    .card-fav.active { background: #fff; color: var(--red); }
+    .qty-badge {
+        position: absolute; bottom: 10px; right: 10px;
+        background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);
+        border-radius: 10px; display: flex; align-items: center; gap: 8px;
+        padding: 4px; border: 1px solid var(--primary); z-index: 2;
+    }
+    .qty-control { width: 24px; text-align: center; color: var(--primary); font-size: 18px; font-weight: bold; }
 
     /* ==========================================================================
-       6. SAVAT & TARIX (STATUS RANGI)
+       6. SAVAT VA TARIX
        ========================================================================== */
     .cart-item {
-        background: var(--bg-card); padding: 12px; border-radius: 18px;
-        margin-bottom: 12px; display: flex; align-items: center; gap: 15px;
-        border: 1px solid var(--border-color);
+        background: var(--bg-card); padding: 12px; border-radius: 15px;
+        margin-bottom: 10px; display: flex; align-items: center; gap: 15px;
     }
-    .cart-thumb { width: 70px; height: 70px; border-radius: 12px; object-fit: cover; }
-    .cart-info { flex: 1; }
-    .cart-actions {
-        display: flex; align-items: center; gap: 12px;
-        background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 10px;
-    }
+    .cart-img { width: 65px; height: 65px; border-radius: 10px; object-fit: cover; }
     
-    .big-btn {
-        width: 100%; padding: 16px; background: var(--gold); color: #000;
-        font-weight: 800; border: none; border-radius: 18px; font-size: 16px;
+    .main-btn {
+        width: 100%; padding: 16px; background: var(--primary); color: #000;
+        font-weight: 800; border: none; border-radius: 16px; font-size: 16px;
         margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;
-        box-shadow: 0 5px 20px rgba(255, 214, 10, 0.2);
     }
-    .gps-btn {
-        width: 100%; padding: 14px; background: #333; color: white;
-        border: 1px solid rgba(255,255,255,0.2); border-radius: 18px; margin-bottom: 10px;
-        font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
-    }
-    .gps-btn.success { background: var(--green); border-color: var(--green); }
+    .main-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
 
-    /* History Cards */
+    .gps-error { background: var(--danger) !important; color: white !important; }
+    .gps-ok { background: var(--success) !important; color: white !important; }
+
+    /* History Status */
     .hist-card {
-        background: var(--bg-card); padding: 18px; border-radius: 18px;
-        margin-bottom: 12px; position: relative; border-left: 5px solid transparent;
+        background: var(--bg-card); padding: 15px; border-radius: 15px;
+        margin-bottom: 12px; border-left: 5px solid; position: relative;
     }
-    .hist-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-    .hist-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 900; text-transform: uppercase; }
-    
-    /* STATUS COLORS */
-    .status-new { border-color: var(--blue); }
-    .status-new .hist-badge { background: rgba(10, 132, 255, 0.15); color: var(--blue); }
-    
-    .status-cook { border-color: orange; }
-    .status-cook .hist-badge { background: rgba(255, 165, 0, 0.15); color: orange; }
-    
-    .status-deliv { border-color: var(--gold); }
-    .status-deliv .hist-badge { background: rgba(255, 214, 10, 0.15); color: var(--gold); }
-    
-    .status-done { border-color: var(--green); }
-    .status-done .hist-badge { background: rgba(48, 209, 88, 0.15); color: var(--green); }
+    /* Status Ranglari */
+    .st-yangi { border-color: var(--blue); } .st-yangi .badge { color: var(--blue); background: rgba(10,132,255,0.1); }
+    .st-pish { border-color: orange; } .st-pish .badge { color: orange; background: rgba(255,165,0,0.1); }
+    .st-deliv { border-color: var(--primary); } .st-deliv .badge { color: var(--primary); background: rgba(255,215,0,0.1); }
+    .st-done { border-color: var(--success); } .st-done .badge { color: var(--success); background: rgba(48,209,88,0.1); }
+    .st-qabul { border-color: #9b59b6; } .st-qabul .badge { color: #9b59b6; background: rgba(155,89,182,0.1); }
 
-    .track-btn {
-        width: 100%; padding: 10px; background: linear-gradient(45deg, #FFC107, #FF9800);
-        color: black; font-weight: 800; border-radius: 12px; margin-top: 10px; border: none;
-        display: flex; align-items: center; justify-content: center; gap: 8px;
-        animation: pulseGold 2s infinite;
-    }
+    .badge { font-size: 11px; font-weight: 900; text-transform: uppercase; padding: 4px 8px; border-radius: 5px; }
 
     /* ==========================================================================
-       7. PROFIL & CHAT & MODALLAR
+       7. PROFIL VA CHAT
        ========================================================================== */
-    .profile-header {
-        text-align: center; padding: 40px 0;
-        background: linear-gradient(180deg, rgba(255,214,10,0.1) 0%, transparent 100%);
-    }
-    .avatar {
-        width: 90px; height: 90px; background: var(--bg-card); border: 3px solid var(--gold);
-        border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        font-size: 40px; color: var(--gold); margin: 0 auto 15px;
-    }
-
-    /* Sevimlilar Grid */
     .fav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px 0; }
-    .fav-item {
-        background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px;
-        text-align: center; position: relative; border: 1px solid var(--border-color);
-    }
-    .fav-item img { width: 100%; height: 70px; object-fit: cover; border-radius: 10px; margin-bottom: 5px; }
-    .fav-remove {
-        position: absolute; top: 5px; right: 5px; width: 24px; height: 24px;
-        background: var(--red); color: white; border-radius: 50%;
-        display: flex; align-items: center; justify-content: center; font-size: 12px;
-    }
+    .fav-item { background: rgba(255,255,255,0.05); padding: 8px; border-radius: 12px; text-align: center; position: relative; }
+    .fav-item img { width: 100%; height: 60px; object-fit: cover; border-radius: 8px; }
+    .fav-del { position: absolute; top: 5px; right: 5px; width: 20px; height: 20px; background: var(--danger); border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; }
 
-    /* Chat */
-    .chat-bubble { padding: 10px 15px; border-radius: 15px; max-width: 80%; margin-bottom: 8px; font-size: 14px; }
-    .me { background: var(--gold); color: #000; align-self: flex-end; border-bottom-right-radius: 4px; }
-    .adm { background: #333; color: #fff; align-self: flex-start; border-bottom-left-radius: 4px; }
+    .chat-box { height: 400px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 15px; padding: 15px; margin-bottom: 15px; }
+    .chat-msg { padding: 10px 15px; border-radius: 15px; max-width: 80%; margin-bottom: 8px; font-size: 14px; }
+    .msg-me { align-self: flex-end; background: var(--primary); color: #000; border-bottom-right-radius: 2px; }
+    .msg-adm { align-self: flex-start; background: #333; color: #fff; border-bottom-left-radius: 2px; }
 
-    /* Modals (Bottom Sheet) */
+    /* ==========================================================================
+       8. MODALLAR (BOTTOM SHEET)
+       ========================================================================== */
     .modal-wrap {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.85); z-index: 8000;
+        background: rgba(0,0,0,0.85); z-index: 6000;
         display: none; align-items: flex-end; justify-content: center;
         backdrop-filter: blur(5px);
     }
@@ -326,123 +235,117 @@
         animation: slideUp 0.3s; border-top: 1px solid rgba(255,255,255,0.1);
         max-height: 90vh; overflow-y: auto;
     }
-    .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; color: var(--text-secondary); cursor: pointer; }
+    .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; color: var(--text-sub); }
 
     /* Navbar */
     .navbar {
         position: fixed; bottom: 0; width: 100%; height: 75px;
-        background: var(--glass); backdrop-filter: blur(20px);
+        background: var(--bg-glass); backdrop-filter: blur(20px);
         display: flex; justify-content: space-around; align-items: center;
         border-radius: 25px 25px 0 0; z-index: 4500;
-        border-top: 1px solid var(--border-color); padding-bottom: 10px;
+        border-top: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;
     }
-    .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); font-size: 10px; font-weight: 700; transition: 0.3s; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-sub); font-size: 10px; font-weight: 700; transition: 0.3s; }
+    .nav-item.active { color: var(--primary); transform: translateY(-5px); }
     .nav-item i { font-size: 24px; margin-bottom: 5px; }
-    .nav-item.active { color: var(--gold); transform: translateY(-5px); }
 
-    /* Login Modal */
-    #loginModal { align-items: center; z-index: 99999; background: var(--bg-body); }
-    .login-icon {
-        width: 80px; height: 80px; background: var(--blue); border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 40px; color: white; margin: 0 auto 20px;
-        box-shadow: 0 0 40px rgba(10, 132, 255, 0.4);
-    }
+    /* Story Viewer */
+    #storyViewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: none; flex-direction: column; }
+    .sb-cont { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; gap: 5px; z-index: 100; }
+    .sb-bg { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 2px; }
+    .sb-fill { height: 100%; background: #fff; width: 0%; }
+    .sb-fill.anim { animation: fill 5s linear forwards; }
+    .sb-fill.full { width: 100%; }
+    @keyframes fill { to { width: 100%; } }
+
+    /* Toast */
+    #toastBox { position: fixed; top: 20px; left: 20px; right: 20px; z-index: 10000; pointer-events: none; display: flex; flex-direction: column; gap: 10px; }
+    .toast { background: rgba(30,30,30,0.95); color: white; padding: 15px; border-radius: 12px; border-left: 4px solid var(--primary); animation: fadeIn 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
 
     .hidden { display: none !important; }
     .strike { text-decoration: line-through; color: #666; font-size: 13px; margin-right: 5px; }
-    
-    /* TOAST */
-    #toastBox { position: fixed; top: 20px; left: 20px; right: 20px; z-index: 10000; pointer-events: none; display: flex; flex-direction: column; gap: 10px; }
-    .toast { background: rgba(30,30,30,0.95); color: white; padding: 15px; border-radius: 12px; border-left: 4px solid var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: fadeIn 0.3s; font-weight: 600; }
 </style>
 </head>
 <body>
+
     <div id="storyViewer">
-        <div class="progress-container" id="storyBars"></div>
-        <div class="story-close tap-effect" onclick="closeStory()">✕</div>
-        <img id="storyImg" class="story-img-full" src="">
-        <div class="nav-zone" style="left:0" onclick="prevStory()"></div>
-        <div class="nav-zone" style="right:0" onclick="nextStory()"></div>
+        <div class="sb-cont" id="storyBars"></div>
+        <div class="tap" onclick="closeStory()" style="position:absolute; top:20px; right:20px; color:white; font-size:24px; z-index:101;">✕</div>
+        <img id="storyImg" src="" style="width:100%; height:100%; object-fit:contain;">
+        <div style="position:absolute; top:0; left:0; width:40%; height:100%; z-index:100;" onclick="prevStory()"></div>
+        <div style="position:absolute; top:0; right:0; width:40%; height:100%; z-index:100;" onclick="nextStory()"></div>
     </div>
 
-    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
-    <div class="drawer-panel" id="drawerPanel">
-        <div class="drawer-header">
-            <h2>CAFE 888</h2>
-            <p>Premium Delivery Service</p>
-        </div>
-        <div class="drawer-item tap-effect" onclick="toggleTheme()">
-            <i class="fa fa-moon"></i> <span id="themeTxt">Tungi rejim</span>
-        </div>
-        <div class="drawer-item tap-effect" onclick="openModal('contactModal'); toggleDrawer()">
-            <i class="fa fa-headset"></i> Bog'lanish
-        </div>
-        <div class="drawer-item tap-effect" onclick="location.reload()">
-            <i class="fa fa-sync-alt"></i> Yangilash
-        </div>
-        <div class="drawer-item tap-effect" style="margin-top:auto; color:var(--red);" onclick="logout()">
-            <i class="fa fa-sign-out-alt"></i> Chiqish
-        </div>
+    <div class="drawer-bg" id="drawerBg" onclick="toggleDrawer()"></div>
+    <div class="drawer" id="myDrawer">
+        <h2 style="color:var(--primary); margin-bottom:30px;">CAFE 888</h2>
+        <div class="d-item tap" onclick="toggleTheme()"><i class="fa fa-moon"></i> <span>Tungi rejim</span></div>
+        <div class="d-item tap" onclick="openModal('contactModal'); toggleDrawer()"><i class="fa fa-headset"></i> Bog'lanish</div>
+        <div class="d-item tap" onclick="location.reload()"><i class="fa fa-sync"></i> Yangilash</div>
+        <div class="d-item tap" style="margin-top:auto; color:var(--danger);" onclick="logout()"><i class="fa fa-sign-out-alt"></i> Chiqish</div>
     </div>
 
     <header class="header">
-        <div class="tap-effect" onclick="toggleDrawer()"><i class="fa fa-bars" style="font-size:24px; color:var(--text-primary)"></i></div>
+        <div class="tap" onclick="toggleDrawer()"><i class="fa fa-bars" style="font-size:24px; color:var(--text-main)"></i></div>
         <div class="logo">CAFE <span>888</span></div>
-        <div class="tap-effect" onclick="openModal('chatModal')"><i class="fa fa-comment-dots" style="font-size:24px; color:var(--text-primary)"></i></div>
+        <div class="tap chat-icon-wrap" onclick="openModal('chatModal')">
+            <i class="fa fa-comment-dots" style="font-size:24px; color:var(--text-main)"></i>
+            <div id="chatBadge" class="chat-badge">1</div>
+        </div>
     </header>
 
-    <div id="p-menu" class="page-container active" style="padding-top:60px;">
+    <div id="p-menu" class="page active">
         <div id="storiesContainer" class="stories-wrap"></div>
-        <div id="catNav" class="category-bar"></div>
-        <div id="menuGrid" class="menu-grid"></div>
+        <div id="catNav" class="cat-scroll"></div>
+        <div id="menuGrid" class="grid"></div>
     </div>
 
-    <div id="p-cart" class="page-container" style="padding-top:80px;">
-        <h2 style="padding:0 20px; margin-bottom:20px;">Savat</h2>
+    <div id="p-cart" class="page">
+        <h2 style="padding:0 20px;">Savat</h2>
         <div id="cartList" style="padding:0 20px;"></div>
         
-        <div style="padding:20px 20px 120px;">
-            <div style="background:var(--bg-card); padding:15px; border-radius:18px; margin-bottom:20px; display:flex; gap:10px;">
-                <input type="text" id="promoInp" placeholder="Promokod" style="flex:1; background:transparent; border:none; color:var(--text-primary); text-transform:uppercase;">
-                <button class="tap-effect" onclick="checkPromo()" style="background:var(--gold); border:none; padding:0 20px; border-radius:12px; font-weight:bold;">OK</button>
+        <div style="padding:20px; padding-bottom:120px;">
+            <div style="background:var(--bg-card); padding:10px; border-radius:12px; display:flex; gap:10px; margin-bottom:15px;">
+                <input type="text" id="promoInp" placeholder="Promokod" style="flex:1; background:transparent; border:none; color:var(--text-main); text-transform:uppercase;">
+                <button class="tap" onclick="checkPromo()" style="background:var(--primary); border:none; padding:0 15px; border-radius:8px; font-weight:bold;">OK</button>
             </div>
-            <div id="promoMsg" style="font-size:13px; margin-bottom:20px;"></div>
+            <div id="promoMsg" style="font-size:12px; margin-bottom:15px;"></div>
 
-            <div style="display:flex; justify-content:space-between; font-size:22px; font-weight:900; margin-bottom:20px;">
-                <span>Jami:</span> <span id="cartTotal" style="color:var(--gold);">0 so'm</span>
+            <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:bold; margin-bottom:20px;">
+                <span>Jami:</span> <span id="totalPrice" style="color:var(--primary);">0 so'm</span>
             </div>
             
-            <button id="gpsBtn" class="gps-btn tap-effect" onclick="getGPS()">
+            <button id="gpsBtn" class="main-btn tap" style="background:#333; color:white; margin-bottom:10px;" onclick="getGPS()">
                 <i class="fa fa-map-marker-alt"></i> Manzilni aniqlash
             </button>
-            
-            <button id="orderBtn" class="big-btn tap-effect" onclick="sendOrder()" style="opacity:0.5; pointer-events:none;">
+            <button id="orderBtn" class="main-btn tap" onclick="sendOrder()" disabled style="opacity:0.5;">
                 BUYURTMA BERISH
             </button>
         </div>
     </div>
 
-    <div id="p-history" class="page-container" style="padding-top:80px;">
-        <h2 style="padding:0 20px;">Buyurtmalar</h2>
+    <div id="p-history" class="page">
+        <h2 style="padding:0 20px;">Tarix</h2>
         <div id="histList" style="padding:0 20px 120px;"></div>
     </div>
 
-    <div id="p-profile" class="page-container" style="padding-top:0;">
-        <div class="profile-header">
-            <div class="avatar"><i class="fa fa-user"></i></div>
-            <h2 id="uName" style="margin:5px 0;">Mijoz</h2>
-            <p id="uPhone" style="color:var(--text-secondary); margin:0;">+998...</p>
+    <div id="p-profile" class="page">
+        <div style="text-align:center; padding:40px 0;">
+            <div style="width:90px; height:90px; background:var(--bg-card); border:3px solid var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; color:var(--primary); margin:0 auto 15px;">
+                <i class="fa fa-user"></i>
+            </div>
+            <h2 id="uName">Mijoz</h2>
+            <p id="uPhone" style="color:var(--text-sub)">+998...</p>
         </div>
         <div style="padding:0 20px;">
-            <div class="drawer-item tap-effect" style="justify-content:space-between;" onclick="openFavs()">
-                <span><i class="fa fa-heart" style="color:var(--red)"></i> Sevimlilar</span> <i class="fa fa-chevron-right"></i>
+            <div class="d-item tap" style="background:var(--bg-card); justify-content:space-between;" onclick="openFavs()">
+                <span><i class="fa fa-heart" style="color:var(--danger)"></i> Sevimlilar</span> <i class="fa fa-chevron-right"></i>
             </div>
-            <div class="drawer-item tap-effect" style="justify-content:space-between;" onclick="openModal('chatModal')">
+            <div class="d-item tap" style="background:var(--bg-card); justify-content:space-between;" onclick="openModal('chatModal')">
                 <span><i class="fa fa-envelope" style="color:var(--blue)"></i> Admin Chat</span> <i class="fa fa-chevron-right"></i>
             </div>
-            <div class="drawer-item tap-effect" style="justify-content:space-between;" onclick="openNews()">
-                <span><i class="fa fa-bullhorn" style="color:var(--gold)"></i> Yangiliklar</span> <i class="fa fa-chevron-right"></i>
+            <div class="d-item tap" style="background:var(--bg-card); justify-content:space-between;" onclick="openNews()">
+                <span><i class="fa fa-bullhorn" style="color:var(--primary)"></i> Yangiliklar</span> <i class="fa fa-chevron-right"></i>
             </div>
         </div>
     </div>
@@ -454,31 +357,29 @@
         <div class="nav-item" onclick="nav('profile', this)"><i class="fa fa-user"></i>Profil</div>
     </nav>
 
-    <div id="loginModal" class="modal-wrap">
-        <div class="modal-box" style="text-align:center;">
-            <div class="login-icon"><i class="fab fa-telegram-plane"></i></div>
+    <div id="loginModal" class="modal-wrap" style="z-index:9999; background:var(--bg-body); display:flex;">
+        <div style="text-align:center;">
+            <div style="width:80px; height:80px; background:var(--blue); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; color:white; margin:0 auto 20px; box-shadow:0 0 40px rgba(10,132,255,0.4);"><i class="fab fa-telegram-plane"></i></div>
             <h2>Xush kelibsiz</h2>
-            <p style="color:var(--text-secondary); margin-bottom:30px;">Davom etish uchun Telegram orqali kiring</p>
-            <div id="loadSpinner" class="hidden" style="color:var(--gold); margin-bottom:15px;">Tasdiqlash kutilmoqda...</div>
-            <button id="tgBtn" class="big-btn tap-effect" style="background:var(--blue); color:white; margin-top:0;" onclick="doLogin()">KIRISH</button>
+            <p style="color:var(--text-sub); margin-bottom:30px;">Davom etish uchun Telegram orqali kiring</p>
+            <div id="loadSpinner" class="hidden" style="color:var(--primary); margin-bottom:15px;">Tasdiqlash kutilmoqda...</div>
+            <button id="tgBtn" class="main-btn tap" style="background:var(--blue); color:white; width:100%; padding:15px 40px;" onclick="doLogin()">Telegram orqali kirish</button>
         </div>
     </div>
 
     <div id="prodModal" class="modal-wrap">
         <div class="modal-box" style="padding:0; overflow:hidden;">
-            <div class="tap-effect" onclick="closeModal('prodModal')" style="position:absolute; top:15px; right:15px; width:35px; height:35px; background:rgba(0,0,0,0.5); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; z-index:10;">✕</div>
-            <img id="pmImg" src="" style="width:100%; height:280px; object-fit:cover;">
+            <div class="tap" onclick="closeModal('prodModal')" style="position:absolute; top:15px; right:15px; background:rgba(0,0,0,0.5); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; z-index:10;">✕</div>
+            <img id="pmImg" src="" style="width:100%; height:250px; object-fit:contain; background:#000;">
             <div style="padding:25px;">
                 <h2 id="pmName" style="margin-bottom:5px;"></h2>
-                <h3 id="pmPrice" style="color:var(--gold); margin-bottom:15px;"></h3>
-                <p id="pmDesc" style="color:var(--text-secondary); line-height:1.5; margin-bottom:30px;"></p>
+                <h3 id="pmPrice" style="color:var(--primary); margin-bottom:15px;"></h3>
+                <p id="pmDesc" style="color:var(--text-sub); margin-bottom:30px; font-size:14px;"></p>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="display:flex; gap:15px; background:rgba(255,255,255,0.05); padding:10px 20px; border-radius:15px;">
-                        <span onclick="pmQ(-1)" style="font-size:24px; cursor:pointer;">-</span>
-                        <b id="pmQty" style="font-size:18px;">1</b>
-                        <span onclick="pmQ(1)" style="font-size:24px; cursor:pointer;">+</span>
+                    <div style="display:flex; gap:15px; background:rgba(255,255,255,0.05); padding:10px 20px; border-radius:12px;">
+                        <span onclick="pmQ(-1)" style="font-size:24px; cursor:pointer;">-</span><b id="pmQty">1</b><span onclick="pmQ(1)" style="font-size:24px; cursor:pointer;">+</span>
                     </div>
-                    <button class="big-btn" style="width:auto; margin:0; padding:15px 40px;" onclick="addFromModal()">Savatga</button>
+                    <button class="main-btn" style="width:auto; margin:0; padding:15px 30px;" onclick="addFromModal()">Savatga</button>
                 </div>
             </div>
         </div>
@@ -486,19 +387,19 @@
 
     <div id="favModal" class="modal-wrap">
         <div class="modal-box">
-            <div class="modal-close" onclick="closeModal('favModal')">✕</div>
+            <div class="close-modal" onclick="closeModal('favModal')">✕</div>
             <h3>Sevimlilar ❤️</h3>
-            <div id="favList" class="fav-grid" style="margin-top:20px;"></div>
+            <div id="favList" class="fav-grid"></div>
         </div>
     </div>
 
     <div id="chatModal" class="modal-wrap">
-        <div class="modal-box" style="height:600px; display:flex; flex-direction:column;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3>Chat</h3><span class="modal-close" style="position:static;" onclick="closeModal('chatModal')">✕</span></div>
-            <div id="chatBox" style="flex:1; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:15px; padding:15px; margin-bottom:15px;"></div>
+        <div class="modal-box" style="height:550px; display:flex; flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3>Chat</h3><span class="close-modal" onclick="closeModal('chatModal')">✕</span></div>
+            <div id="chatBox" class="chat-box"></div>
             <div style="display:flex; gap:10px;">
-                <input type="text" id="chatInp" placeholder="Xabar..." style="flex:1; background:rgba(255,255,255,0.1); border:none; padding:15px; border-radius:15px; color:white;">
-                <button onclick="sendChat()" class="tap-effect" style="padding:12px; border-radius:15px; background:var(--gold); border:none; width:50px;"><i class="fa fa-paper-plane"></i></button>
+                <input type="text" id="chatInp" placeholder="Xabar..." style="flex:1; background:rgba(255,255,255,0.1); border:none; padding:15px; border-radius:12px; color:white;">
+                <button onclick="sendChat()" class="tap" style="padding:15px; border-radius:12px; background:var(--primary); border:none;"><i class="fa fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
@@ -508,16 +409,15 @@
         <div id="map" style="width:100%; height:100%;"></div>
     </div>
 
-    <div id="newsModal" class="modal-wrap" onclick="if(event.target==this)closeModal('newsModal')"><div class="modal-box"><h3 style="color:var(--gold)">Yangiliklar</h3><div id="newsContent" style="margin-top:15px; max-height:300px; overflow-y:auto;"></div></div></div>
-    <div id="contactModal" class="modal-wrap" onclick="if(event.target==this)closeModal('contactModal')"><div class="modal-box"><h3 style="color:var(--gold)">Aloqa</h3><div class="drawer-item" onclick="copy('+998939782926')">+998 93 978 29 26</div><button class="big-btn" onclick="window.location.href='https://t.me/Azikking'">Telegram Admin</button></div></div>
-
+    <div id="newsModal" class="modal-wrap" onclick="if(event.target==this)closeModal('newsModal')"><div class="modal-box"><h3 style="color:var(--primary)">Yangiliklar</h3><div id="newsContent" style="margin-top:15px; max-height:300px; overflow-y:auto;"></div></div></div>
+    <div id="contactModal" class="modal-wrap" onclick="if(event.target==this)closeModal('contactModal')"><div class="modal-box"><h3 style="color:var(--primary)">Aloqa</h3><div class="d-item" onclick="copy('+998939782926')">+998 93 978 29 26</div><button class="main-btn" onclick="window.location.href='https://t.me/Azikking'">Admin Telegram</button></div></div>
     <div id="toastBox"></div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // --- 1. CONFIGURATION ---
         const BOT_USER = "Cafe888adminbot"; 
         const SHEET_ID = "1j6VojbeSYWgYj3UY98xCxHLCzHcGlEg0nXjYwHDkKQk";
         const ADS_ID = "1ENQ4bnzBxj7x5jmrXUwdDZhmEMQ7umPTPwq2bgXfj3k";
@@ -537,34 +437,28 @@
         let tempPmId=null, tempPmQty=1;
         let map=null, courierMark=null;
 
-        // --- INIT ---
         window.onload = () => {
-            // Theme check
-            const theme = localStorage.getItem('theme');
-            if(theme === 'light') document.body.classList.add('light-mode');
-            
-            // Auth check
+            if(localStorage.getItem('theme')=='light') document.body.classList.add('light-mode');
             const uid = localStorage.getItem('cafe_uid');
-            if(uid) checkAuth(uid); else document.getElementById('loginModal').style.display = 'flex';
+            if(uid) checkAuth(uid); 
+            else document.getElementById('loginModal').style.display = 'flex';
             
             loadData(); loadStories();
             db.ref('info/location').on('value', s => shopLoc=s.val());
         };
 
-        // --- 2. AUTH ---
+        // --- AUTH ---
         function doLogin() {
             const token = 'req_' + Date.now();
             document.getElementById('tgBtn').style.display='none';
             document.getElementById('loadSpinner').classList.remove('hidden');
             window.open(`https://t.me/${BOT_USER}?start=login_${token}`, '_blank');
             
-            const ref = db.ref('auth_tokens/'+token);
-            ref.on('value', s => {
+            db.ref('auth_tokens/'+token).on('value', s => {
                 if(s.val()) {
-                    user = s.val();
-                    localStorage.setItem('cafe_uid', user.phone.replace('+',''));
-                    ref.remove();
-                    document.getElementById('loginModal').style.display='none';
+                    user = s.val(); localStorage.setItem('cafe_uid', user.phone.replace('+',''));
+                    db.ref('auth_tokens/'+token).remove();
+                    document.getElementById('loginModal').style.display = 'none';
                     initApp();
                 }
             });
@@ -582,7 +476,7 @@
             loadHistory(); loadChat();
         }
 
-        // --- 3. DATA & STORIES ---
+        // --- DATA ---
         function loadData() {
             fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`).then(r=>r.text()).then(t=>{
                 const j = JSON.parse(t.substr(47).slice(0,-2));
@@ -598,30 +492,30 @@
                 const j = JSON.parse(t.substr(47).slice(0,-2));
                 stories = j.table.rows.map(r=>r.c[0]?.v).filter(u=>u);
                 document.getElementById('storiesContainer').innerHTML = stories.map((u,i)=>`
-                    <div class="story-circle tap-effect" onclick="openStory(${i})"><img src="${u}"></div>
+                    <div class="story-c tap" onclick="openStory(${i})"><img src="${u}"></div>
                 `).join('');
             });
         }
 
-        // --- 4. STORIES PLAYER ---
+        // --- STORIES ---
         function openStory(i) { stIdx=i; document.getElementById('storyViewer').style.display='flex'; showStory(); }
         function showStory() {
-            if(stIdx >= stories.length) { closeStory(); return; }
+            if(stIdx >= stories.length) { closeStories(); return; }
             document.getElementById('storyImg').src = stories[stIdx];
             document.getElementById('storyBars').innerHTML = stories.map((_, i)=>`
-                <div class="progress-bg"><div class="progress-bar ${i===stIdx?'anim':(i<stIdx?'filled':'')}"></div></div>
+                <div class="sb-bg"><div class="sb-fill ${i===stIdx?'anim':(i<stIdx?'full':'')}"></div></div>
             `).join('');
             clearTimeout(stTimer); stTimer = setTimeout(nextStory, 5000);
         }
         function nextStory() { stIdx++; showStory(); }
         function prevStory() { if(stIdx>0) stIdx--; showStory(); }
-        function closeStory() { clearTimeout(stTimer); document.getElementById('storyViewer').style.display='none'; }
+        function closeStories() { clearTimeout(stTimer); document.getElementById('storyViewer').style.display='none'; }
 
-        // --- 5. RENDER UI ---
+        // --- UI ---
         function renderCats() {
             const cats = ['Barchasi', ...new Set(products.map(p=>p.cat))];
             document.getElementById('catNav').innerHTML = cats.map(c=>
-                `<div class="cat-btn tap-effect ${c=='Barchasi'?'active':''}" onclick="filt('${c}',this)">${c}</div>`
+                `<div class="cat-btn tap ${c=='Barchasi'?'active':''}" onclick="filt('${c}',this)">${c}</div>`
             ).join('');
         }
         function filt(c, el) {
@@ -632,39 +526,33 @@
             const list = c=='Barchasi' ? products : products.filter(p=>p.cat==c);
             document.getElementById('menuGrid').innerHTML = list.map(p=> {
                 const qty = cart[p.id] || 0;
-                
-                // + va - tugmalari CARD ICHIDA
-                const btnHtml = qty > 0 
-                    ? `<div class="qty-controls tap-effect" onclick="event.stopPropagation()">
-                         <div class="qty-btn" onclick="updCart(${p.id},-1)">-</div>
-                         <div class="qty-num">${qty}</div>
-                         <div class="qty-btn" onclick="updCart(${p.id},1)">+</div>
+                const btn = qty > 0 
+                    ? `<div class="qty-badge tap" onclick="event.stopPropagation()">
+                         <div class="qty-control" onclick="updCart(${p.id},-1)">-</div>
+                         <b style="color:white; font-size:14px;">${qty}</b>
+                         <div class="qty-control" onclick="updCart(${p.id},1)">+</div>
                        </div>`
-                    : `<div class="add-btn tap-effect" onclick="updCart(${p.id},1);event.stopPropagation()">+</div>`;
+                    : `<div class="add-btn tap" onclick="updCart(${p.id},1);event.stopPropagation()">+</div>`;
                 
                 return `
-                <div class="card tap-effect" onclick="openProd(${p.id})">
-                    <div class="card-img-wrap"><img src="${p.img}">
-                        <div class="card-fav ${favs[p.id]?'active':''}" onclick="toggleFav(${p.id});event.stopPropagation()">
-                            <i class="fa fa-heart"></i>
-                        </div>
-                    </div>
-                    <div class="card-content">
+                <div class="card tap" onclick="openProd(${p.id})">
+                    <div class="card-img-box"><img src="${p.img}"></div>
+                    ${btn}
+                    <div class="card-body">
                         <div class="card-title">${p.name}</div>
-                        <div class="card-footer">
-                            <div class="card-price">${p.price.toLocaleString()} so'm</div>
-                            ${btnHtml}
-                        </div>
+                        <div class="card-price">${p.price.toLocaleString()} so'm</div>
+                    </div>
+                    <div style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.6); padding:6px; border-radius:50%; color:${favs[p.id]?'var(--danger)':'white'}" onclick="toggleFav(${p.id});event.stopPropagation()">
+                        <i class="fa fa-heart"></i>
                     </div>
                 </div>`;
             }).join('');
         }
 
-        // --- 6. CART ---
+        // --- CART & GPS ---
         function updCart(id, n) { 
             cart[id] = (cart[id]||0)+n; if(cart[id]<=0) delete cart[id]; 
-            renderGrid(document.querySelector('.cat-btn.active').innerText); 
-            renderCart(); 
+            renderGrid(document.querySelector('.cat-btn.active').innerText); renderCart(); 
         }
         function renderCart() {
             let t=0, h='';
@@ -672,69 +560,56 @@
                 const p = products.find(x=>x.id==id);
                 t += p.price * cart[id];
                 h += `<div class="cart-item">
-                    <img src="${p.img}" class="cart-thumb">
-                    <div class="cart-info">
-                        <div style="font-weight:700;">${p.name}</div>
-                        <div style="color:var(--gold); font-size:13px;">${p.price.toLocaleString()} so'm</div>
-                    </div>
-                    <div class="cart-actions">
-                        <div onclick="updCart(${p.id},-1)" style="font-size:20px; font-weight:bold; cursor:pointer;">-</div>
-                        <b>${cart[id]}</b>
-                        <div onclick="updCart(${p.id},1)" style="font-size:20px; font-weight:bold; cursor:pointer;">+</div>
+                    <img src="${p.img}" class="cart-img">
+                    <div style="flex:1"><b>${p.name}</b><br><small style="color:var(--primary)">${p.price.toLocaleString()} so'm</small></div>
+                    <div style="background:#2c2c2e; padding:5px 10px; border-radius:10px; display:flex; gap:10px; align-items:center;">
+                        <span onclick="updCart(${p.id},-1)" style="font-size:20px; font-weight:bold;">-</span><b>${cart[id]}</b><span onclick="updCart(${p.id},1)" style="font-size:20px; font-weight:bold;">+</span>
                     </div>
                 </div>`;
             }
+            let disp = t.toLocaleString()+" so'm";
+            if(activePromo) disp = `<span class="strike">${t.toLocaleString()}</span> ${(t-(t*activePromo/100)).toLocaleString()} so'm`;
             
-            let disp = t.toLocaleString() + " so'm";
-            if(activePromo) {
-                let final = t - (t*activePromo/100);
-                disp = `<span class="strike">${t.toLocaleString()}</span> ${final.toLocaleString()} so'm`;
-            }
-            
-            document.getElementById('cartList').innerHTML = h || "<div style='text-align:center;color:#666;padding:30px;'>Savat bo'sh</div>";
-            document.getElementById('cartTotal').innerHTML = disp;
+            document.getElementById('cartList').innerHTML = h || "<div style='text-align:center; padding:30px; color:var(--text-sub)'>Savat bo'sh</div>";
+            document.getElementById('totalPrice').innerHTML = disp;
             
             const btn = document.getElementById('orderBtn');
-            // GPS va Savat to'la bo'lsa tugma aktivlashadi
-            if(t>0 && loc) { 
-                btn.style.opacity='1'; btn.style.pointerEvents='all'; btn.innerHTML = `BUYURTMA BERISH <i class="fa fa-check"></i>`;
-            } else { 
-                btn.style.opacity='0.5'; btn.style.pointerEvents='none'; 
-            }
+            // QAT'IY TEKSHIRUV: Savat bo'sh emas + Lokatsiya bor + Radius ichida
+            if(t>0 && loc) { btn.style.opacity='1'; btn.style.pointerEvents='all'; btn.innerText = "BUYURTMA BERISH"; } 
+            else { btn.style.opacity='0.5'; btn.style.pointerEvents='none'; }
         }
 
-        // --- 7. GPS (RADIUS TEKSHIRUVI) ---
         function getGPS() {
             const b = document.getElementById('gpsBtn');
             b.innerHTML = "<i class='fa fa-circle-notch fa-spin'></i> Aniqlanmoqda...";
-            
             if(window.Android && window.Android.checkGPS) window.Android.checkGPS();
 
             navigator.geolocation.getCurrentPosition(p => {
                 const lat = p.coords.latitude, lng = p.coords.longitude;
                 // RADIUS CHECK
                 if(shopLoc && shopLoc.radius) {
-                    const d = getDist(lat, lng, shopLoc.lat, shopLoc.long);
-                    if(d > shopLoc.radius) {
+                    const dist = getDist(lat, lng, shopLoc.lat, shopLoc.long);
+                    if(dist > shopLoc.radius) {
                         b.innerHTML = "❌ Yetkazib berish hududidan tashqarisiz"; 
-                        b.classList.remove('success'); b.style.background = "var(--red)";
-                        toast(`Faqat ${shopLoc.radius}km ichida ishlaymiz. Siz ${d.toFixed(1)}km uzoqsiz.`);
+                        b.classList.add('gps-error'); b.classList.remove('gps-ok');
+                        toast(`Faqat ${shopLoc.radius}km ichida ishlaymiz. Siz ${dist.toFixed(1)}km uzoqsiz.`);
                         loc=null; renderCart(); return;
                     }
                 }
                 loc = {lat, long:lng};
                 b.innerHTML = "✅ Manzil aniqlandi"; 
-                b.style.background = "var(--green)";
-                renderCart(); // Qayta render qilib tugmani yoqish
-            }, () => {
-                b.innerHTML = "❌ GPS Xatosi"; toast("GPS yoqilganligini tekshiring!");
-            }, {enableHighAccuracy:true, timeout:10000});
+                b.classList.add('gps-ok'); b.classList.remove('gps-error');
+                renderCart();
+            }, () => { 
+                b.innerHTML = "❌ GPS Xatosi"; b.classList.add('gps-error');
+                toast("GPS yoqilganligini tekshiring!"); 
+            }, {enableHighAccuracy:true, timeout:15000});
         }
 
         function sendOrder() {
             const items = []; let t=0;
             for(let id in cart) { const p=products.find(x=>x.id==id); items.push({name:p.name, qty:cart[id]}); t+=p.price*cart[id]; }
-            let final = activePromo ? t - (t*activePromo/100) : t;
+            let final = activePromo ? t-(t*activePromo/100) : t;
 
             db.ref('orders').push({
                 user_id: user.phone, user_info: `${user.name} (${user.phone})`,
@@ -746,30 +621,32 @@
                     toast("✅ Buyurtma yuborildi!");
                     nav('history', document.querySelectorAll('.nav-item')[2]);
                     document.getElementById('gpsBtn').innerHTML = `<i class="fa fa-map-marker-alt"></i> Manzilni aniqlash`;
-                    document.getElementById('gpsBtn').style.background = "#333";
+                    document.getElementById('gpsBtn').className = "gps-btn tap"; // Reset class
                 }
             });
         }
 
-        // --- 8. TARIX (STATUS RANGI) ---
+        // --- HISTORY ---
         function loadHistory() {
             db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value', s => {
                 const d = s.val(); if(!d) return;
                 document.getElementById('histList').innerHTML = Object.values(d).reverse().map(o => {
-                    let st=o.status, cls='status-new', txt='YANGI';
-                    if(st=='kuryerda'){cls='status-deliv'; txt='KURYERDA';}
-                    if(st=='yetkazildi'){cls='status-done'; txt='YETKAZILDI';}
-                    if(st=='tayyorlanmoqda'){cls='status-cook'; txt='TAYYORLANMOQDA';}
+                    let st = o.status;
+                    // Statuslarni to'g'ri tekshirish
+                    let cls='st-yangi', txt='YANGI';
+                    if(st.includes('qabul') || st.includes('pish')) { cls='st-pish'; txt='TAYYORLANMOQDA'; }
+                    if(st.includes('kuryer')) { cls='st-deliv'; txt='KURYERDA'; }
+                    if(st.includes('yetkazildi')) { cls='st-done'; txt='YETKAZILDI'; }
                     
-                    let trk = (st=='kuryerda'&&o.courier_id) ? `<button class="track-btn" onclick="track('${o.courier_id}')">Kuryerni Kuzatish</button>` : '';
+                    let trk = (st.includes('kuryer') && o.courier_id) ? `<button class="track-btn" onclick="track('${o.courier_id}')">Kuryerni Kuzatish</button>` : '';
                     
                     return `<div class="hist-card ${cls}">
-                        <div class="hist-header">
-                            <span style="font-size:12px; color:var(--text-secondary);">${o.time}</span>
-                            <span class="hist-badge">${txt}</span>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                            <span style="font-size:12px; color:var(--text-sub);">${o.time}</span>
+                            <span class="badge">${txt}</span>
                         </div>
                         <div style="font-size:14px; margin-bottom:10px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div>
-                        <div style="font-size:18px; font-weight:800;">${parseInt(o.total).toLocaleString()} so'm</div>
+                        <div style="font-weight:800; font-size:16px;">${parseInt(o.total).toLocaleString()} so'm</div>
                         ${trk}
                     </div>`;
                 }).join('');
@@ -786,9 +663,9 @@
             });
         }
 
-        // --- 9. UTILS & MODALS ---
+        // --- UTILS ---
         function nav(p, el) {
-            document.querySelectorAll('.page-container').forEach(x=>x.classList.remove('active'));
+            document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
             document.getElementById('p-'+p).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
             el.classList.add('active');
@@ -808,9 +685,9 @@
             const list = products.filter(p=>favs[p.id]);
             document.getElementById('favList').innerHTML = list.map(p=>`
                 <div class="fav-item">
-                    <div class="fav-remove tap-effect" onclick="toggleFav(${p.id}); openFavs()">✕</div>
+                    <div class="fav-del tap" onclick="toggleFav(${p.id}); openFavs()">✕</div>
                     <img src="${p.img}"><div style="font-size:12px; height:32px; overflow:hidden;">${p.name}</div>
-                    <button style="width:100%; margin-top:5px; background:var(--gold); border:none; border-radius:8px; padding:5px;" onclick="updCart(${p.id},1); closeModal('favModal')">+</button>
+                    <button style="width:100%; margin-top:5px; background:var(--primary); border:none; border-radius:8px; padding:5px;" onclick="updCart(${p.id},1); closeModal('favModal')">+</button>
                 </div>
             `).join('') || "<div style='color:#777; grid-column:span 3; text-align:center'>Bo'sh</div>";
             openModal('favModal');
@@ -820,15 +697,58 @@
             db.ref('users/'+user.phone.replace('+','')+'/favorites').set(favs);
             renderGrid(document.querySelector('.cat-btn.active').innerText);
         }
-        
-        function checkPromo(){
-            const c=document.getElementById('promoInp').value.toUpperCase();
-            db.ref('promocodes/'+c).once('value', s=>{
-                if(s.val() && s.val().limit>0) { activePromo=s.val().discount; document.getElementById('promoMsg').innerHTML=`<b style="color:var(--green)">✅ ${activePromo}% Chegirma!</b>`; renderCart(); }
-                else document.getElementById('promoMsg').innerHTML=`<b style="color:var(--red)">❌ Xato kod</b>`;
+        function checkPromo() {
+            const c = document.getElementById('promoInp').value.toUpperCase();
+            db.ref('promocodes/'+c).once('value', s => {
+                if(s.val() && s.val().limit > 0) {
+                    activePromo = s.val().discount;
+                    document.getElementById('promoMsg').innerHTML = `<span style="color:var(--success)">✅ ${activePromo}% Chegirma!</span>`;
+                    renderCart();
+                } else {
+                    document.getElementById('promoMsg').innerHTML = `<span style="color:var(--danger)">❌ Xato kod</span>`;
+                }
             });
         }
         
+        // CHAT WITH BADGE
+        function loadChat() {
+            const ph = user.phone.replace('+','');
+            db.ref('messages/'+ph).limitToLast(50).on('child_added', s => {
+                const m = s.val();
+                document.getElementById('chatBox').innerHTML += `<div style="display:flex; justify-content:${m.from=='user'?'flex-end':'flex-start'}"><div class="chat-msg ${m.from=='user'?'msg-me':'msg-adm'}">${m.body}</div></div>`;
+                document.getElementById('chatBox').scrollTop = 99999;
+                
+                // Badge Logic
+                if(m.from !== 'user' && !document.getElementById('chatModal').style.display.includes('flex')) {
+                    document.getElementById('chatBadge').classList.add('show');
+                }
+            });
+        }
+        function sendMsg() {
+            const t=document.getElementById('chatInp').value; if(!t)return;
+            db.ref('messages/'+user.phone.replace('+','')).push({from:'user', body:t, time:Date.now()});
+            document.getElementById('chatInp').value = "";
+        }
+
+        // Helpers
+        function getDist(lat1, lon1, lat2, lon2) {
+            var R = 6371; var dLat = (lat2-lat1)*Math.PI/180; var dLon = (lon2-lon1)*Math.PI/180;
+            var a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)*Math.sin(dLon/2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return R * c;
+        }
+        function openModal(id) { 
+            document.getElementById(id).style.display='flex';
+            if(id === 'chatModal') document.getElementById('chatBadge').classList.remove('show');
+        }
+        function closeModal(id) { document.getElementById(id).style.display='none'; }
+        function toggleDrawer() { document.getElementById('myDrawer').classList.toggle('active'); document.getElementById('drawerBg').classList.toggle('active'); }
+        function logout() { localStorage.removeItem('cafe_uid'); location.reload(); }
+        function copy(t) { navigator.clipboard.writeText(t); toast("Nusxalandi"); }
+        function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('theme', document.body.classList.contains('light-mode')?'light':'dark'); }
+        function toast(m) {
+            const d=document.createElement('div'); d.className='toast'; d.innerText=m;
+            document.getElementById('toastBox').appendChild(d); setTimeout(()=>d.remove(),3000);
+        }
         function openNews() {
             db.ref('news').limitToLast(10).once('value', s=>{
                 const d = s.val();
@@ -839,38 +759,6 @@
                     </div>`).join('') : "Yangilik yo'q";
                 openModal('newsModal');
             });
-        }
-
-        // Chat
-        function loadChat() {
-            db.ref('messages/'+user.phone.replace('+','')).limitToLast(50).on('child_added', s=>{
-                const m=s.val();
-                document.getElementById('chatBox').innerHTML += `<div style="display:flex; justify-content:${m.from=='user'?'flex-end':'flex-start'}"><div class="chat-bubble ${m.from=='user'?'me':'adm'}">${m.body}</div></div>`;
-                document.getElementById('chatBox').scrollTop = 99999;
-            });
-        }
-        function sendChat() {
-            const t=document.getElementById('chatInp').value; if(!t)return;
-            db.ref('messages/'+user.phone.replace('+','')).push({from:'user', body:t, time:Date.now()});
-            document.getElementById('chatInp').value="";
-        }
-
-        function getDist(lat1, lon1, lat2, lon2) {
-            var R = 6371; var dLat = (lat2-lat1)*Math.PI/180; var dLon = (lon2-lon1)*Math.PI/180;
-            var a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)*Math.sin(dLon/2);
-            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return R * c;
-        }
-        function openModal(id) { document.getElementById(id).style.display='flex'; }
-        function closeModal(id) { document.getElementById(id).style.display='none'; }
-        function toggleDrawer() { document.getElementById('drawerPanel').classList.toggle('active'); document.getElementById('drawerOverlay').classList.toggle('active'); }
-        function toast(m) { const d=document.createElement('div'); d.className='toast'; d.innerText=m; document.getElementById('toastBox').appendChild(d); setTimeout(()=>d.remove(),3000); }
-        function logout() { localStorage.removeItem('cafe_uid'); location.reload(); }
-        function copy(t) { navigator.clipboard.writeText(t); toast("Nusxalandi"); }
-        function toggleTheme() { 
-            document.body.classList.toggle('light-mode'); 
-            const isLight = document.body.classList.contains('light-mode');
-            document.getElementById('themeTxt').innerText=isLight?"Kunduzgi rejim":"Tungi rejim"; 
-            localStorage.setItem('theme', isLight ? 'light' : 'dark');
         }
     </script>
 </body>
