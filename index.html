@@ -9,13 +9,13 @@
 
 <style>
     /* ==========================================================================
-       1. GLOBAL O'ZGARUVCHILAR VA RESET (DARK THEME DEFAULT)
+       1. GLOBAL SOZLAMALAR (PREMIUM DARK)
        ========================================================================== */
     :root {
         /* Asosiy Fonlar */
-        --bg-body: #09090b;       /* Juda to'q kulrang/qora */
+        --bg-body: #09090b;       /* Juda to'q kulrang */
         --bg-card: #18181b;       /* Kartalar foni */
-        --bg-glass: rgba(24, 24, 27, 0.85); /* Glass effect */
+        --bg-glass: rgba(24, 24, 27, 0.95); /* Glass effect */
         
         /* Matn Ranglari */
         --text-main: #ffffff;
@@ -29,9 +29,9 @@
         --blue: #3b82f6;          /* Moviy */
         
         /* O'lchamlar */
-        --header-height: 65px;
-        --nav-height: 80px;
-        --radius-card: 20px;
+        --header-height: 60px;
+        --nav-height: 75px;
+        --radius-card: 18px;
         --radius-btn: 14px;
         
         /* Animatsiya tezligi */
@@ -42,7 +42,7 @@
     body.light-mode {
         --bg-body: #f4f4f5;
         --bg-card: #ffffff;
-        --bg-glass: rgba(255, 255, 255, 0.9);
+        --bg-glass: rgba(255, 255, 255, 0.95);
         --text-main: #18181b;
         --text-muted: #71717a;
     }
@@ -87,6 +87,9 @@
     @keyframes heartbeat { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
     .heart-anim { animation: heartbeat 0.3s ease-in-out; }
 
+    /* Pulse (Kuryer tugmasi uchun) */
+    @keyframes pulseGold { 0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); } }
+
     /* ==========================================================================
        3. DRAWER (YON MENYU) - ENG TEPADA
        ========================================================================== */
@@ -118,7 +121,7 @@
     .d-item i { font-size: 20px; width: 25px; text-align: center; }
 
     /* ==========================================================================
-       4. HEADER & STORIES
+       4. HEADER & STORIES (ORALIQ MASOFA TUZATILDI)
        ========================================================================== */
     .header {
         position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height);
@@ -129,7 +132,7 @@
     .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; }
     .logo span { color: var(--primary); text-shadow: 0 0 15px var(--primary-glow); }
     
-    /* Xabar belgisi (Red Dot) */
+    /* Chat belgisi (Red Dot) */
     .chat-icon-wrap { position: relative; }
     .msg-badge {
         position: absolute; top: -2px; right: -2px; width: 10px; height: 10px;
@@ -138,10 +141,10 @@
     }
     .msg-badge.show { display: block; }
 
-    /* Stories (Instagram) */
+    /* Stories (Instagram Style - Headerga yaqin) */
     .stories-wrap {
-        display: flex; gap: 12px; padding: 15px; overflow-x: auto; scrollbar-width: none;
-        margin-top: var(--header-height);
+        display: flex; gap: 12px; padding: 10px 15px; overflow-x: auto; scrollbar-width: none;
+        margin-top: 0; /* Headerdan keyin darhol boshlanadi */
     }
     .story-c {
         min-width: 76px; height: 76px; border-radius: 50%; padding: 3px;
@@ -171,11 +174,12 @@
     .s-left { left: 0; } .s-right { right: 0; }
 
     /* ==========================================================================
-       5. MENU GRID & CARDS (TUZATILGAN)
+       5. MENU GRID & CARDS (MUKAMMAL)
        ========================================================================== */
     .page-cont { display: none; padding-bottom: 20px; }
     .page-cont.active { display: block; }
 
+    /* Kategoriya menyusi (Yopishqoq) */
     .cat-bar {
         display: flex; gap: 10px; overflow-x: auto; padding: 5px 15px 15px;
         position: sticky; top: var(--header-height); z-index: 4000; 
@@ -191,6 +195,7 @@
         transform: scale(1.05); box-shadow: 0 5px 15px var(--primary-glow);
     }
 
+    /* Mahsulotlar Gridi */
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 15px 15px; }
     
     .card {
@@ -201,8 +206,9 @@
     }
     .card:active { transform: scale(0.98); }
 
-    /* RASM MUAMMOSI HAL QILINDI: COVER */
-    .card-img { width: 100%; height: 160px; object-fit: cover; }
+    /* RASM TO'LIQ (COVER) */
+    .card-img-wrap { width: 100%; height: 160px; position: relative; }
+    .card-img { width: 100%; height: 100%; object-fit: cover; }
     
     .card-body { padding: 12px; flex: 1; display: flex; flex-direction: column; }
     .card-title { font-weight: 700; margin-bottom: 5px; font-size: 15px; line-height: 1.3; height: 40px; overflow: hidden; }
@@ -212,7 +218,7 @@
     }
     .card-price { font-weight: 800; font-size: 16px; color: var(--primary); }
     
-    /* +/- TUGMALARI ALOHIDA */
+    /* +/- TUGMALARI */
     .btn-plus {
         width: 34px; height: 34px; background: var(--primary); color: #000;
         border-radius: 12px; display: flex; align-items: center; justify-content: center;
@@ -236,16 +242,25 @@
     .card-fav.active { background: #fff; color: var(--danger); }
 
     /* ==========================================================================
-       6. SAVAT & TARIX (STATUS)
+       6. SAVAT (RASM KICHIKLASHTIRILDI) & TARIX
        ========================================================================== */
-    .cart-box {
-        background: var(--bg-card); padding: 15px; border-radius: 20px;
-        margin-bottom: 15px; display: flex; align-items: center; gap: 15px;
+    .cart-item {
+        background: var(--bg-card); padding: 12px; border-radius: 18px;
+        margin-bottom: 12px; display: flex; align-items: center; gap: 15px;
         border: 1px solid rgba(255,255,255,0.05);
     }
-    .cart-pic { width: 70px; height: 70px; border-radius: 15px; object-fit: cover; }
-    .cart-btns { display: flex; gap: 10px; background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 10px; }
+    /* MUHIM: Rasm hajmi qat'iy 65px */
+    .cart-thumb { width: 65px; height: 65px; border-radius: 12px; object-fit: cover; flex-shrink: 0; }
     
+    .cart-info { flex: 1; }
+    .cart-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+    .cart-price { color: var(--primary); font-size: 13px; font-weight: 600; }
+    
+    .cart-controls {
+        display: flex; align-items: center; gap: 10px;
+        background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 12px;
+    }
+
     .btn-main {
         width: 100%; padding: 18px; background: var(--primary); color: #000;
         font-weight: 800; border: none; border-radius: 20px; font-size: 16px;
@@ -257,25 +272,26 @@
         border-radius: 20px; display: flex; align-items: center; justify-content: center; gap: 10px;
         font-weight: 600; border: 1px solid rgba(255,255,255,0.1);
     }
-    .btn-gps.ok { background: var(--success); border-color: var(--success); }
-    .btn-gps.err { background: var(--danger); border-color: var(--danger); }
+    .btn-gps.ok { background: var(--success); border-color: var(--success); color: white; }
+    .btn-gps.err { background: var(--danger); border-color: var(--danger); color: white; }
 
     /* Tarix Statuslari */
     .hist-card {
         background: var(--bg-card); padding: 20px; border-radius: 20px;
         margin-bottom: 15px; border-left: 5px solid; position: relative;
     }
-    .st-pill { padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 900; text-transform: uppercase; }
+    .h-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .h-badge { padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 900; text-transform: uppercase; }
     
-    .s-new { border-color: var(--blue); } .s-new .st-pill { background: rgba(59,130,246,0.15); color: var(--blue); }
-    .s-cook { border-color: orange; } .s-cook .st-pill { background: rgba(255,165,0,0.15); color: orange; }
-    .s-deliv { border-color: var(--primary); } .s-deliv .st-pill { background: rgba(255,215,0,0.15); color: var(--primary); }
-    .s-done { border-color: var(--success); } .s-done .st-pill { background: rgba(34,197,94,0.15); color: var(--success); }
+    .status-new { border-color: var(--blue); } .status-new .h-badge { background: rgba(0,122,255,0.15); color: var(--blue); }
+    .status-cook { border-color: orange; } .status-cook .h-badge { background: rgba(255,165,0,0.15); color: orange; }
+    .status-deliv { border-color: var(--primary); } .status-deliv .h-badge { background: rgba(255,215,0,0.15); color: var(--primary); }
+    .status-done { border-color: var(--success); } .status-done .h-badge { background: rgba(52,199,89,0.15); color: var(--success); }
 
-    .track-btn {
+    .btn-track {
         width: 100%; padding: 12px; background: linear-gradient(45deg, #FFD700, #FFA500);
         color: black; font-weight: 800; border-radius: 12px; margin-top: 15px; border: none;
-        animation: pulse 2s infinite; display: flex; align-items: center; justify-content: center; gap: 8px;
+        display: flex; align-items: center; justify-content: center; gap: 8px; animation: pulse 2s infinite;
     }
 
     /* ==========================================================================
@@ -285,11 +301,11 @@
         text-align: center; padding: 50px 20px 30px;
         background: linear-gradient(180deg, rgba(255,215,0,0.1), transparent);
     }
-    /* AVATAR MUAMMOSI HAL QILINDI (Margin Top) */
+    /* Avatar: Header tagida qolmasligi uchun */
     .avatar {
         width: 100px; height: 100px; background: var(--bg-card); border: 3px solid var(--primary);
         border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        font-size: 40px; color: var(--primary); margin: 20px auto 15px; /* Margin Top berildi */
+        font-size: 40px; color: var(--primary); margin: 30px auto 15px; /* Margin ko'paytirildi */
         box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
     
@@ -306,15 +322,15 @@
         background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px;
         text-align: center; position: relative; border: 1px solid rgba(255,255,255,0.05);
     }
-    .fav-box img { width: 100%; height: 60px; object-fit: cover; border-radius: 10px; margin-bottom: 5px; }
+    .fav-box img { width: 100%; height: 70px; object-fit: cover; border-radius: 10px; margin-bottom: 5px; }
     .fav-del {
-        position: absolute; top: 5px; right: 5px; width: 22px; height: 22px;
+        position: absolute; top: 5px; right: 5px; width: 24px; height: 24px;
         background: var(--danger); color: white; border-radius: 50%;
         display: flex; align-items: center; justify-content: center; font-size: 12px;
     }
 
     /* ==========================================================================
-       8. MODALLAR (BOTTOM SHEET) & NAVBAR
+       8. MODALLAR & NAVBAR
        ========================================================================== */
     .modal-wrap {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -329,7 +345,7 @@
         border-top: 1px solid rgba(255,255,255,0.1);
         max-height: 85vh; overflow-y: auto;
     }
-    .sheet-close { position: absolute; top: 20px; right: 20px; font-size: 24px; color: var(--text-muted); cursor: pointer; }
+    .modal-close { position: absolute; top: 20px; right: 20px; font-size: 24px; color: var(--text-muted); cursor: pointer; }
 
     /* Login Full Screen */
     #loginModal { align-items: center; z-index: 99999; background: var(--bg-body); }
@@ -342,14 +358,14 @@
 
     /* Navbar */
     .navbar {
-        position: fixed; bottom: 0; width: 100%; height: var(--nav-height);
+        position: fixed; bottom: 0; width: 100%; height: 75px;
         background: rgba(20, 20, 22, 0.95); backdrop-filter: blur(20px);
         display: flex; justify-content: space-around; align-items: center;
-        border-radius: 30px 30px 0 0; z-index: 4500;
-        border-top: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;
+        border-radius: 25px 25px 0 0; z-index: 4500;
+        border-top: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;
     }
     .nav-btn { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 10px; font-weight: 700; transition: 0.3s; }
-    .nav-btn i { font-size: 24px; margin-bottom: 6px; }
+    .nav-btn i { font-size: 24px; margin-bottom: 5px; }
     .nav-btn.active { color: var(--primary); transform: translateY(-5px); }
 
     /* Chat */
@@ -396,7 +412,7 @@
         </div>
     </header>
 
-    <div id="p-menu" class="page-cont active" style="padding-top:65px;">
+    <div id="p-menu" class="page-cont active" style="padding-top:60px;">
         <div id="storiesContainer" class="stories-wrap"></div>
         <div id="catNav" class="cat-bar"></div>
         <div id="menuGrid" class="grid"></div>
@@ -433,12 +449,15 @@
             <h2 id="uName">Mijoz</h2>
             <p id="uPhone" style="color:var(--text-muted)">+998...</p>
         </div>
-        <div class="prof-menu">
+        <div style="padding:0 20px;">
             <div class="prof-btn tap" onclick="openFavs()">
                 <span><i class="fa fa-heart" style="color:var(--danger); margin-right:10px;"></i> Sevimlilar</span> <i class="fa fa-chevron-right"></i>
             </div>
             <div class="prof-btn tap" onclick="openModal('chatModal')">
                 <span><i class="fa fa-envelope" style="color:var(--blue); margin-right:10px;"></i> Admin Chat</span> <i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="prof-btn tap" onclick="openPromoList()">
+                <span><i class="fa fa-tags" style="color:var(--success); margin-right:10px;"></i> Promokodlar</span> <i class="fa fa-chevron-right"></i>
             </div>
             <div class="prof-btn tap" onclick="openNews()">
                 <span><i class="fa fa-bullhorn" style="color:var(--primary); margin-right:10px;"></i> Yangiliklar</span> <i class="fa fa-chevron-right"></i>
@@ -454,24 +473,24 @@
     </nav>
 
     <div id="loginModal" class="modal-wrap">
-        <div class="modal-box" style="text-align:center; background:var(--bg-body);">
+        <div class="modal-box" style="text-align:center; background:var(--bg-body); padding:40px; border-radius:30px;">
             <div class="tg-icon"><i class="fab fa-telegram-plane"></i></div>
             <h2>Xush kelibsiz</h2>
             <p style="color:var(--text-muted); margin-bottom:30px;">Davom etish uchun Telegram orqali kiring</p>
             <div id="loadSpinner" class="hidden" style="color:var(--primary); margin-bottom:15px;">Tasdiqlash kutilmoqda...</div>
-            <button id="tgBtn" class="btn-main tap" style="background:var(--blue); color:white; width:100%;" onclick="doLogin()">KIRISH</button>
+            <button id="tgBtn" class="btn-main tap" style="background:var(--blue); color:white; width:100%; margin-top:0;" onclick="doLogin()">KIRISH</button>
         </div>
     </div>
 
-    <div id="prodModal" class="modal-wrap">
+    <div id="prodModal" class="modal-wrap" onclick="if(event.target==this)closeModal('prodModal')">
         <div class="sheet">
-            <div class="sheet-close tap" onclick="closeModal('prodModal')">✕</div>
-            <img id="pmImg" src="" style="width:100%; height:250px; object-fit:contain; margin-bottom:20px;">
+            <div class="tap" onclick="closeModal('prodModal')" style="position:absolute; top:15px; right:15px; background:rgba(0,0,0,0.5); width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white;">✕</div>
+            <img id="pmImg" src="" style="width:100%; height:250px; object-fit:cover; border-radius:15px; margin-bottom:15px;">
             <h2 id="pmName" style="margin-bottom:5px;"></h2>
             <h3 id="pmPrice" style="color:var(--primary); margin-bottom:15px;"></h3>
             <p id="pmDesc" style="color:var(--text-muted); line-height:1.5; margin-bottom:30px;"></p>
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="display:flex; align-items:center; gap:15px; background:rgba(255,255,255,0.05); padding:10px 20px; border-radius:15px;">
+                <div style="display:flex; gap:15px; background:rgba(255,255,255,0.05); padding:10px 20px; border-radius:12px;">
                     <span onclick="pmQ(-1)" style="font-size:24px; font-weight:bold; cursor:pointer;">-</span>
                     <b id="pmQty" style="font-size:18px;">1</b>
                     <span onclick="pmQ(1)" style="font-size:24px; font-weight:bold; cursor:pointer;">+</span>
@@ -481,19 +500,24 @@
         </div>
     </div>
 
-    <div id="favModal" class="modal-wrap">
+    <div id="favModal" class="modal-wrap" onclick="if(event.target==this)closeModal('favModal')">
         <div class="sheet">
-            <div class="sheet-close" onclick="closeModal('favModal')">✕</div>
             <h3 style="margin-bottom:20px;">Sevimlilar ❤️</h3>
             <div id="favList" class="fav-grid"></div>
         </div>
     </div>
 
-    <div id="chatModal" class="modal-wrap">
+    <div id="promoListModal" class="modal-wrap" onclick="if(event.target==this)closeModal('promoListModal')">
+        <div class="sheet">
+            <h3 style="margin-bottom:20px;">Faol Promokodlar 🎟</h3>
+            <div id="promoListContent"></div>
+        </div>
+    </div>
+
+    <div id="chatModal" class="modal-wrap" onclick="if(event.target==this)closeModal('chatModal')">
         <div class="sheet" style="height:80vh;">
-            <div class="sheet-close" onclick="closeModal('chatModal')">✕</div>
             <h3 style="margin-bottom:15px;">Admin Chat</h3>
-            <div id="chatBox" style="flex:1; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:20px; padding:15px; margin-bottom:15px; min-height:300px;"></div>
+            <div id="chatBox" style="flex:1; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:15px; padding:15px; margin-bottom:15px; min-height:300px;"></div>
             <div style="display:flex; gap:10px;">
                 <input type="text" id="chatInp" placeholder="Xabar..." style="flex:1; background:rgba(255,255,255,0.1); border:none; padding:15px; border-radius:15px; color:white;">
                 <button onclick="sendChat()" class="tap" style="background:var(--primary); border:none; width:50px; border-radius:15px;"><i class="fa fa-paper-plane"></i></button>
@@ -502,11 +526,11 @@
     </div>
 
     <div id="mapModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#fff; z-index:9000; display:none;">
-        <button onclick="document.getElementById('mapModal').style.display='none'" style="position:absolute; top:40px; left:20px; z-index:9001; padding:12px 25px; border-radius:30px; border:none; background:white; font-weight:bold; box-shadow:0 5px 20px rgba(0,0,0,0.2);">⬅️ Orqaga</button>
+        <button onclick="document.getElementById('mapModal').style.display='none'" style="position:absolute; top:40px; left:20px; z-index:9001; padding:10px 20px; border-radius:20px; border:none; background:white; font-weight:bold; box-shadow:0 5px 20px rgba(0,0,0,0.2);">⬅️ Orqaga</button>
         <div id="map" style="width:100%; height:100%;"></div>
     </div>
 
-    <div id="newsModal" class="modal-wrap" onclick="if(event.target==this)closeModal('newsModal')"><div class="sheet"><h3 style="color:var(--primary)">Yangiliklar</h3><div id="newsContent" style="margin-top:15px; max-height:300px; overflow-y:auto;"></div></div></div>
+    <div id="newsModal" class="modal-wrap" onclick="if(event.target==this)closeModal('newsModal')"><div class="sheet"><h3 style="color:var(--primary)">Yangiliklar</h3><div id="newsContent" style="margin-top:15px; max-height:400px; overflow-y:auto;"></div></div></div>
     <div id="contactModal" class="modal-wrap" onclick="if(event.target==this)closeModal('contactModal')"><div class="sheet"><h3 style="color:var(--primary)">Aloqa</h3><div class="d-item" onclick="copy('+998939782926')">+998 93 978 29 26</div><button class="btn-main" onclick="window.location.href='https://t.me/Azikking'">Telegram Admin</button></div></div>
     
     <div id="toastBox"></div>
@@ -516,335 +540,155 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // CONFIG
-        const BOT_USER = "Cafe888adminbot"; 
-        const SHEET_ID = "1j6VojbeSYWgYj3UY98xCxHLCzHcGlEg0nXjYwHDkKQk";
-        const ADS_ID = "1ENQ4bnzBxj7x5jmrXUwdDZhmEMQ7umPTPwq2bgXfj3k";
-        
-        firebase.initializeApp({
-            apiKey: "AIzaSyCVSfWRZ77PFFxip93NcD5QZ9Fc0gMUyW8",
-            authDomain: "cafe888-c2d7d.firebaseapp.com",
-            databaseURL: "https://cafe888-c2d7d-default-rtdb.firebaseio.com",
-            projectId: "cafe888-c2d7d",
-            storageBucket: "cafe888-c2d7d.firebasestorage.app",
-            messagingSenderId: "286769489924",
-            appId: "1:286769489924:web:f778a8d15d46abaf1b2d51"
-        });
-        const db = firebase.database();
-
+        const BOT_USER="Cafe888adminbot", SHEET_ID="1j6VojbeSYWgYj3UY98xCxHLCzHcGlEg0nXjYwHDkKQk", ADS_ID="1ENQ4bnzBxj7x5jmrXUwdDZhmEMQ7umPTPwq2bgXfj3k";
+        firebase.initializeApp({apiKey:"AIzaSyCVSfWRZ77PFFxip93NcD5QZ9Fc0gMUyW8",authDomain:"cafe888-c2d7d.firebaseapp.com",databaseURL:"https://cafe888-c2d7d-default-rtdb.firebaseio.com",projectId:"cafe888-c2d7d",storageBucket:"cafe888-c2d7d.firebasestorage.app",messagingSenderId:"286769489924",appId:"1:286769489924:web:f778a8d15d46abaf1b2d51"});
+        const db=firebase.database();
         let products=[], cart={}, user=null, loc=null, favs={}, stories=[], stIdx=0, stTimer, shopLoc=null, activePromo=null;
-        let tempPmId=null, tempPmQty=1;
-        let map=null, courierMark=null;
+        let tempPmId=null, tempPmQty=1, map=null, carMarker=null;
 
-        window.onload = () => {
-            if(localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
-            const uid = localStorage.getItem('cafe_uid');
-            if(uid) checkAuth(uid); else document.getElementById('loginModal').style.display = 'flex';
-            
+        window.onload=()=>{
+            if(localStorage.getItem('theme')==='light')document.body.classList.add('light-mode');
+            const uid=localStorage.getItem('cafe_uid');
+            if(uid)checkAuth(uid); else document.getElementById('loginModal').style.display='flex';
             loadData(); loadStories();
-            db.ref('info/location').on('value', s => shopLoc=s.val());
+            db.ref('info/location').on('value',s=>shopLoc=s.val());
         };
 
-        // --- AUTH ---
-        function doLogin() {
-            const token = 'req_' + Date.now();
-            document.getElementById('tgBtn').style.display='none';
-            document.getElementById('loadSpinner').classList.remove('hidden');
-            window.open(`https://t.me/${BOT_USER}?start=login_${token}`, '_blank');
-            
-            const ref = db.ref('auth_tokens/'+token);
-            ref.on('value', s => {
-                if(s.val()) {
-                    user = s.val();
-                    localStorage.setItem('cafe_uid', user.phone.replace('+',''));
-                    ref.remove();
-                    document.getElementById('loginModal').style.display='none';
-                    initApp();
-                }
+        function doLogin(){
+            const t='req_'+Date.now();
+            window.open(`https://t.me/${BOT_USER}?start=login_${t}`, '_blank');
+            db.ref('auth_tokens/'+t).on('value',s=>{
+                if(s.val()){ user=s.val(); localStorage.setItem('cafe_uid',user.phone.replace('+','')); db.ref('auth_tokens/'+t).remove(); document.getElementById('loginModal').style.display='none'; initApp(); }
             });
         }
-        function checkAuth(uid) {
-            db.ref('users/'+uid).on('value', s => {
-                if(s.val()) { user=s.val(); document.getElementById('loginModal').style.display='none'; initApp(); }
-                else document.getElementById('loginModal').style.display='flex';
-            });
-        }
-        function initApp() {
-            document.getElementById('uName').innerText = user.name;
-            document.getElementById('uPhone').innerText = user.phone;
-            favs = user.favorites || {};
-            loadHistory(); loadChat();
-        }
+        function checkAuth(uid){ db.ref('users/'+uid).on('value',s=>{ if(s.val()){ user=s.val(); document.getElementById('loginModal').style.display='none'; initApp(); } else document.getElementById('loginModal').style.display='flex'; }); }
+        function initApp(){ document.getElementById('uName').innerText=user.name; document.getElementById('uPhone').innerText=user.phone; favs=user.favorites||{}; loadHistory(); loadChat(); }
 
-        // --- DATA & UI ---
-        function loadData() {
+        function loadData(){
             fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`).then(r=>r.text()).then(t=>{
-                const j = JSON.parse(t.substr(47).slice(0,-2));
-                products = j.table.rows.map(r=>({
-                    id:r.c[0]?.v, cat:r.c[1]?.v||"Boshqa", name:r.c[2]?.v, 
-                    price:r.c[3]?.v||0, img:r.c[4]?.v, desc:r.c[5]?.v||""
-                }));
+                const j=JSON.parse(t.substr(47).slice(0,-2));
+                products=j.table.rows.map(r=>({id:r.c[0]?.v, cat:r.c[1]?.v||"Boshqa", name:r.c[2]?.v, price:r.c[3]?.v||0, img:r.c[4]?.v, desc:r.c[5]?.v||""}));
                 renderCats(); renderGrid('Barchasi');
             });
         }
-        function renderCats() {
-            const cats = ['Barchasi', ...new Set(products.map(p=>p.cat))];
-            document.getElementById('catNav').innerHTML = cats.map(c=>
-                `<div class="cat-pill tap ${c=='Barchasi'?'active':''}" onclick="filter('${c}',this)">${c}</div>`
-            ).join('');
+        function loadStories(){
+            fetch(`https://docs.google.com/spreadsheets/d/${ADS_ID}/gviz/tq?tqx=out:json`).then(r=>r.text()).then(t=>{
+                const j=JSON.parse(t.substr(47).slice(0,-2));
+                stories=j.table.rows.map(r=>r.c[0]?.v).filter(u=>u);
+                document.getElementById('storiesContainer').innerHTML=stories.map((u,i)=>`<div class="story-c tap" onclick="openStory(${i})"><img src="${u}"></div>`).join('');
+            });
         }
-        function filter(c, el) {
-            document.querySelectorAll('.cat-pill').forEach(x=>x.classList.remove('active'));
-            el.classList.add('active'); renderGrid(c);
+
+        function openStory(i){ stIdx=i; document.getElementById('storyViewer').style.display='flex'; showStory(); }
+        function showStory(){
+            if(stIdx>=stories.length){closeStory();return;}
+            document.getElementById('storyImg').src=stories[stIdx];
+            document.getElementById('storyBars').innerHTML=stories.map((_,i)=>`<div class="s-bg"><div class="s-fill ${i===stIdx?'anim':(i<stIdx?'full':'')}"></div></div>`).join('');
+            clearTimeout(stTimer); stTimer=setTimeout(nextStory,5000);
         }
-        function renderGrid(c) {
-            const list = c=='Barchasi' ? products : products.filter(p=>p.cat==c);
-            document.getElementById('menuGrid').innerHTML = list.map((p, i) => {
-                const qty = cart[p.id] || 0;
-                const btn = qty > 0 
-                    ? `<div class="qty-wrap tap" onclick="event.stopPropagation()">
-                         <div class="qb" onclick="updCart(${p.id},-1)">-</div>
-                         <div class="qn">${qty}</div>
-                         <div class="qb" onclick="updCart(${p.id},1)">+</div>
-                       </div>`
-                    : `<div class="btn-plus tap" onclick="updCart(${p.id},1);event.stopPropagation()">+</div>`;
-                
-                return `
-                <div class="card tap grid-anim" style="animation-delay:${i*0.05}s" onclick="openProd(${p.id})">
-                    <div class="card-img-wrap"><img src="${p.img}" class="card-img">
-                        <div class="card-fav ${favs[p.id]?'active':''}" onclick="toggleFav(${p.id});event.stopPropagation()">
-                            <i class="fa fa-heart"></i>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="card-title">${p.name}</div>
-                        <div class="card-footer">
-                            <div class="card-price">${p.price.toLocaleString()} so'm</div>
-                            ${btn}
-                        </div>
-                    </div>
+        function nextStory(){ stIdx++; showStory(); } function prevStory(){ if(stIdx>0)stIdx--; showStory(); } function closeStory(){ clearTimeout(stTimer); document.getElementById('storyViewer').style.display='none'; }
+
+        function renderCats(){ const c=['Barchasi',...new Set(products.map(p=>p.cat))]; document.getElementById('catNav').innerHTML=c.map(k=>`<div class="cat-pill tap ${k=='Barchasi'?'active':''}" onclick="filt('${k}',this)">${k}</div>`).join(''); }
+        function filt(c,el){ document.querySelectorAll('.cat-pill').forEach(x=>x.classList.remove('active')); el.classList.add('active'); renderGrid(c); }
+        function renderGrid(c){
+            const l=c=='Barchasi'?products:products.filter(p=>p.cat==c);
+            document.getElementById('menuGrid').innerHTML=l.map(p=>{
+                const q=cart[p.id]||0;
+                const btn = q>0 ? `<div class="qty-wrap tap" onclick="event.stopPropagation()"><div class="qb" onclick="updCart(${p.id},-1)">-</div><div class="qn">${q}</div><div class="qb" onclick="updCart(${p.id},1)">+</div></div>` : `<div class="btn-plus tap" onclick="updCart(${p.id},1);event.stopPropagation()">+</div>`;
+                return `<div class="card tap grid-anim" onclick="openProd(${p.id})">
+                    <div class="card-img-wrap"><img src="${p.img}" class="card-img"><div class="card-fav ${favs[p.id]?'active':''}" onclick="togFav(${p.id});event.stopPropagation()"><i class="fa fa-heart"></i></div></div>
+                    <div class="card-body"><div class="card-title">${p.name}</div><div class="card-footer"><div class="card-price">${p.price.toLocaleString()} so'm</div>${btn}</div></div>
                 </div>`;
             }).join('');
         }
 
-        // --- CART & GPS ---
-        function updCart(id, n) { 
-            cart[id] = (cart[id]||0)+n; if(cart[id]<=0) delete cart[id]; 
-            renderGrid(document.querySelector('.cat-pill.active').innerText); 
-            renderCart(); 
-        }
-        function renderCart() {
+        function updCart(id,n){ cart[id]=(cart[id]||0)+n; if(cart[id]<=0)delete cart[id]; renderGrid(document.querySelector('.cat-pill.active').innerText); renderCart(); }
+        function renderCart(){
             let t=0, h='';
-            for(let id in cart) {
-                const p = products.find(x=>x.id==id);
-                t += p.price * cart[id];
-                h += `<div class="cart-item">
-                    <img src="${p.img}" class="cart-thumb">
-                    <div class="cart-info">
-                        <div style="font-weight:700;">${p.name}</div>
-                        <div style="color:var(--primary); font-size:13px;">${p.price.toLocaleString()} so'm</div>
-                    </div>
-                    <div class="cart-btns">
-                        <div onclick="updCart(${p.id},-1)" style="font-size:18px; font-weight:bold; cursor:pointer;">-</div>
-                        <b>${cart[id]}</b>
-                        <div onclick="updCart(${p.id},1)" style="font-size:18px; font-weight:bold; cursor:pointer;">+</div>
-                    </div>
-                </div>`;
+            for(let id in cart){
+                const p=products.find(x=>x.id==id); t+=p.price*cart[id];
+                h+=`<div class="cart-item"><img src="${p.img}" class="cart-thumb"><div class="cart-info"><div class="cart-title">${p.name}</div><div class="cart-price">${p.price.toLocaleString()} so'm</div></div><div class="cart-controls"><div onclick="updCart(${p.id},-1)" style="font-weight:bold;font-size:18px;cursor:pointer;">-</div><b>${cart[id]}</b><div onclick="updCart(${p.id},1)" style="font-weight:bold;font-size:18px;cursor:pointer;">+</div></div></div>`;
             }
-            let disp = t.toLocaleString() + " so'm";
+            let disp = t.toLocaleString()+" so'm";
             if(activePromo) disp = `<span class="strike">${t.toLocaleString()}</span> ${(t-(t*activePromo/100)).toLocaleString()} so'm`;
-            
-            document.getElementById('cartList').innerHTML = h || "<div style='text-align:center;color:#666;padding:30px;'>Savat bo'sh</div>";
-            document.getElementById('cartTotal').innerHTML = disp;
-            
-            const btn = document.getElementById('orderBtn');
-            if(t>0 && loc) { btn.style.opacity='1'; btn.style.pointerEvents='all'; btn.innerText="BUYURTMA BERISH"; }
-            else { btn.style.opacity='0.5'; btn.style.pointerEvents='none'; }
+            document.getElementById('cartList').innerHTML=h||"<div style='text-align:center;padding:30px;color:#666'>Savat bo'sh</div>";
+            document.getElementById('cartTotal').innerHTML=disp;
+            const b=document.getElementById('orderBtn'); if(t>0&&loc){b.style.opacity='1';b.style.pointerEvents='all';}else{b.style.opacity='0.5';b.style.pointerEvents='none';}
         }
 
-        function getGPS() {
-            const b = document.getElementById('gpsBtn');
-            b.innerHTML = "<i class='fa fa-circle-notch fa-spin'></i> Aniqlanmoqda...";
+        function getGPS(){
+            const b=document.getElementById('gpsBtn'); b.innerHTML="Aniqlanmoqda...";
             if(window.Android && window.Android.checkGPS) window.Android.checkGPS();
-
-            navigator.geolocation.getCurrentPosition(p => {
-                const lat = p.coords.latitude, lng = p.coords.longitude;
-                if(shopLoc && shopLoc.radius) {
-                    const dist = getDist(lat, lng, shopLoc.lat, shopLoc.long);
-                    if(dist > shopLoc.radius) {
-                        b.innerHTML = "❌ Yetkazib berish hududidan tashqarisiz"; 
-                        b.classList.remove('ok'); b.classList.add('err');
-                        toast(`Faqat ${shopLoc.radius}km ichida ishlaymiz. Siz ${dist.toFixed(1)}km uzoqsiz.`);
-                        loc=null; renderCart(); return;
-                    }
+            navigator.geolocation.getCurrentPosition(p=>{
+                const lat=p.coords.latitude, lng=p.coords.longitude;
+                if(shopLoc && shopLoc.radius){
+                    const d=getDist(lat,lng,shopLoc.lat,shopLoc.long);
+                    if(d>shopLoc.radius){ b.innerHTML="❌ Uzoq masofa"; b.classList.add('gps-error'); loc=null; renderCart(); return; }
                 }
-                loc = {lat, long:lng};
-                b.innerHTML = "✅ Manzil aniqlandi"; 
-                b.classList.remove('err'); b.classList.add('ok');
-                renderCart();
-            }, () => {
-                b.innerHTML = "❌ GPS Xatosi"; toast("GPS yoqilganligini tekshiring!");
-            }, {enableHighAccuracy:true, timeout:10000});
+                loc={lat,long:lng}; b.innerHTML="✅ Manzil aniqlandi"; b.classList.add('gps-success'); renderCart();
+            },()=>{b.innerHTML="❌ GPS Xatosi";},{enableHighAccuracy:true});
         }
 
-        function sendOrder() {
-            const items = []; let t=0;
-            for(let id in cart) { const p=products.find(x=>x.id==id); items.push({name:p.name, qty:cart[id]}); t+=p.price*cart[id]; }
-            let final = activePromo ? t - (t*activePromo/100) : t;
-
-            db.ref('orders').push({
-                user_id: user.phone, user_info: `${user.name} (${user.phone})`,
-                items, total: final, original_total: t, promo_discount: activePromo||0,
-                location: loc, status: 'yangi', time: new Date().toLocaleString()
-            }, (e) => {
-                if(!e) {
-                    cart={}; loc=null; activePromo=null;
-                    toast("✅ Buyurtma yuborildi!");
-                    nav('history', document.querySelectorAll('.nav-btn')[2]);
-                    document.getElementById('gpsBtn').innerHTML = `<i class="fa fa-map-marker-alt"></i> Manzilni aniqlash`;
-                    document.getElementById('gpsBtn').className = "btn-gps";
-                }
-            });
+        function sendOrder(){
+            const items=[]; let t=0; for(let id in cart){const p=products.find(x=>x.id==id); items.push({name:p.name, qty:cart[id]}); t+=p.price*cart[id];}
+            let f=activePromo?t-(t*activePromo/100):t;
+            db.ref('orders').push({user_id:user.phone, user_info:`${user.name} (${user.phone})`, items, total:f, original_total:t, promo_discount:activePromo||0, location:loc, status:'yangi', time:new Date().toLocaleString()});
+            cart={}; loc=null; activePromo=null; toast("✅ Buyurtma ketdi"); nav('history',document.querySelectorAll('.nav-btn')[2]);
+            document.getElementById('gpsBtn').innerHTML="Manzilni aniqlash"; document.getElementById('gpsBtn').classList.remove('gps-success');
         }
 
-        // --- CHAT & BADGE ---
-        function loadChat() {
+        function loadChat(){
             db.ref('messages/'+user.phone.replace('+','')).limitToLast(50).on('child_added', s=>{
                 const m=s.val();
-                if(m.from === 'admin' && !document.getElementById('chatModal').style.display.includes('flex')) {
-                    document.getElementById('chatBadge').classList.add('show');
-                }
-                document.getElementById('chatBox').innerHTML += `<div style="display:flex; justify-content:${m.from=='user'?'flex-end':'flex-start'}"><div class="chat-msg ${m.from=='user'?'me':'adm'}">${m.body}</div></div>`;
-                document.getElementById('chatBox').scrollTop = 99999;
+                if(m.from==='admin' && document.getElementById('chatModal').style.display==='none') document.getElementById('chatBadge').classList.add('active');
+                document.getElementById('chatBox').innerHTML+=`<div style="display:flex;justify-content:${m.from=='user'?'flex-end':'flex-start'}"><div class="chat-bubble ${m.from=='user'?'msg-me':'msg-adm'}">${m.body}</div></div>`;
+                setTimeout(()=>document.getElementById('chatBox').scrollTop=document.getElementById('chatBox').scrollHeight, 100);
             });
         }
-        function sendChat() {
+        function sendChat(){
             const t=document.getElementById('chatInp').value; if(!t)return;
             db.ref('messages/'+user.phone.replace('+','')).push({from:'user', body:t, time:Date.now()});
             document.getElementById('chatInp').value="";
         }
 
-        // --- STORIES ---
-        function loadStories() {
-            fetch(`https://docs.google.com/spreadsheets/d/${ADS_ID}/gviz/tq?tqx=out:json`).then(r=>r.text()).then(t=>{
-                const j = JSON.parse(t.substr(47).slice(0,-2));
-                stories = j.table.rows.map(r=>r.c[0]?.v).filter(u=>u);
-                document.getElementById('storiesContainer').innerHTML = stories.map((u,i)=>`
-                    <div class="story-c tap" onclick="openStory(${i})"><img src="${u}"></div>
-                `).join('');
-            });
-        }
-        function openStory(i) { stIdx=i; document.getElementById('storyViewer').style.display='flex'; showStory(); }
-        function showStory() {
-            if(stIdx >= stories.length) { closeStory(); return; }
-            document.getElementById('storyImg').src = stories[stIdx];
-            document.getElementById('storyBars').innerHTML = stories.map((_, i)=>`
-                <div class="s-bg"><div class="s-fill ${i===stIdx?'anim':(i<stIdx?'full':'')}"></div></div>
-            `).join('');
-            clearTimeout(stTimer); stTimer = setTimeout(nextStory, 5000);
-        }
-        function nextStory() { stIdx++; showStory(); }
-        function prevStory() { if(stIdx>0) stIdx--; showStory(); }
-        function closeStory() { clearTimeout(stTimer); document.getElementById('storyViewer').style.display='none'; }
-
-        // --- HISTORY ---
-        function loadHistory() {
-            db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value', s => {
-                const d = s.val(); if(!d) return;
-                document.getElementById('histList').innerHTML = Object.values(d).reverse().map(o => {
-                    let st=o.status, cls='s-new', txt='YANGI';
-                    if(st=='kuryerda'){cls='s-deliv'; txt='KURYERDA';}
-                    if(st=='yetkazildi'){cls='s-done'; txt='YETKAZILDI';}
-                    if(st=='tayyorlanmoqda'){cls='s-cook'; txt='TAYYORLANMOQDA';}
-                    
-                    let trk = (st=='kuryerda'&&o.courier_id) ? `<button class="track-btn" onclick="track('${o.courier_id}')">Kuryerni Kuzatish</button>` : '';
-                    
-                    return `<div class="hist-card ${cls}">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                            <span style="font-size:12px; color:gray;">${o.time}</span>
-                            <span class="st-pill">${txt}</span>
-                        </div>
-                        <div style="font-size:14px; margin-bottom:10px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div>
-                        <div style="font-size:18px; font-weight:800;">${parseInt(o.total).toLocaleString()} so'm</div>
-                        ${trk}
-                    </div>`;
-                }).join('');
-            });
-        }
-        function track(cid) {
+        var carIcon=L.icon({iconUrl:'https://cdn-icons-png.flaticon.com/512/3202/3202926.png',iconSize:[40,40],iconAnchor:[20,20]});
+        function track(cid){
             document.getElementById('mapModal').style.display='block';
-            if(!map) { map = L.map('map').setView([41, 69], 13); L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map); }
-            setTimeout(()=>map.invalidateSize(), 500);
-            db.ref('couriers/'+cid+'/location').on('value', s=>{
-                const d=s.val(); if(!d) return;
-                if(courierMark) courierMark.setLatLng([d.lat, d.long]); else courierMark = L.marker([d.lat, d.long]).addTo(map);
-                map.panTo([d.lat, d.long]);
+            if(!map){map=L.map('map').setView([41,69],13); L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);}
+            setTimeout(()=>map.invalidateSize(),500);
+            db.ref('couriers/'+cid+'/location').on('value',s=>{
+                const d=s.val(); if(!d)return;
+                if(carMarker) carMarker.setLatLng([d.lat,d.long]); else carMarker=L.marker([d.lat,d.long],{icon:carIcon}).addTo(map);
+                map.panTo([d.lat,d.long]);
             });
         }
 
-        // --- UTILS ---
-        function getDist(lat1, lon1, lat2, lon2) {
-            var R = 6371; var dLat = (lat2-lat1)*Math.PI/180; var dLon = (lon2-lon1)*Math.PI/180;
-            var a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)*Math.sin(dLon/2);
-            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return R * c;
-        }
-        function nav(p, el) {
-            document.querySelectorAll('.page-cont').forEach(x=>x.classList.remove('active'));
-            document.getElementById('p-'+p).classList.add('active');
-            document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
-            el.classList.add('active');
-            if(p=='cart') renderCart();
-        }
-        function openProd(id) {
-            const p=products.find(x=>x.id==id); tempPmId=id; tempPmQty=1;
-            document.getElementById('pmImg').src=p.img; document.getElementById('pmName').innerText=p.name;
-            document.getElementById('pmPrice').innerText=p.price.toLocaleString()+" so'm";
-            document.getElementById('pmDesc').innerText=p.desc; document.getElementById('pmQty').innerText="1";
-            openModal('prodModal');
-        }
-        function pmQ(n){tempPmQty+=n; if(tempPmQty<1)tempPmQty=1; document.getElementById('pmQty').innerText=tempPmQty;}
-        function addFromModal(){ updCart(tempPmId, tempPmQty); closeModal('prodModal'); }
-        function openFavs() {
-            const list = products.filter(p=>favs[p.id]);
-            document.getElementById('favList').innerHTML = list.map(p=>`
-                <div class="fav-box">
-                    <div class="fav-del" onclick="toggleFav(${p.id}); openFavs()">✕</div>
-                    <img src="${p.img}"><div style="font-size:11px;">${p.name}</div>
-                    <button style="width:100%; margin-top:5px; background:var(--primary); border:none; border-radius:6px;" onclick="updCart(${p.id},1); closeModal('favModal')">+</button>
-                </div>
-            `).join('') || "Bo'sh";
-            openModal('favModal');
-        }
-        function toggleFav(id) {
-            if(favs[id]) delete favs[id]; else favs[id]=true;
-            db.ref('users/'+user.phone.replace('+','')+'/favorites').set(favs);
-            renderGrid(document.querySelector('.cat-pill.active').innerText);
-        }
-        function checkPromo(){
-            const c=document.getElementById('promoInp').value.toUpperCase();
-            db.ref('promocodes/'+c).once('value', s=>{
-                if(s.val() && s.val().limit>0) { activePromo=s.val().discount; document.getElementById('promoMsg').innerHTML=`<b style="color:var(--success)">✅ ${activePromo}% Chegirma!</b>`; renderCart(); }
-                else document.getElementById('promoMsg').innerHTML=`<b style="color:var(--danger)">❌ Xato kod</b>`;
+        function openPromoList(){
+            openModal('promoListModal');
+            db.ref('promocodes').once('value',s=>{
+                const d=s.val(); if(!d){document.getElementById('promoListContent').innerHTML="Kod yo'q";return;}
+                let h=""; for(let k in d){if(d[k].limit>0) h+=`<div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:12px;margin-bottom:10px;display:flex;justify-content:space-between;"><b>${k}</b><span style="color:var(--green)">${d[k].discount}% Chegirma</span></div>`;}
+                document.getElementById('promoListContent').innerHTML=h||"Aktiv kod yo'q";
             });
         }
-        function openNews() {
-            db.ref('news').limitToLast(10).once('value', s=>{
-                const d = s.val();
-                document.getElementById('newsContent').innerHTML = d ? Object.values(d).reverse().map(n=>`
-                    <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-bottom:10px;">
-                        <div style="font-weight:700; margin-bottom:5px;">${n.text}</div>
-                        <div style="font-size:11px; color:gray;">${n.date}</div>
-                    </div>`).join('') : "Yangilik yo'q";
-                openModal('newsModal');
-            });
-        }
-        function openModal(id) { document.getElementById(id).style.display='flex'; if(id=='chatModal') document.getElementById('chatBadge').classList.remove('show'); }
-        function closeModal(id) { document.getElementById(id).style.display='none'; }
-        function toggleDrawer() { document.getElementById('drawerPanel').classList.toggle('active'); document.getElementById('drawerOverlay').classList.toggle('active'); }
-        function toast(m) { const d=document.createElement('div'); d.className='toast'; d.innerText=m; document.getElementById('toastBox').appendChild(d); setTimeout(()=>d.remove(),3000); }
-        function logout() { localStorage.removeItem('cafe_uid'); location.reload(); }
-        function copy(t) { navigator.clipboard.writeText(t); toast("Nusxalandi"); }
-        function toggleTheme() { document.body.classList.toggle('light-mode'); document.getElementById('themeTxt').innerText=document.body.classList.contains('light-mode')?"Kunduzgi rejim":"Tungi rejim"; localStorage.setItem('theme', document.body.classList.contains('light-mode')?'light':'dark'); }
+
+        function nav(p,el){document.querySelectorAll('.page-cont').forEach(x=>x.classList.remove('active'));document.getElementById('p-'+p).classList.add('active');document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));el.classList.add('active');if(p=='cart')renderCart();}
+        function openModal(id){document.getElementById(id).style.display='flex'; if(id=='chatModal')document.getElementById('chatBadge').classList.remove('active');}
+        function closeModal(id){document.getElementById(id).style.display='none';}
+        function toggleDrawer(){document.getElementById('drawerPanel').classList.toggle('active');document.getElementById('drawerOverlay').classList.toggle('active');}
+        function toast(m){const d=document.createElement('div');d.className='toast';d.innerText=m;document.getElementById('toastBox').appendChild(d);setTimeout(()=>d.remove(),3000);}
+        function openProd(id){const p=products.find(x=>x.id==id);tempPmId=id;tempPmQty=1;document.getElementById('pmImg').src=p.img;document.getElementById('pmName').innerText=p.name;document.getElementById('pmPrice').innerText=p.price.toLocaleString()+" so'm";document.getElementById('pmDesc').innerText=p.desc;document.getElementById('pmQty').innerText="1";openModal('prodModal');}
+        function pmQ(n){tempPmQty+=n;if(tempPmQty<1)tempPmQty=1;document.getElementById('pmQty').innerText=tempPmQty;}
+        function addFromModal(){updCart(tempPmId,tempPmQty);closeModal('prodModal');}
+        function togFav(id){if(favs[id])delete favs[id];else favs[id]=true;db.ref('users/'+user.phone.replace('+','')+'/favorites').set(favs);renderGrid(document.querySelector('.cat-pill.active').innerText);}
+        function openFavs(){const l=products.filter(p=>favs[p.id]);document.getElementById('favList').innerHTML=l.map(p=>`<div class="fav-item"><div class="fav-del" onclick="togFav(${p.id});openFavs()">✕</div><img src="${p.img}"><div style="font-size:11px;">${p.name}</div><button style="width:100%;margin-top:5px;background:var(--primary);border:none;border-radius:6px;" onclick="updCart(${p.id},1);closeModal('favModal')">+</button></div>`).join('')||"Bo'sh";openModal('favModal');}
+        function checkPromo(){const c=document.getElementById('promoInp').value.toUpperCase();db.ref('promocodes/'+c).once('value',s=>{if(s.val()&&s.val().limit>0){activePromo=s.val().discount;document.getElementById('promoMsg').innerHTML=`<b style="color:var(--success)">✅ ${activePromo}% Chegirma!</b>`;renderCart();}else{document.getElementById('promoMsg').innerHTML=`<b style="color:var(--red)">❌ Xato kod</b>`;}});}
+        function loadHistory(){db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value',s=>{const d=s.val();if(!d)return;document.getElementById('histList').innerHTML=Object.values(d).reverse().map(o=>{let st=o.status,cls='status-new',txt='YANGI';if(st=='kuryerda'){cls='status-deliv';txt='KURYERDA';}if(st=='yetkazildi'){cls='status-done';txt='YETKAZILDI';}if(st=='tayyorlanmoqda'){cls='status-cook';txt='TAYYORLANMOQDA';}let trk=(st=='kuryerda'&&o.courier_id)?`<button class="btn-track" onclick="track('${o.courier_id}')">Kuryerni Kuzatish</button>`:'';return `<div class="hist-card ${cls}"><div class="h-header"><span style="font-size:12px;color:gray;">${o.time}</span><span class="h-badge">${txt}</span></div><div style="font-size:14px;margin-bottom:10px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div><div style="font-size:18px;font-weight:800;">${parseInt(o.total).toLocaleString()} so'm</div>${trk}</div>`;}).join('');});}
+        function getDist(lat1,lon1,lat2,lon2){var R=6371;var dLat=(lat2-lat1)*Math.PI/180;var dLon=(lon2-lon1)*Math.PI/180;var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);var c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));return R*c;}
+        function logout(){localStorage.removeItem('cafe_uid');location.reload();}
+        function copy(t){navigator.clipboard.writeText(t);toast("Nusxalandi");}
+        function toggleTheme(){document.body.classList.toggle('light-mode');localStorage.setItem('theme',document.body.classList.contains('light-mode')?'light':'dark');}
+        function openNews(){db.ref('news').limitToLast(10).once('value',s=>{document.getElementById('newsContent').innerHTML=Object.values(s.val()||{}).reverse().map(n=>`<div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:15px;margin-bottom:10px;"><div style="font-weight:700;margin-bottom:5px;">${n.text}</div><div style="font-size:11px;color:gray;">${n.date}</div></div>`).join('')||"Yo'q";openModal('newsModal');});}
     </script>
 </body>
 </html>
