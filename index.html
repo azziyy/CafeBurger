@@ -8,6 +8,38 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <style>
+/* Sevimlilar ro'yxatidagi savatga qo'shish tugmasi */
+.fav-add-btn {
+    width: 100%; 
+    margin-top: 10px; 
+    padding: 12px;
+    background: var(--primary) !important; /* To'liq oltin/sariq rang */
+    color: #000 !important; /* Matn qora rangda (aniq ko'rinishi uchun) */
+    border: none;
+    border-radius: 14px; /* Yumaloq burchaklar */
+    font-weight: 800; 
+    font-size: 14px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); /* Pastga soya berish */
+    transition: 0.2s ease;
+}
+
+.fav-add-btn:active {
+    transform: scale(0.95); /* Bosilganda effekt */
+}
+
+/* Karta ichidagi ma'lumotlar konteyneri */
+.fav-card-body {
+    padding: 12px; 
+    display: flex; 
+    flex-direction: column; 
+    background: var(--bg-card); /* Karta foni orqa fondan ajralib turishi uchun */
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
 /* Sevimlilar ro'yxatidagi X tugmasi uchun maxsus stil */
 .fav-del { 
     position: absolute; 
@@ -784,29 +816,38 @@
         function addFromModal(){updCart(tempPmId,tempPmQty);closeModal('prodModal');}
         function togFav(id){if(favs[id])delete favs[id];else favs[id]=true;db.ref('users/'+user.phone.replace('+','')+'/favorites').set(favs);renderGrid(document.querySelector('.cat-pill.active').innerText);}
         function openFavs() {
-    const l = products.filter(p => favs[p.id]);
-    document.getElementById('favList').innerHTML = l.map(p => `
-        <div class="fav-box grid-anim">
-            <div class="fav-del tap" onclick="event.stopPropagation(); togFav(${p.id}); openFavs();">
+    const list = products.filter(p => favs[p.id]);
+    const container = document.getElementById('favList');
+    
+    container.innerHTML = list.map(p => `
+        <div class="fav-card">
+            <div class="fav-x tap" onclick="event.stopPropagation(); togFav(${p.id}); openFavs();">
                 <i class="fa fa-times"></i>
             </div>
             
-            <img src="${p.img}" class="tap" onclick="openProd(${p.id})">
-            
-            <div style="font-size:12px; font-weight:600; margin-top:5px; height:32px; overflow:hidden;">
-                ${p.name}
+            <div class="fav-img-box">
+                <img src="${p.img}" alt="${p.name}">
             </div>
             
-            <button class="btn-main tap" 
-                    style="width:100%; margin-top:5px; padding:8px; font-size:12px; background:var(--gold); border-radius:8px;" 
-                    onclick="event.stopPropagation(); updCart(${p.id}, 1); closeModal('favModal'); toast('Savatga qo\\'shildi');">
-                <i class="fa fa-plus"></i> Savatga
-            </button>
+            <div class="fav-card-body">
+                <div style="font-weight:700; font-size:14px; height:34px; overflow:hidden; margin-bottom:5px;">
+                    ${p.name}
+                </div>
+                <div style="color:var(--primary); font-weight:800; font-size:15px;">
+                    ${p.price.toLocaleString()} so'm
+                </div>
+                
+                <button class="fav-add-btn tap" onclick="event.stopPropagation(); updCart(${p.id}, 1); closeModal('favModal'); toast('Savatga qo\\'shildi');">
+                    <i class="fa fa-shopping-basket"></i> Savatga
+                </button>
+            </div>
         </div>
-    `).join('') || "<div style='grid-column:span 3; text-align:center; padding:20px; color:var(--sub);'>Sevimlilar ro'yxati bo'sh</div>";
+    `).join('') || "<div style='grid-column:span 2; text-align:center; padding:40px; color:var(--text-muted);'>Bo'sh</div>";
     
-    openModal('favModal');
+    document.getElementById('favModal').style.display = 'flex';
 }
+
+
 
 
         function checkPromo(){const c=document.getElementById('promoInp').value.toUpperCase();db.ref('promocodes/'+c).once('value',s=>{if(s.val()&&s.val().limit>0){activePromo=s.val().discount;document.getElementById('promoMsg').innerHTML=`<b style="color:var(--success)">✅ ${activePromo}% Chegirma!</b>`;renderCart();}else{document.getElementById('promoMsg').innerHTML=`<b style="color:var(--red)">❌ Xato kod</b>`;}});}
