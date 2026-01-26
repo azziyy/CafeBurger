@@ -12,13 +12,14 @@
        1. GLOBAL SOZLAMALAR (PREMIUM DARK)
        ========================================================= */
     :root {
-        --bg: #09090b; --card: #18181b; --text: #ffffff; --text-sub: #a1a1aa;
+        --bg: #09090b; --card: #18181b; --text: #ffffff; --sub: #a1a1aa;
         --gold: #FFD700; --danger: #ef4444; --success: #22c55e; --blue: #3b82f6;
         --glass: rgba(24, 24, 27, 0.95); --radius: 18px;
+        --border: 1px solid rgba(255,255,255,0.08);
     }
     body.light-mode {
-        --bg: #f4f4f5; --card: #ffffff; --text: #18181b; --text-sub: #71717a;
-        --glass: rgba(255, 255, 255, 0.95);
+        --bg: #f4f4f5; --card: #ffffff; --text: #18181b; --sub: #71717a;
+        --glass: rgba(255, 255, 255, 0.95); --border: 1px solid rgba(0,0,0,0.08);
     }
     
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
@@ -32,135 +33,74 @@
     .tap:active { transform: scale(0.95); opacity: 0.8; transition: 0.1s; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); } }
-
-/* --- DRAWER (PREMIUM STYLE) --- */
-
-/* Overlay (Orqa fon qorayishi) */
-.drawer-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.7); z-index: 9000;
-    opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(3px);
-}
-.drawer-overlay.active { opacity: 1; visibility: visible; }
-
-/* Asosiy Panel */
-.drawer-panel {
-    position: fixed; top: 0; left: -85%; width: 85%; height: 100%;
-    background: var(--bg); z-index: 9001;
-    transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-    display: flex; flex-direction: column;
-    box-shadow: 5px 0 30px rgba(0,0,0,0.5);
-    border-right: 1px solid rgba(255,255,255,0.05);
-}
-.drawer-panel.active { left: 0; }
-
-/* Header Qismi */
-.drawer-header-premium {
-    padding: 40px 20px 30px;
-    background: linear-gradient(135deg, rgba(255,215,0,0.1), transparent);
-    display: flex; align-items: center; gap: 15px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.drawer-logo-box {
-    width: 50px; height: 50px; background: var(--gold); color: #000;
-    border-radius: 15px; display: flex; align-items: center; justify-content: center;
-    font-size: 24px; box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
-}
-.drawer-info h2 { margin: 0; font-size: 20px; color: var(--text); font-weight: 800; }
-.drawer-info h2 span { color: var(--gold); }
-.drawer-info p { margin: 2px 0 0; font-size: 12px; color: var(--sub); letter-spacing: 1px; text-transform: uppercase; }
-.drawer-close-btn { 
-    margin-left: auto; width: 35px; height: 35px; 
-    background: rgba(255,255,255,0.05); border-radius: 50%;
-    display: flex; align-items: center; justify-content: center; color: var(--sub);
-}
-
-/* Menu Qismi */
-.drawer-content-premium { padding: 20px; flex: 1; overflow-y: auto; }
-
-.d-item-pro {
-    display: flex; align-items: center; gap: 15px;
-    padding: 15px; margin-bottom: 12px;
-    background: var(--card); border-radius: 18px;
-    border: 1px solid rgba(255,255,255,0.03);
-    transition: 0.2s;
-}
-.d-item-pro:active { transform: scale(0.98); background: rgba(255,255,255,0.05); }
-
-.d-icon-box {
-    width: 40px; height: 40px; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center; font-size: 18px;
-}
-/* Icon orqa fon ranglari */
-.purple { background: rgba(157, 0, 255, 0.15); color: #be5eff; }
-.gold { background: rgba(255, 215, 0, 0.15); color: var(--gold); }
-.blue { background: rgba(10, 132, 255, 0.15); color: var(--blue); }
-
-.d-text { display: flex; flex-direction: column; flex: 1; }
-.d-text span { font-weight: 700; font-size: 15px; color: var(--text); }
-.d-text small { font-size: 11px; color: var(--sub); margin-top: 2px; }
-
-.d-arrow { color: var(--sub); font-size: 12px; }
-
-/* Footer Qismi */
-.drawer-footer-premium { padding: 20px; text-align: center; }
-
-.btn-logout-pro {
-    width: 100%; padding: 15px;
-    background: rgba(255, 69, 58, 0.1); color: var(--danger);
-    border: 1px solid rgba(255, 69, 58, 0.2); border-radius: 18px;
-    font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;
-    margin-bottom: 15px;
-}
-.app-ver { color: var(--sub); font-size: 11px; opacity: 0.5; }
-
-
+    
     /* =========================================================
-       3. HEADER & STORIES
+       2. HEADER & DRAWER
        ========================================================= */
     .header { 
         position: fixed; top: 0; width: 100%; height: 60px; 
         background: var(--glass); backdrop-filter: blur(20px); 
         z-index: 5000; display: flex; align-items: center; justify-content: space-between; 
-        padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        padding: 0 20px; border-bottom: var(--border);
     }
     .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; } 
-    .logo span { color: var(--gold); }
-
-    /* Stories */
-    .stories-area {
-        margin-top: 65px; padding: 10px 15px; display: flex; gap: 12px; 
-        overflow-x: auto; scrollbar-width: none;
+    .logo span { color: var(--gold); text-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
+    
+    .chat-wrap { position: relative; padding: 5px; }
+    .badge { 
+        position: absolute; top: 0; right: 0; width: 10px; height: 10px; 
+        background: var(--danger); border-radius: 50%; border: 2px solid var(--bg);
+        display: none; box-shadow: 0 0 5px var(--danger);
     }
-    .story-bubble {
-        min-width: 72px; height: 72px; border-radius: 50%; padding: 3px;
-        background: linear-gradient(45deg, #f09433, #e6683c, #cc2366);
+    .badge.active { display: block; }
+
+    /* Drawer Menu */
+    .drawer-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8); z-index: 9000;
+        opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(5px);
+    }
+    .drawer-overlay.active { opacity: 1; visibility: visible; }
+    
+    .drawer {
+        position: fixed; top: 0; left: -85%; width: 80%; height: 100%;
+        background: var(--card); z-index: 9001;
+        transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        display: flex; flex-direction: column; padding: 40px 25px;
+        box-shadow: 10px 0 50px rgba(0,0,0,0.5);
+    }
+    .drawer.active { left: 0; }
+    
+    .d-head { margin-bottom: 40px; border-bottom: var(--border); padding-bottom: 20px; }
+    .d-head h2 { color: var(--gold); margin: 0; font-size: 28px; }
+    .d-head p { color: var(--sub); margin: 5px 0 0; font-size: 14px; }
+    
+    .d-item {
+        display: flex; align-items: center; gap: 15px; padding: 16px; margin-bottom: 10px;
+        background: rgba(255,255,255,0.03); border-radius: 15px;
+        font-weight: 600; border: var(--border); cursor: pointer;
+    }
+    .d-icon { width: 30px; text-align: center; font-size: 20px; color: var(--text); }
+    .d-footer { margin-top: auto; color: var(--danger); font-weight: bold; border: 1px solid rgba(255, 69, 58, 0.3); padding: 15px; text-align: center; border-radius: 15px; }
+
+    /* =========================================================
+       3. SAHIFALAR & MENU
+       ========================================================= */
+    .page { display: none; padding-top: 65px; animation: fadeIn 0.4s; }
+    .page.active { display: block; }
+
+    .stories-row {
+        display: flex; gap: 12px; padding: 10px 15px; overflow-x: auto; scrollbar-width: none;
+    }
+    .story-c {
+        min-width: 76px; height: 76px; border-radius: 50%; padding: 3px;
+        background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366);
         position: relative; flex-shrink: 0;
     }
-    .story-bubble img { 
-        width: 100%; height: 100%; border-radius: 50%; 
-        border: 3px solid var(--bg); object-fit: cover; 
+    .story-c img {
+        width: 100%; height: 100%; border-radius: 50%;
+        border: 3px solid var(--bg); object-fit: cover;
     }
-
-    /* Story Viewer */
-    #storyViewer {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: #000; z-index: 99999; display: none; flex-direction: column;
-    }
-    .story-bars { position: absolute; top: 15px; left: 10px; right: 10px; z-index: 100; display: flex; gap: 5px; }
-    .bar-bg { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; }
-    .bar-fill { height: 100%; background: #fff; width: 0%; }
-    .bar-fill.anim { animation: storyProg 5s linear forwards; }
-    .bar-fill.seen { width: 100%; }
-    @keyframes storyProg { to { width: 100%; } }
-    .story-img-full { width: 100%; height: 100%; object-fit: contain; }
-    
-    /* =========================================================
-       4. MAHSULOT KARTASI
-       ========================================================= */
-    .page-cont { display: none; padding-bottom: 20px; animation: fadeIn 0.4s; }
-    .page-cont.active { display: block; }
 
     .cat-bar {
         display: flex; gap: 10px; overflow-x: auto; padding: 5px 15px 15px;
@@ -169,93 +109,92 @@
     }
     .cat-pill {
         padding: 8px 22px; border-radius: 25px; background: var(--card);
-        color: var(--text-sub); font-weight: 600; white-space: nowrap;
-        border: 1px solid rgba(255,255,255,0.05); transition: 0.3s;
+        color: var(--sub); font-weight: 600; white-space: nowrap;
+        border: var(--border); transition: 0.3s;
     }
     .cat-pill.active {
         background: var(--gold); color: #000; border-color: var(--gold);
         transform: scale(1.05); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
     }
 
-    .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 15px 20px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 15px 15px; }
     
     .card {
         background: var(--card); border-radius: 18px; overflow: hidden;
         display: flex; flex-direction: column; position: relative;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        border: var(--border); box-shadow: 0 8px 20px rgba(0,0,0,0.1);
     }
-    .card-img-wrap { width: 100%; height: 150px; position: relative; }
-    .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .card-img-box { width: 100%; height: 160px; position: relative; }
+    .card-img-box img { width: 100%; height: 100%; object-fit: cover; } /* RASM TÒLIQ */
     
-    .card-title { font-weight: 700; font-size: 14px; margin-bottom: 5px; height: 36px; overflow: hidden; line-height: 1.2; padding: 0 10px; margin-top: 10px; }
-    .card-footer {
-        padding: 10px; margin-top: auto; display: flex; justify-content: space-between; align-items: center;
+    /* YURAKCHA RASM ICHIDA */
+    .fav-btn-card {
+        position: absolute; top: 10px; right: 10px; width: 32px; height: 32px;
+        background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        color: white; z-index: 2; font-size: 14px;
     }
-    .card-price { color: var(--gold); font-weight: 900; font-size: 15px; }
+    .fav-btn-card.active { background: white; color: var(--danger); }
+
+    .card-info { padding: 12px; flex: 1; display: flex; flex-direction: column; }
+    .card-title { font-weight: 700; font-size: 15px; margin-bottom: 5px; height: 38px; overflow: hidden; line-height: 1.3; }
+    .card-foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; }
+    .card-price { color: var(--gold); font-weight: 900; font-size: 16px; }
     
-    .btn-plus-mini {
-        width: 30px; height: 30px; background: var(--gold); color: #000;
-        border-radius: 8px; display: flex; align-items: center; justify-content: center;
-        font-size: 18px; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.2);
-    }
-    .qty-control-mini {
-        display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1);
-        padding: 2px 6px; border-radius: 8px; border: 1px solid var(--gold);
-    }
+    .btn-add { width: 34px; height: 34px; background: var(--gold); color: #000; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; }
+    .qty-mini { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 10px; border: 1px solid var(--gold); }
+    .qm-btn { font-size: 18px; font-weight: bold; color: var(--gold); width: 20px; text-align: center; }
 
     /* =========================================================
-       5. SAVAT
+       4. SAVAT (RASM KICHIKLASHTIRILDI)
        ========================================================= */
     .cart-item {
         background: var(--card); padding: 10px; border-radius: 16px;
-        margin-bottom: 12px; display: flex; align-items: center; gap: 12px;
-        border: 1px solid rgba(255,255,255,0.05);
+        margin-bottom: 12px; display: flex; align-items: center; gap: 15px;
+        border: var(--border);
     }
-    /* RASM O'LCHAMI (FIXED) */
+    /* RASM O'LCHAMI: 60px */
     .cart-thumb { 
-        width: 60px; height: 60px; border-radius: 10px; 
-        object-fit: cover; flex-shrink: 0; 
+        width: 60px !important; height: 60px !important; 
+        border-radius: 12px; object-fit: cover; flex-shrink: 0; 
     }
-    .cart-info { flex: 1; overflow: hidden; }
-    .cart-title { font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
-    .cart-price { color: var(--gold); font-size: 13px; font-weight: 600; }
+    .cart-det { flex: 1; }
+    .cart-det h4 { margin: 0; font-size: 15px; }
+    .cart-det p { margin: 2px 0 0; color: var(--gold); font-weight: 600; font-size: 13px; }
     
-    /* Oval Tugmalar */
-    .cart-actions {
-        display: flex; align-items: center; background: #2a2a2a;
+    .cart-capsule {
+        display: flex; align-items: center; background: #222; 
         border-radius: 20px; border: 1px solid #333; padding: 2px;
     }
-    .ca-btn { width: 30px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
-    .ca-val { width: 20px; text-align: center; font-size: 14px; font-weight: bold; }
+    .cc-btn { width: 30px; height: 28px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; }
+    .cc-num { width: 25px; text-align: center; font-weight: bold; font-size: 14px; }
 
-    .btn-main {
-        width: 100%; padding: 16px; background: var(--gold); color: #000;
-        font-weight: 800; border: none; border-radius: 18px; font-size: 16px;
-        margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;
-    }
-    .btn-gps {
-        width: 100%; padding: 14px; background: #333; color: white;
-        border-radius: 18px; display: flex; align-items: center; justify-content: center; gap: 10px;
-        font-weight: 600; border: 1px solid rgba(255,255,255,0.1);
-    }
+    .cart-footer { padding: 20px; padding-bottom: 120px; }
+    .promo-row { display: flex; gap: 10px; background: var(--card); padding: 10px; border-radius: 15px; border: var(--border); margin-bottom: 15px; }
+    .promo-row input { flex: 1; background: transparent; border: none; color: var(--text); font-size: 16px; text-transform: uppercase; }
+    .promo-row button { background: var(--gold); border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; }
+    
+    .total-row { display: flex; justify-content: space-between; font-size: 20px; font-weight: 900; margin-bottom: 20px; }
+    .btn-main { width: 100%; padding: 16px; background: var(--gold); color: #000; border-radius: 18px; font-weight: 800; border: none; font-size: 16px; margin-top: 10px; }
+    .btn-gps { width: 100%; padding: 14px; background: #333; color: white; border-radius: 18px; margin-bottom: 10px; border: 1px solid #444; font-weight: 600; }
     .btn-gps.ok { background: var(--success); border-color: var(--success); }
     .btn-gps.err { background: var(--danger); border-color: var(--danger); }
 
     /* =========================================================
-       6. TARIX & PROFIL
+       5. TARIX (RANGLI STATUSLAR)
        ========================================================= */
     .hist-card {
-        background: var(--card); padding: 15px; border-radius: 16px;
-        margin-bottom: 12px; border-left: 4px solid; position: relative;
+        background: var(--card); padding: 18px; border-radius: 18px;
+        margin-bottom: 15px; border-left: 5px solid; position: relative;
     }
-    .h-head { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; color: var(--text-sub); }
+    .h-head { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; color: var(--sub); }
     .st-badge { padding: 4px 10px; border-radius: 6px; font-weight: 900; font-size: 11px; text-transform: uppercase; }
     
     /* Status Ranglari */
     .s-new { border-color: var(--blue); } .s-new .st-badge { background: rgba(59,130,246,0.2); color: var(--blue); }
     .s-cook { border-color: orange; } .s-cook .st-badge { background: rgba(255,165,0,0.2); color: orange; }
     .s-deliv { border-color: var(--gold); } .s-deliv .st-badge { background: rgba(255,215,0,0.2); color: var(--gold); }
-    .s-done { border-color: var(--green); } .s-done .st-badge { background: rgba(34,197,94,0.2); color: var(--success); }
+    .s-done { border-color: var(--success); } .s-done .st-badge { background: rgba(34,197,94,0.2); color: var(--success); }
 
     .track-btn {
         width: 100%; padding: 12px; background: linear-gradient(45deg, #FFD700, #FFA500);
@@ -263,47 +202,41 @@
         display: flex; align-items: center; justify-content: center; gap: 8px; animation: pulse 2s infinite;
     }
 
+    /* =========================================================
+       6. PROFIL (AVATAR O'RNI)
+       ========================================================= */
     .prof-head { text-align: center; padding: 50px 0 30px; background: linear-gradient(180deg, rgba(255,215,0,0.1), transparent); }
-    .avatar {
-        width: 100px; height: 100px; background: var(--card); border: 3px solid var(--gold);
-        border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        font-size: 40px; color: var(--gold); margin: 20px auto 15px; /* Margin fix */
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    }
+    /* AVATAR TEPASIDAN JOY OCHILDI */
+    .avatar { width: 100px; height: 100px; background: var(--card); border: 3px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; color: var(--gold); margin: 30px auto 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
     
     .prof-menu { padding: 0 20px; }
-    .prof-btn {
-        background: var(--card); padding: 20px; border-radius: 20px;
-        margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
-        font-weight: 600; border: 1px solid rgba(255,255,255,0.05);
-    }
+    .mc-icon { width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .mc-icon.red { background: rgba(255,71,87,0.15); color: var(--danger); }
+    .mc-icon.blue { background: rgba(42,171,238,0.15); color: var(--blue); }
+    .mc-icon.green { background: rgba(46,204,113,0.15); color: var(--success); }
+    .mc-icon.gold { background: rgba(255,215,0,0.15); color: var(--gold); }
 
-    /* Sevimlilar Grid (TUZATILDI) */
+    /* SEVIMLILAR GRID (KICHIK RASMLAR) */
     .fav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .fav-box {
-        background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px;
+    .fav-box { 
+        background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px; 
         text-align: center; position: relative; border: 1px solid rgba(255,255,255,0.05);
         display: flex; flex-direction: column; align-items: center;
     }
-    /* RASMLAR KICHIKLASHTIRILDI */
-    .fav-box img { 
-        width: 60px; height: 60px; object-fit: cover; 
-        border-radius: 10px; margin-bottom: 5px; 
-    }
-    .fav-del {
-        position: absolute; top: -5px; right: -5px; width: 22px; height: 22px;
-        background: var(--danger); color: white; border-radius: 50%;
+    .fav-box img { width: 60px; height: 60px; object-fit: cover; border-radius: 10px; margin-bottom: 5px; }
+    .fav-del { 
+        position: absolute; top: -5px; right: -5px; width: 22px; height: 22px; 
+        background: var(--danger); color: white; border-radius: 50%; 
         display: flex; align-items: center; justify-content: center; font-size: 12px;
     }
 
     /* =========================================================
-       7. MODALLAR (BOTTOM SHEET) & NAVBAR
+       7. MODALLAR & NAVBAR
        ========================================================= */
     .modal-wrap {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.85); z-index: 8000;
-        display: none; align-items: flex-end; justify-content: center;
-        backdrop-filter: blur(5px);
+        background: rgba(0,0,0,0.85); z-index: 8000; display: none;
+        align-items: flex-end; justify-content: center; backdrop-filter: blur(5px);
     }
     .sheet {
         background: #1c1c1e; width: 100%; max-width: 500px;
@@ -312,122 +245,99 @@
         border-top: 1px solid rgba(255,255,255,0.1);
         max-height: 85vh; overflow-y: auto;
     }
-    .sheet-close { position: absolute; top: 20px; right: 20px; font-size: 24px; color: var(--text-sub); cursor: pointer; }
+    .sheet-close { position: absolute; top: 20px; right: 20px; font-size: 24px; color: var(--sub); cursor: pointer; }
 
-    /* Login Full Screen */
+    /* Chat Bubble */
+    #chatBox { flex: 1; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 15px; padding: 15px; margin: 15px 0; min-height: 300px; }
+    .msg-bubble { padding: 10px 15px; border-radius: 18px; max-width: 80%; margin-bottom: 10px; font-size: 14px; position: relative; }
+    .me { background: var(--gold); color: black; margin-left: auto; border-bottom-right-radius: 4px; }
+    .adm { background: #333; color: white; align-self: flex-start; border-bottom-left-radius: 4px; }
+    .chat-inp { display: flex; gap: 10px; }
+    .chat-inp input { flex: 1; background: #333; border: none; padding: 12px; border-radius: 12px; color: white; }
+    .chat-inp button { width: 50px; background: var(--gold); border: none; border-radius: 12px; font-size: 18px; }
+
+    /* Login */
     #loginModal { align-items: center; z-index: 99999; background: var(--bg); display: flex; }
     .login-box { text-align: center; width: 85%; }
     .login-icon { width: 80px; height: 80px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; color: white; margin: 0 auto 20px; box-shadow: 0 0 40px rgba(59,130,246,0.4); }
+
+    /* Map */
+    #mapModal { background: #fff; z-index: 9500; }
+    #map { width: 100%; height: 100%; }
+    .map-back { position: absolute; top: 40px; left: 20px; z-index: 9501; padding: 10px 20px; border: none; background: white; font-weight: bold; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
 
     /* Navbar */
     .navbar {
         position: fixed; bottom: 0; width: 100%; height: 75px;
         background: var(--glass); backdrop-filter: blur(15px);
         display: flex; justify-content: space-around; align-items: center;
-        border-radius: 25px 25px 0 0; z-index: 4500; border-top: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;
+        border-radius: 25px 25px 0 0; z-index: 4500; border-top: var(--border);
     }
-    .nav-btn { display: flex; flex-direction: column; align-items: center; color: var(--text-sub); font-size: 10px; font-weight: 700; transition: 0.3s; position: relative; }
+    .nav-btn { display: flex; flex-direction: column; align-items: center; color: var(--sub); font-size: 10px; font-weight: 700; transition: 0.3s; position: relative; }
     .nav-btn i { font-size: 24px; margin-bottom: 5px; }
     .nav-btn.active { color: var(--gold); transform: translateY(-5px); }
-    .nav-badge { position: absolute; top: -2px; right: 5px; background: var(--red); color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px; }
+    .nav-badge { position: absolute; top: -2px; right: 5px; background: var(--danger); color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px; }
 
-    /* Chat Bubble */
-    .chat-bubble { padding: 10px 14px; border-radius: 16px; max-width: 80%; margin-bottom: 10px; font-size: 14px; }
-    .me { background: var(--gold); color: black; align-self: flex-end; border-bottom-right-radius: 4px; }
-    .adm { background: #333; color: white; align-self: flex-start; border-bottom-left-radius: 4px; }
+    /* Story Viewer */
+    #storyViewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; }
+    .s-bars { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; gap: 5px; z-index: 100; }
+    .s-bg { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 2px; }
+    .s-fill { height: 100%; background: white; width: 0%; }
+    .s-fill.anim { animation: fill 5s linear forwards; }
+    .s-fill.seen { width: 100%; }
+    @keyframes fill { to{width:100%} }
+    .s-img { width: 100%; height: 100%; object-fit: contain; }
+    .s-close { position: absolute; top: 30px; right: 20px; font-size: 30px; color: white; z-index: 101; cursor: pointer; }
+    .tap-zone { position: absolute; top: 0; height: 100%; width: 40%; z-index: 99; }
 
+    #toastBox { position: fixed; top: 20px; left: 20px; right: 20px; z-index: 10000; pointer-events: none; }
+    .toast { background: rgba(30,30,30,0.95); color: white; padding: 15px; border-radius: 12px; border-left: 4px solid var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: fadeIn 0.3s; font-weight: 600; margin-bottom: 10px; }
     .hidden { display: none !important; }
     .strike { text-decoration: line-through; color: #666; font-size: 13px; margin-right: 5px; }
-    
-    /* Toast */
-    #toastBox { position: fixed; top: 20px; left: 20px; right: 20px; z-index: 10000; pointer-events: none; display: flex; flex-direction: column; gap: 10px; }
-    .toast { background: rgba(30,30,30,0.95); color: white; padding: 15px; border-radius: 12px; border-left: 4px solid var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: fadeIn 0.3s; font-weight: 600; }
 </style>
 </head>
 <body>
 
     <div id="storyViewer">
-        <div class="story-bars" id="storyBars"></div>
+        <div class="s-bars" id="storyBars"></div>
         <div class="tap" onclick="closeStory()" style="position:absolute; top:25px; right:20px; font-size:30px; color:white; z-index:10002;">✕</div>
-        <img id="storyImg" class="story-img-full" src="">
+        <img id="storyImg" class="s-img" src="">
         <div style="position:absolute; top:0; left:0; width:40%; height:100%; z-index:10000;" onclick="prevStory()"></div>
         <div style="position:absolute; top:0; right:0; width:40%; height:100%; z-index:10000;" onclick="nextStory()"></div>
     </div>
 
-      <div id="drawerOverlay" class="drawer-overlay" onclick="toggleDrawer()"></div>
-    
-    <div id="drawerPanel" class="drawer-panel">
-        <div class="drawer-header-premium">
-            <div class="drawer-logo-box">
-                <i class="fa fa-utensils"></i>
-            </div>
-            <div class="drawer-info">
-                <h2>CAFE <span>888</span></h2>
-                <p>Premium Delivery</p>
-            </div>
-            <div class="drawer-close-btn tap" onclick="toggleDrawer()">
-                <i class="fa fa-chevron-left"></i>
-            </div>
+    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+    <div class="drawer-panel" id="drawerPanel">
+        <div class="d-head">
+            <h2>CAFE 888</h2>
+            <p>Premium Service</p>
         </div>
-
-        <div class="drawer-content-premium">
-            <div class="d-item-pro tap" onclick="toggleTheme()">
-                <div class="d-icon-box purple"><i class="fa fa-moon"></i></div>
-                <div class="d-text">
-                    <span>Tungi rejim</span>
-                    <small>Ko'rinishni o'zgartirish</small>
-                </div>
-                <div class="d-arrow"><i class="fa fa-toggle-on" style="color:var(--text-sub)"></i></div>
-            </div>
-
-            <div class="d-item-pro tap" onclick="openModal('contactModal'); toggleDrawer()">
-                <div class="d-icon-box gold"><i class="fa fa-headset"></i></div>
-                <div class="d-text">
-                    <span>Biz bilan aloqa</span>
-                    <small>Call-markaz</small>
-                </div>
-                <div class="d-arrow"><i class="fa fa-chevron-right"></i></div>
-            </div>
-
-            <div class="d-item-pro tap" onclick="location.reload()">
-                <div class="d-icon-box blue"><i class="fa fa-sync-alt"></i></div>
-                <div class="d-text">
-                    <span>Ilovani yangilash</span>
-                    <small>Ma'lumotlarni yuklash</small>
-                </div>
-                <div class="d-arrow"><i class="fa fa-chevron-right"></i></div>
-            </div>
-        </div>
-
-        <div class="drawer-footer-premium">
-            <button class="btn-logout-pro tap" onclick="logout()">
-                <i class="fa fa-sign-out-alt"></i> Tizimdan chiqish
-            </button>
-            <p class="app-ver">Versiya 3.5.0 Pro</p>
-        </div>
+        <div class="d-item tap" onclick="toggleTheme()"><i class="fa fa-moon"></i> <span id="themeTxt">Tungi rejim</span></div>
+        <div class="d-item tap" onclick="openModal('contactModal'); toggleDrawer()"><i class="fa fa-headset"></i> Bog'lanish</div>
+        <div class="d-item tap" onclick="location.reload()"><i class="fa fa-sync"></i> Yangilash</div>
+        <div class="d-footer tap" onclick="logout()"><i class="fa fa-sign-out-alt"></i> Chiqish</div>
     </div>
-
 
     <header class="header">
         <div class="tap" onclick="toggleDrawer()"><i class="fa fa-bars" style="font-size:24px; color:var(--text)"></i></div>
         <div class="logo">CAFE <span>888</span></div>
-        <div class="tap" onclick="openModal('chatModal')"><i class="fa fa-comment-dots" style="font-size:24px; color:var(--text)"></i><div id="chatBadge" style="position:absolute;top:10px;right:18px;width:8px;height:8px;background:var(--danger);border-radius:50%;display:none;"></div></div>
+        <div class="tap" onclick="openModal('chatModal')"><i class="fa fa-comment-dots" style="font-size:24px; color:var(--text)"></i><div id="chatBadge" class="badge"></div></div>
     </header>
 
-    <div id="p-menu" class="page-cont active" style="padding-top:65px;">
-        <div id="storiesContainer" class="stories-area"></div>
+    <div id="p-menu" class="page active">
+        <div id="storiesContainer" class="stories-row"></div>
         <div id="catNav" class="cat-bar"></div>
-        <div id="menuGrid" class="menu-grid"></div>
+        <div id="menuGrid" class="grid"></div>
     </div>
 
-    <div id="p-cart" class="page-cont" style="padding-top:80px;">
+    <div id="p-cart" class="page">
         <h2 style="padding:0 20px; margin-bottom:20px;">Savat</h2>
         <div id="cartList" style="padding:0 20px;"></div>
         
-        <div style="padding:20px 20px 120px;">
-            <div style="background:var(--card); padding:15px; border-radius:15px; margin-bottom:20px; display:flex; gap:10px;">
-                <input type="text" id="promoInp" placeholder="Promokod" style="flex:1; background:transparent; border:none; color:var(--text); text-transform:uppercase;">
-                <button class="tap" onclick="checkPromo()" style="background:var(--gold); border:none; padding:0 20px; border-radius:10px; font-weight:bold;">OK</button>
+        <div class="cart-footer">
+            <div class="promo-row">
+                <input type="text" id="promoInp" placeholder="Promokod">
+                <button class="tap" onclick="checkPromo()">OK</button>
             </div>
             <div id="promoMsg" style="font-size:13px; margin-bottom:20px;"></div>
 
@@ -440,30 +350,22 @@
         </div>
     </div>
 
-    <div id="p-history" class="page-cont" style="padding-top:80px;">
+    <div id="p-history" class="page">
         <h2 style="padding:0 20px;">Buyurtmalar tarixi</h2>
         <div id="histList" style="padding:0 20px 120px;"></div>
     </div>
 
-    <div id="p-profile" class="page-cont" style="padding-top:0;">
+    <div id="p-profile" class="page">
         <div class="prof-head">
             <div class="avatar"><i class="fa fa-user"></i></div>
             <h2 id="uName">Mijoz</h2>
-            <p id="uPhone" style="color:var(--text-sub)">+998...</p>
+            <p id="uPhone" style="color:var(--sub)">+998...</p>
         </div>
-        <div style="padding:0 20px;">
-            <div class="drawer-item tap" style="justify-content:space-between;" onclick="openFavs()">
-                <span><i class="fa fa-heart" style="color:var(--danger)"></i> Sevimlilar</span> <i class="fa fa-chevron-right"></i>
-            </div>
-            <div class="drawer-item tap" style="justify-content:space-between;" onclick="openModal('chatModal')">
-                <span><i class="fa fa-envelope" style="color:var(--blue)"></i> Admin Chat</span> <i class="fa fa-chevron-right"></i>
-            </div>
-            <div class="drawer-item tap" style="justify-content:space-between;" onclick="openPromoList()">
-                <span><i class="fa fa-tags" style="color:var(--success)"></i> Promokodlar</span> <i class="fa fa-chevron-right"></i>
-            </div>
-            <div class="drawer-item tap" style="justify-content:space-between;" onclick="openNews()">
-                <span><i class="fa fa-bullhorn" style="color:var(--gold)"></i> Yangiliklar</span> <i class="fa fa-chevron-right"></i>
-            </div>
+        <div class="prof-menu">
+            <div class="d-item tap" onclick="openFavs()"><div class="mc-icon red"><i class="fa fa-heart"></i></div><span>Sevimlilar</span></div>
+            <div class="d-item tap" onclick="openModal('chatModal')"><div class="mc-icon blue"><i class="fa fa-envelope"></i></div><span>Admin Chat</span></div>
+            <div class="d-item tap" onclick="openPromoList()"><div class="mc-icon green"><i class="fa fa-ticket-alt"></i></div><span>Promokodlar</span></div>
+            <div class="d-item tap" onclick="openNews()"><div class="mc-icon gold"><i class="fa fa-bullhorn"></i></div><span>Yangiliklar</span></div>
         </div>
     </div>
 
@@ -478,7 +380,7 @@
         <div class="modal-box" style="text-align:center; background:var(--bg); padding:40px; border-radius:30px;">
             <div class="login-icon"><i class="fab fa-telegram-plane"></i></div>
             <h2>Xush kelibsiz</h2>
-            <p style="color:var(--text-sub); margin-bottom:30px;">Davom etish uchun Telegram orqali kiring</p>
+            <p style="color:var(--sub); margin-bottom:30px;">Davom etish uchun Telegram orqali kiring</p>
             <button id="tgBtn" class="btn-main tap" style="background:var(--blue); color:white; width:100%; margin-top:0;" onclick="doLogin()">KIRISH</button>
         </div>
     </div>
@@ -489,7 +391,7 @@
             <img id="pmImg" src="" style="width:100%; height:250px; object-fit:cover; border-radius:15px; margin-bottom:15px;">
             <h2 id="pmName" style="margin-bottom:5px;"></h2>
             <h3 id="pmPrice" style="color:var(--gold); margin-bottom:15px;"></h3>
-            <p id="pmDesc" style="color:var(--text-sub); line-height:1.5; margin-bottom:30px;"></p>
+            <p id="pmDesc" style="color:var(--sub); line-height:1.5; margin-bottom:30px;"></p>
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; gap:15px; background:rgba(255,255,255,0.05); padding:10px 20px; border-radius:12px;">
                     <span onclick="pmQ(-1)" style="font-size:24px; font-weight:bold; cursor:pointer;">-</span><b id="pmQty" style="font-size:18px;">1</b><span onclick="pmQ(1)" style="font-size:24px; font-weight:bold; cursor:pointer;">+</span>
@@ -513,7 +415,7 @@
     <div id="favModal" class="modal-wrap" onclick="if(event.target==this)closeModal('favModal')"><div class="sheet"><h3 style="margin-bottom:20px;">Sevimlilar ❤️</h3><div id="favList" class="fav-grid"></div></div></div>
     <div id="promoListModal" class="modal-wrap" onclick="if(event.target==this)closeModal('promoListModal')"><div class="sheet"><h3 style="margin-bottom:20px;">Faol Promokodlar 🎟</h3><div id="promoListContent"></div></div></div>
     <div id="newsModal" class="modal-wrap" onclick="if(event.target==this)closeModal('newsModal')"><div class="sheet"><h3 style="color:var(--gold)">Yangiliklar</h3><div id="newsContent" style="margin-top:15px;"></div></div></div>
-    <div id="contactModal" class="modal-wrap" onclick="if(event.target==this)closeModal('contactModal')"><div class="sheet"><h3 style="color:var(--gold)">Aloqa</h3><div class="drawer-item" onclick="copy('+998939782926')">+998 93 978 29 26</div><button class="btn-main" onclick="window.location.href='https://t.me/Azikking'">Telegram Admin</button></div></div>
+    <div id="contactModal" class="modal-wrap" onclick="if(event.target==this)closeModal('contactModal')"><div class="sheet"><h3 style="color:var(--gold)">Aloqa</h3><div class="d-item" onclick="copy('+998939782926')">+998 93 978 29 26</div><button class="btn-main" onclick="window.location.href='https://t.me/Azikking'">Telegram Admin</button></div></div>
     <div id="mapModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#fff; z-index:9000; display:none;"><button onclick="document.getElementById('mapModal').style.display='none'" style="position:absolute; top:40px; left:20px; z-index:9001; padding:10px 20px; border-radius:20px; border:none; background:white; font-weight:bold; box-shadow:0 5px 20px rgba(0,0,0,0.2);">⬅️ Orqaga</button><div id="map" style="width:100%; height:100%;"></div></div>
     <div id="toastBox"></div>
 
@@ -562,7 +464,7 @@
             fetch(`https://docs.google.com/spreadsheets/d/${ADS_ID}/gviz/tq?tqx=out:json`).then(r=>r.text()).then(t=>{
                 const j=JSON.parse(t.substr(47).slice(0,-2));
                 stories=j.table.rows.map(r=>r.c[0]?.v).filter(u=>u);
-                document.getElementById('storiesContainer').innerHTML = stories.map((u,i)=>`<div class="story-bubble tap" onclick="openStory(${i})"><img src="${u}"></div>`).join('');
+                document.getElementById('storiesContainer').innerHTML = stories.map((u,i)=>`<div class="story-c tap" onclick="openStory(${i})"><img src="${u}"></div>`).join('');
             });
         }
 
@@ -582,16 +484,13 @@
             document.getElementById('menuGrid').innerHTML=l.map((p, i) => {
                 const qty = cart[p.id] || 0;
                 const btn = qty > 0 
-                    ? `<div class="qty-control-mini tap" onclick="event.stopPropagation()"><div style="width:20px;text-align:center;font-weight:bold;font-size:18px;" onclick="updCart(${p.id},-1)">-</div><b style="color:white;font-size:14px;">${q}</b><div style="width:20px;text-align:center;font-weight:bold;font-size:18px;" onclick="updCart(${p.id},1)">+</div></div>`
-                    : `<div class="btn-plus-mini tap" onclick="updCart(${p.id},1);event.stopPropagation()">+</div>`;
+                    ? `<div class="qty-mini tap" onclick="event.stopPropagation()"><div class="qm-btn" onclick="updCart(${p.id},-1)">-</div><b style="color:white;font-size:14px;">${qty}</b><div class="qm-btn" onclick="updCart(${p.id},1)">+</div></div>`
+                    : `<div class="btn-plus tap" onclick="updCart(${p.id},1);event.stopPropagation()">+</div>`;
                 
                 return `
                 <div class="card tap" onclick="openProd(${p.id})">
-                    <div class="card-img-wrap"><img src="${p.img}"><div class="card-fav ${favs[p.id]?'active':''}" onclick="toggleFav(${p.id});event.stopPropagation()">
-                        <i class="fa fa-heart"></i>
-                    </div></div>
-                    <div class="card-title">${p.name}</div>
-                    <div class="card-footer"><div class="card-price">${p.price.toLocaleString()} so'm</div>${btn}</div>
+                    <div class="card-img-box"><img src="${p.img}"><div class="fav-btn-card ${favs[p.id]?'active':''}" onclick="toggleFav(${p.id});event.stopPropagation()"><i class="fa fa-heart"></i></div></div>
+                    <div class="card-info"><div class="card-title">${p.name}</div><div class="card-foot"><div class="card-price">${p.price.toLocaleString()} so'm</div>${btn}</div></div>
                 </div>`;
             }).join('');
         }
@@ -601,7 +500,7 @@
             let t=0, h='';
             for(let id in cart){
                 const p=products.find(x=>x.id==id); t+=p.price*cart[id];
-                h+=`<div class="cart-item"><img src="${p.img}" class="cart-thumb"><div class="cart-info"><h4>${p.name}</h4><p>${p.price.toLocaleString()} so'm</p></div><div class="cart-actions"><div class="ca-btn tap" onclick="updCart(${p.id},-1)">-</div><div class="ca-val">${cart[id]}</div><div class="ca-btn tap" onclick="updCart(${p.id},1)">+</div></div></div>`;
+                h+=`<div class="cart-item"><img src="${p.img}" class="cart-thumb"><div class="cart-det"><h4>${p.name}</h4><p>${p.price.toLocaleString()} so'm</p></div><div class="cart-capsule"><div class="cc-btn tap" onclick="updCart(${p.id},-1)">-</div><div class="cc-num">${cart[id]}</div><div class="cc-btn tap" onclick="updCart(${p.id},1)">+</div></div></div>`;
             }
             let disp=t.toLocaleString()+" so'm";
             if(activePromo) disp=`<span class="strike">${t.toLocaleString()}</span> ${(t-(t*activePromo/100)).toLocaleString()} so'm`;
@@ -611,7 +510,7 @@
         }
 
         function getGPS(){
-            const b=document.getElementById('btnGps'); b.innerHTML="Aniqlanmoqda...";
+            const b=document.getElementById('gpsBtn'); b.innerHTML="Aniqlanmoqda...";
             if(window.Android && window.Android.checkGPS) window.Android.checkGPS();
             navigator.geolocation.getCurrentPosition(p=>{
                 const lat=p.coords.latitude, lng=p.coords.longitude;
@@ -627,15 +526,15 @@
             const items=[]; let t=0; for(let id in cart){const p=products.find(x=>x.id==id); items.push({name:p.name, qty:cart[id]}); t+=p.price*cart[id];}
             let f=activePromo?t-(t*activePromo/100):t;
             db.ref('orders').push({user_id:user.phone, user_info:`${user.name} (${user.phone})`, items, total:f, original_total:t, promo_discount:activePromo||0, location:loc, status:'yangi', time:new Date().toLocaleString()});
-            cart={}; loc=null; activePromo=null; toast("✅ Buyurtma yuborildi"); nav('history',document.querySelectorAll('.nav-item')[2]);
-            document.getElementById('btnGps').innerHTML=`<i class="fa fa-map-marker-alt"></i> Manzilni aniqlash`; document.getElementById('btnGps').className='btn-gps tap';
+            cart={}; loc=null; activePromo=null; toast("✅ Buyurtma yuborildi"); nav('history',document.querySelectorAll('.nav-btn')[2]);
+            document.getElementById('gpsBtn').innerHTML=`<i class="fa fa-map-marker-alt"></i> Manzilni aniqlash`; document.getElementById('gpsBtn').className='btn-gps tap';
         }
 
         function loadChat(){
             db.ref('messages/'+user.phone.replace('+','')).limitToLast(50).on('child_added', s=>{
                 const m=s.val();
-                if(m.from==='admin' && document.getElementById('chatModal').style.display==='none') document.getElementById('chatBadge').style.display='block';
-                document.getElementById('chatBox').innerHTML+=`<div style="display:flex;justify-content:${m.from=='user'?'flex-end':'flex-start'}"><div class="chat-bubble ${m.from=='user'?'me':'adm'}">${m.body}</div></div>`;
+                if(m.from==='admin' && document.getElementById('chatModal').style.display==='none') document.getElementById('chatBadge').classList.add('active');
+                document.getElementById('chatBox').innerHTML+=`<div style="display:flex;justify-content:${m.from=='user'?'flex-end':'flex-start'}"><div class="msg-bubble ${m.from=='user'?'me':'adm'}">${m.body}</div></div>`;
                 document.getElementById('chatBox').scrollTop=9999;
             });
         }
@@ -666,8 +565,8 @@
             });
         }
 
-        function nav(p,el){document.querySelectorAll('.page-cont').forEach(x=>x.classList.remove('active'));document.getElementById('p-'+p).classList.add('active');document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));el.classList.add('active');if(p=='cart')renderCart();}
-        function openModal(id){document.getElementById(id).style.display='flex'; if(id=='chatModal')document.getElementById('chatBadge').style.display='none';}
+        function nav(p,el){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById('p-'+p).classList.add('active');document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));el.classList.add('active');if(p=='cart')renderCart();}
+        function openModal(id){document.getElementById(id).style.display='flex'; if(id=='chatModal')document.getElementById('chatBadge').classList.remove('active');}
         function closeModal(id){document.getElementById(id).style.display='none';}
         function toggleDrawer(){document.getElementById('drawerPanel').classList.toggle('active');document.getElementById('drawerOverlay').classList.toggle('active');}
         function toast(m){const d=document.createElement('div');d.className='toast';d.innerText=m;document.getElementById('toastBox').appendChild(d);setTimeout(()=>d.remove(),3000);}
@@ -676,7 +575,7 @@
         function addFromModal(){updCart(tempPmId,tempPmQty);closeModal('prodModal');}
         function togFav(id){if(favs[id])delete favs[id];else favs[id]=true;db.ref('users/'+user.phone.replace('+','')+'/favorites').set(favs);renderGrid(document.querySelector('.cat-pill.active').innerText);}
         function openFavs(){const l=products.filter(p=>favs[p.id]);document.getElementById('favList').innerHTML=l.map(p=>`<div class="fav-box"><div class="fav-del" onclick="togFav(${p.id});openFavs()">✕</div><img src="${p.img}"><div style="font-size:11px;">${p.name}</div><button style="width:100%;margin-top:5px;background:var(--gold);border:none;border-radius:6px;" onclick="updCart(${p.id},1);closeModal('favModal')">+</button></div>`).join('')||"Bo'sh";openModal('favModal');}
-        function checkPromo(){const c=document.getElementById('promoInp').value.toUpperCase();db.ref('promocodes/'+c).once('value',s=>{if(s.val()&&s.val().limit>0){activePromo=s.val().discount;document.getElementById('promoMsg').innerHTML=`<b style="color:var(--success)">✅ ${activePromo}% Chegirma!</b>`;renderCart();}else{document.getElementById('promoMsg').innerHTML=`<b style="color:var(--red)">❌ Xato kod</b>`;}});}
+        function checkPromo(){const c=document.getElementById('promoInp').value.toUpperCase();db.ref('promocodes/'+c).once('value',s=>{if(s.val()&&s.val().limit>0){activePromo=s.val().discount;document.getElementById('promoMsg').innerHTML=`<b style="color:var(--success)">✅ ${activePromo}% Chegirma!</b>`;renderCart();}else{document.getElementById('promoMsg').innerHTML=`<b style="color:var(--danger)">❌ Xato kod</b>`;}});}
         function loadHistory(){db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value',s=>{const d=s.val();if(!d)return;document.getElementById('histList').innerHTML=Object.values(d).reverse().map(o=>{let st=o.status,cls='s-new',txt='YANGI';if(st=='kuryerda'){cls='s-deliv';txt='KURYERDA';}if(st=='yetkazildi'){cls='s-done';txt='YETKAZILDI';}if(st=='tayyorlanmoqda'){cls='s-cook';txt='TAYYORLANMOQDA';}let trk=(st=='kuryerda'&&o.courier_id)?`<button class="track-btn" onclick="track('${o.courier_id}')">Kuryerni Kuzatish</button>`:'';return `<div class="hist-card ${cls}"><div class="h-head"><span>${o.time}</span><span class="st-badge">${txt}</span></div><div style="font-size:14px;margin-bottom:10px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div><div style="font-size:18px;font-weight:bold;">${parseInt(o.total).toLocaleString()} so'm</div>${trk}</div>`;}).join('');});}
         function getDist(lat1,lon1,lat2,lon2){var R=6371;var dLat=(lat2-lat1)*Math.PI/180;var dLon=(lon2-lon1)*Math.PI/180;var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);var c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));return R*c;}
         function logout(){localStorage.removeItem('cafe_uid');location.reload();}
