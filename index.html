@@ -3,314 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Cafe 888 Ultimate Pro</title>
-    
+    <title>Cafe 888 Premium</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="storyViewer" class="story-overlay hidden">
-        <div class="story-bars-container" id="storyBars"></div>
-        <div class="story-header">
-            <div class="story-author">
-                <img src="https://cdn-icons-png.flaticon.com/512/1046/1046784.png" alt="Cafe Icon">
-                <span>Cafe 888 Yangiliklari</span>
-            </div>
-            <div class="story-close tap-effect" onclick="closeStory()">✕</div>
-        </div>
-        
-        <img id="storyImg" class="story-main-image" src="" alt="Story">
-        
-        <div class="tap-zone left" onclick="prevStory()"></div>
-        <div class="tap-zone right" onclick="nextStory()"></div>
-        
-        <div class="story-footer">
-            <span>Batafsil ko'rish uchun yuqoriga suring</span>
-            <i class="fa fa-chevron-up"></i>
-        </div>
+    <div id="storyViewer">
+        <div class="s-bars" id="storyBars"></div>
+        <div class="s-close tap" onclick="closeStory()">✕</div>
+        <img id="storyImg" class="s-img" src="">
+        <div class="s-left" onclick="prevStory()"></div>
+        <div class="s-right" onclick="nextStory()"></div>
     </div>
 
     <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
-    
     <div class="drawer-panel" id="drawerPanel">
-        <div class="drawer-header">
-            <div class="drawer-logo">888</div>
+        <div class="d-header">
             <h2>CAFE 888</h2>
-            <p>Premium yetkazib berish xizmati</p>
+            <p>Premium Service</p>
         </div>
-        
-        <div class="drawer-content">
-            <div class="drawer-item tap-effect" onclick="toggleTheme()">
-                <div class="icon-box"><i class="fa fa-moon"></i></div>
-                <span id="themeTxt">Tungi rejim</span>
-                <div class="toggle-switch"></div>
+        <div class="d-content">
+            <div class="d-item tap" onclick="toggleTheme()">
+                <div class="d-icon"><i class="fa fa-moon"></i></div>
+                <span>Tungi rejim</span>
             </div>
-            
-            <div class="drawer-item tap-effect" onclick="openModal('contactModal'); toggleDrawer()">
-                <div class="icon-box"><i class="fa fa-headset"></i></div>
-                <span>Biz bilan bog'lanish</span>
+            <div class="d-item tap" onclick="openModal('contactModal'); toggleDrawer()">
+                <div class="d-icon"><i class="fa fa-headset"></i></div>
+                <span>Bog'lanish</span>
             </div>
-            
-            <div class="drawer-item tap-effect" onclick="location.reload()">
-                <div class="icon-box"><i class="fa fa-sync-alt"></i></div>
-                <span>Ilovani yangilash</span>
+            <div class="d-item tap" onclick="location.reload()">
+                <div class="d-icon"><i class="fa fa-sync-alt"></i></div>
+                <span>Yangilash</span>
             </div>
         </div>
-        
-        <div class="drawer-footer">
-            <button class="btn-logout tap-effect" onclick="logout()">
-                <i class="fa fa-sign-out-alt"></i> Tizimdan chiqish
-            </button>
-            <p class="version-text">Versiya 2.5.0 (Pro)</p>
+        <div class="d-footer tap" onclick="logout()">
+            <i class="fa fa-sign-out-alt"></i> Chiqish
         </div>
     </div>
 
-    <header class="app-header">
-        <div class="header-left tap-effect" onclick="toggleDrawer()">
-            <i class="fa fa-bars"></i>
-        </div>
-        
-        <div class="header-center">
-            <span class="brand-text">CAFE <span>888</span></span>
-        </div>
-        
-        <div class="header-right tap-effect" onclick="openModal('chatModal')">
-            <div class="icon-wrap">
-                <i class="fa fa-comment-dots"></i>
-                <div id="chatBadge" class="notification-dot"></div>
-            </div>
+    <header class="header">
+        <div class="tap" onclick="toggleDrawer()"><i class="fa fa-bars" style="font-size:24px;"></i></div>
+        <div class="logo">CAFE <span>888</span></div>
+        <div class="chat-wrap tap" onclick="openModal('chatModal')">
+            <i class="fa fa-comment-dots" style="font-size:24px;"></i>
+            <div id="chatBadge" class="badge-dot"></div>
         </div>
     </header>
 
-    <div id="p-menu" class="page-container active">
-        <div class="section-title">Yangiliklar & Aksiyalar</div>
-        <div id="storiesContainer" class="stories-wrapper"></div>
-        
-        <div class="sticky-cat-bar">
-            <div id="catNav" class="categories-scroll"></div>
-        </div>
-        
-        <div id="menuGrid" class="products-grid"></div>
-        
-        <div style="height: 100px;"></div>
+    <div id="p-menu" class="page-cont active">
+        <div id="storiesContainer" class="stories-wrap"></div>
+        <div id="catNav" class="cat-bar"></div>
+        <div id="menuGrid" class="grid"></div>
     </div>
 
-    <div id="p-cart" class="page-container">
-        <div class="page-header">
-            <h2>Mening Savatim</h2>
-            <button class="clear-cart-btn" onclick="clearCart()"><i class="fa fa-trash"></i> Tozalash</button>
-        </div>
-        
-        <div id="cartList" class="cart-list-container"></div>
-        
-        <div class="cart-footer-panel">
-            <div class="promo-code-box">
-                <div class="promo-icon"><i class="fa fa-tag"></i></div>
-                <input type="text" id="promoInp" placeholder="Promokod kiriting...">
-                <button class="btn-apply tap-effect" onclick="checkPromo()">OK</button>
+    <div id="p-cart" class="page-cont">
+        <h2 class="page-title">Savat</h2>
+        <div id="cartList" class="list-container"></div>
+        <div class="cart-footer">
+            <div class="promo-box">
+                <input type="text" id="promoInp" placeholder="Promokod">
+                <button class="tap" onclick="checkPromo()">OK</button>
             </div>
-            <div id="promoMsg" class="promo-message"></div>
-
+            <div id="promoMsg"></div>
             <div class="total-row">
-                <span>Jami to'lov:</span>
-                <span id="cartTotal" class="total-price">0 so'm</span>
+                <span>Jami:</span> <span id="cartTotal">0 so'm</span>
             </div>
-            
-            <button id="gpsBtn" class="btn-gps tap-effect" onclick="getGPS()">
-                <i class="fa fa-map-marker-alt"></i> Manzilni aniqlash
-            </button>
-            
-            <button id="orderBtn" class="btn-checkout tap-effect disabled" onclick="sendOrder()">
-                BUYURTMA BERISH <i class="fa fa-arrow-right"></i>
-            </button>
+            <button id="gpsBtn" class="btn-gps tap" onclick="getGPS()"><i class="fa fa-map-marker-alt"></i> Manzilni aniqlash</button>
+            <button id="orderBtn" class="btn-main tap" onclick="sendOrder()">BUYURTMA BERISH</button>
         </div>
-        <div style="height: 120px;"></div>
     </div>
 
-    <div id="p-history" class="page-container">
-        <div class="page-header">
-            <h2>Buyurtmalar Tarixi</h2>
-        </div>
-        <div id="histList" class="history-list"></div>
-        <div style="height: 100px;"></div>
+    <div id="p-history" class="page-cont">
+        <h2 class="page-title">Buyurtmalar</h2>
+        <div id="histList" class="list-container"></div>
     </div>
 
-    <div id="p-profile" class="page-container">
-        <div class="profile-card">
-            <div class="profile-avatar">
-                <i class="fa fa-user"></i>
+    <div id="p-profile" class="page-cont" style="padding-top:0;">
+        <div class="prof-head">
+            <div class="avatar"><i class="fa fa-user"></i></div>
+            <h2 id="uName">Mijoz</h2>
+            <p id="uPhone">+998...</p>
+        </div>
+        <div class="prof-list">
+            <div class="d-item tap" onclick="openFavs()">
+                <div class="d-icon red"><i class="fa fa-heart"></i></div><span>Sevimlilar</span><i class="fa fa-chevron-right arrow"></i>
             </div>
-            <h2 id="uName">Foydalanuvchi</h2>
-            <p id="uPhone">+998 -- --- -- --</p>
-            <div class="profile-stats">
-                <div class="stat-item">
-                    <b id="statOrders">0</b>
-                    <span>Buyurtma</span>
-                </div>
-                <div class="stat-item">
-                    <b id="statBonus">0</b>
-                    <span>Bonus</span>
-                </div>
+            <div class="d-item tap" onclick="openModal('chatModal')">
+                <div class="d-icon blue"><i class="fa fa-envelope"></i></div><span>Admin Chat</span><i class="fa fa-chevron-right arrow"></i>
+            </div>
+            <div class="d-item tap" onclick="openPromoList()">
+                <div class="d-icon green"><i class="fa fa-ticket-alt"></i></div><span>Promokodlar</span><i class="fa fa-chevron-right arrow"></i>
+            </div>
+            <div class="d-item tap" onclick="openNews()">
+                <div class="d-icon gold"><i class="fa fa-bullhorn"></i></div><span>Yangiliklar</span><i class="fa fa-chevron-right arrow"></i>
             </div>
         </div>
-        
-        <div class="profile-menu">
-            <div class="menu-item tap-effect" onclick="openFavs()">
-                <div class="icon-bg red"><i class="fa fa-heart"></i></div>
-                <span>Sevimlilar</span>
-                <i class="fa fa-chevron-right arrow"></i>
-            </div>
-            
-            <div class="menu-item tap-effect" onclick="openModal('chatModal')">
-                <div class="icon-bg blue"><i class="fa fa-envelope"></i></div>
-                <span>Admin bilan chat</span>
-                <i class="fa fa-chevron-right arrow"></i>
-            </div>
-            
-            <div class="menu-item tap-effect" onclick="openPromoList()">
-                <div class="icon-bg green"><i class="fa fa-ticket-alt"></i></div>
-                <span>Mening Promokodlarim</span>
-                <i class="fa fa-chevron-right arrow"></i>
-            </div>
-            
-            <div class="menu-item tap-effect" onclick="openNews()">
-                <div class="icon-bg gold"><i class="fa fa-bullhorn"></i></div>
-                <span>Yangiliklar</span>
-                <i class="fa fa-chevron-right arrow"></i>
-            </div>
-        </div>
-        <div style="height: 100px;"></div>
     </div>
 
-    <nav class="bottom-navbar">
-        <div class="nav-item active tap-effect" onclick="nav('menu', this)">
-            <i class="fa fa-utensils"></i>
-            <span>Menyu</span>
-        </div>
-        <div class="nav-item tap-effect" onclick="nav('cart', this)">
-            <i class="fa fa-shopping-basket"></i>
-            <span>Savat</span>
-            <div id="navCartBadge" class="nav-badge hidden">0</div>
-        </div>
-        <div class="nav-item tap-effect" onclick="nav('history', this)">
-            <i class="fa fa-clock"></i>
-            <span>Tarix</span>
-        </div>
-        <div class="nav-item tap-effect" onclick="nav('profile', this)">
-            <i class="fa fa-user"></i>
-            <span>Profil</span>
-        </div>
+    <nav class="navbar">
+        <div class="nav-item active" onclick="nav('menu', this)"><i class="fa fa-utensils"></i>Menyu</div>
+        <div class="nav-item" onclick="nav('cart', this)"><i class="fa fa-shopping-basket"></i>Savat</div>
+        <div class="nav-item" onclick="nav('history', this)"><i class="fa fa-clock"></i>Tarix</div>
+        <div class="nav-item" onclick="nav('profile', this)"><i class="fa fa-user"></i>Profil</div>
     </nav>
 
-    <div id="loginModal" class="modal-full">
-        <div class="login-content">
-            <div class="login-logo-anim">
-                <i class="fab fa-telegram-plane"></i>
-            </div>
-            <h1>Xush kelibsiz!</h1>
-            <p>Cafe 888 ilovasidan foydalanish uchun Telegram orqali tizimga kiring.</p>
-            
-            <div id="loadSpinner" class="loader hidden"></div>
-            
-            <button id="tgBtn" class="btn-telegram tap-effect" onclick="doLogin()">
-                <i class="fab fa-telegram-plane"></i> Telegram orqali kirish
-            </button>
-            <p class="login-footer">Xavfsiz va tezkor kirish</p>
+    <div id="loginModal" class="modal-fs">
+        <div class="login-box">
+            <div class="login-icon"><i class="fab fa-telegram-plane"></i></div>
+            <h2>Xush kelibsiz</h2>
+            <p>Telegram orqali tizimga kiring</p>
+            <div id="loadSpinner" class="hidden">Tasdiqlash kutilmoqda...</div>
+            <button id="tgBtn" class="btn-main tap" onclick="doLogin()">KIRISH</button>
         </div>
     </div>
 
-    <div id="prodModal" class="sheet-overlay" onclick="if(event.target==this)closeModal('prodModal')">
-        <div class="bottom-sheet">
-            <div class="sheet-drag-handle"></div>
-            <div class="sheet-close tap-effect" onclick="closeModal('prodModal')">✕</div>
-            
-            <div class="prod-image-container">
-                <img id="pmImg" src="" alt="Product">
-                <div class="prod-tags">
-                    <span class="tag-hot">🔥 Hot</span>
-                </div>
-            </div>
-            
-            <div class="prod-details">
-                <div class="prod-header">
-                    <h2 id="pmName">Mahsulot nomi</h2>
-                    <h3 id="pmPrice">0 so'm</h3>
-                </div>
-                <p id="pmDesc" class="prod-desc">Mahsulot haqida ma'lumot...</p>
-                
-                <div class="prod-actions">
-                    <div class="qty-counter">
-                        <button class="qty-btn" onclick="pmQ(-1)">-</button>
-                        <span id="pmQty">1</span>
-                        <button class="qty-btn" onclick="pmQ(1)">+</button>
+    <div id="prodModal" class="modal-wrap" onclick="if(event.target==this)closeModal('prodModal')">
+        <div class="sheet">
+            <div class="sheet-close tap" onclick="closeModal('prodModal')">✕</div>
+            <img id="pmImg" src="">
+            <div class="sheet-body">
+                <h2 id="pmName"></h2>
+                <h3 id="pmPrice"></h3>
+                <p id="pmDesc"></p>
+                <div class="sheet-actions">
+                    <div class="qty-pill">
+                        <span onclick="pmQ(-1)">-</span><b id="pmQty">1</b><span onclick="pmQ(1)">+</span>
                     </div>
-                    <button class="btn-add-cart tap-effect" onclick="addFromModal()">
-                        Savatga qo'shish
-                    </button>
+                    <button class="btn-main tap" onclick="addFromModal()">Savatga</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="favModal" class="sheet-overlay" onclick="if(event.target==this)closeModal('favModal')">
-        <div class="bottom-sheet h-70">
-            <div class="sheet-header">
-                <h3>Sevimlilar ❤️</h3>
-                <span onclick="closeModal('favModal')">Yopish</span>
-            </div>
-            <div id="favList" class="fav-grid-container"></div>
-        </div>
-    </div>
-
-    <div id="chatModal" class="sheet-overlay" onclick="if(event.target==this)closeModal('chatModal')">
-        <div class="bottom-sheet h-90">
-            <div class="sheet-header chat-header">
-                <div class="admin-status">
-                    <div class="status-dot online"></div>
-                    <div>
-                        <h3>Admin Chat</h3>
-                        <span>Online</span>
-                    </div>
-                </div>
-                <span class="close-icon" onclick="closeModal('chatModal')">✕</span>
-            </div>
-            
-            <div id="chatBox" class="chat-messages-area"></div>
-            
-            <div class="chat-input-area">
-                <input type="text" id="chatInp" placeholder="Xabaringizni yozing...">
-                <button onclick="sendChat()" class="btn-send tap-effect">
-                    <i class="fa fa-paper-plane"></i>
-                </button>
+    <div id="chatModal" class="modal-wrap" onclick="if(event.target==this)closeModal('chatModal')">
+        <div class="sheet h-90">
+            <div class="sheet-head"><h3>Admin Chat</h3><span onclick="closeModal('chatModal')">✕</span></div>
+            <div id="chatBox"></div>
+            <div class="chat-input">
+                <input type="text" id="chatInp" placeholder="Xabar yozing...">
+                <button onclick="sendChat()" class="tap"><i class="fa fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
 
-    <div id="mapModal" class="map-modal">
-        <div class="map-header">
-            <button class="btn-back tap-effect" onclick="document.getElementById('mapModal').style.display='none'">
-                <i class="fa fa-arrow-left"></i> Orqaga
-            </button>
-            <span>Kuryer Joylashuvi</span>
-        </div>
-        <div id="map" class="full-map"></div>
-        <div class="map-footer">
-            <div class="courier-info">
-                <div class="courier-icon"><i class="fa fa-motorcycle"></i></div>
-                <div>
-                    <b>Buyurtma yetkazilmoqda</b>
-                    <p>Kuryer tez orada yetib boradi</p>
-                </div>
-            </div>
-        </div>
+    <div id="mapModal" class="modal-fs">
+        <button class="map-back tap" onclick="document.getElementById('mapModal').style.display='none'">⬅️ Orqaga</button>
+        <div id="map"></div>
     </div>
 
-    <div id="promoListModal" class="sheet-overlay" onclick="if(event.target==this)closeModal('promoListModal')"><div class="bottom-sheet"><div class="sheet-header"><h3>Promokodlar 🎟</h3><span onclick="closeModal('promoListModal')">✕</span></div><div id="promoListContent"></div></div></div>
-    <div id="newsModal" class="sheet-overlay" onclick="if(event.target==this)closeModal('newsModal')"><div class="bottom-sheet"><div class="sheet-header"><h3>Yangiliklar 📢</h3><span onclick="closeModal('newsModal')">✕</span></div><div id="newsContent"></div></div></div>
-    <div id="contactModal" class="sheet-overlay" onclick="if(event.target==this)closeModal('contactModal')"><div class="bottom-sheet"><div class="sheet-header"><h3>Aloqa 📞</h3><span onclick="closeModal('contactModal')">✕</span></div><div class="contact-body"><div class="contact-row" onclick="copy('+998939782926')"><i class="fa fa-phone"></i> +998 93 978 29 26</div><button class="btn-telegram-link" onclick="window.location.href='https://t.me/Azikking'"><i class="fab fa-telegram"></i> Telegram orqali yozish</button></div></div></div>
+    <div id="favModal" class="modal-wrap" onclick="if(event.target==this)closeModal('favModal')"><div class="sheet"><h3>Sevimlilar</h3><div id="favList" class="grid-fav"></div></div></div>
+    <div id="promoListModal" class="modal-wrap" onclick="if(event.target==this)closeModal('promoListModal')"><div class="sheet"><h3>Promokodlar</h3><div id="promoListContent"></div></div></div>
+    <div id="newsModal" class="modal-wrap" onclick="if(event.target==this)closeModal('newsModal')"><div class="sheet"><h3>Yangiliklar</h3><div id="newsContent"></div></div></div>
+    <div id="contactModal" class="modal-wrap" onclick="if(event.target==this)closeModal('contactModal')"><div class="sheet"><h3>Aloqa</h3><div class="d-item" onclick="copy('+998939782926')"><i class="fa fa-phone"></i> +998 93 978 29 26</div></div></div>
     
     <div id="toastBox"></div>
 
