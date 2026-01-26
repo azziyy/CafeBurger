@@ -8,78 +8,128 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <style>
-/* =========================================
-   CHAT STYLES (FINAL CLEAN VERSION)
-   ========================================= */
+/* --- CHAT MODAL STRUKTURASI (FLEXBOX) --- */
+/* Modal oynasi butun ekran bo'yicha to'g'ri joylashishi uchun */
+#chatModal .sheet {
+    height: 90vh; /* Ekran balandligining 90% ini egallaydi */
+    display: flex;
+    flex-direction: column; /* Elementlar ustma-ust joylashadi */
+    padding: 0; /* Ichki hoshiyani olib tashlaymiz */
+    overflow: hidden; /* Tashqariga chiqib ketishni oldini olish */
+    position: relative;
+}
 
-/* Chat qutisi */
+/* Chat Header (Tepa qism) */
+.chat-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1c1c1e;
+    flex-shrink: 0; /* Qisqarmaydi */
+}
+
+/* Chat Box (Xabarlar yuradigan joy) */
 #chatBox {
-    flex: 1;
-    overflow-y: auto;
+    flex: 1; /* Bo'sh qolgan hamma joyni egallaydi */
+    overflow-y: auto; /* Faqat shu qism scroll bo'ladi */
     padding: 15px;
     display: flex;
     flex-direction: column;
-    gap: 12px; /* Xabarlar orasidagi masofa */
+    gap: 10px;
+    background: #000; /* Qora fon */
     scroll-behavior: smooth;
-    background: transparent;
 }
 
-/* Xabar pufakchasi (Umumiy stil) */
+/* Chat Input (Yozish joyi - Pastda qotib turadi) */
+.chat-inp-wrap {
+    padding: 15px;
+    background: #1c1c1e;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0; /* Qisqarmaydi */
+}
+
+.chat-inp-wrap input {
+    flex: 1;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    color: white;
+    outline: none;
+}
+
+.chat-inp-wrap button {
+    width: 45px;
+    height: 45px;
+    background: var(--gold);
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- XABARLAR DIZAYNI --- */
 .msg-bubble {
     max-width: 80%;
-    padding: 12px 16px;
-    border-radius: 18px;
+    padding: 10px 14px;
+    border-radius: 14px;
     font-size: 14px;
     line-height: 1.4;
+    word-wrap: break-word;
     position: relative;
-    word-wrap: break-word; /* Uzun so'zlarni sindirish */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* MIJOZ XABARI (O'ngda) - Premium Oltin */
+/* Mijoz (O'ngda) */
 .msg-me {
     align-self: flex-end;
-    /* Gradient fon - chiroyli ko'rinish uchun */
-    background: linear-gradient(135deg, #FFD700, #FFB800) !important;
-    
-    /* Matn sozlamalari - aniq ko'rinishi uchun */
-    color: #000000 !important; 
-    font-weight: 700; /* Qalin shrift */
-    
-    /* Shakl */
-    border-bottom-right-radius: 4px;
-    margin-left: auto;
-    
-    /* Soya */
-    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    background: var(--gold);
+    color: #000;
+    border-bottom-right-radius: 2px;
 }
 
-/* ADMIN XABARI (Chapda) - To'q fon */
+/* Admin (Chapda) */
 .msg-adm {
     align-self: flex-start;
-    background: #2c2c2e !important;
-    color: #ffffff !important;
-    border-bottom-left-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: #333;
+    color: #fff;
+    border-bottom-left-radius: 2px;
 }
 
-/* Vaqt ko'rsatkichi */
+/* Vaqt */
 .msg-time {
     font-size: 10px;
-    margin-top: 5px;
     display: block;
     text-align: right;
-    font-weight: 500;
+    margin-top: 4px;
+    opacity: 0.7;
 }
 
-/* Vaqt ranglari (Fon rangiga moslashish) */
-.msg-me .msg-time {
-    color: rgba(0, 0, 0, 0.6) !important; /* Qora xira */
+/* --- PASTGA TUSHIRISH TUGMASI (Scroll Button) --- */
+#scrollBtn {
+    position: absolute;
+    bottom: 80px; /* Inputdan teparoqda */
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    border-radius: 50%;
+    display: none; /* Boshida yashirin */
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.1);
+    z-index: 100;
+    transition: 0.3s;
 }
-
-.msg-adm .msg-time {
-    color: rgba(255, 255, 255, 0.5) !important; /* Oq xira */
-}
+#scrollBtn:active { background: var(--gold); color: black; }
 
 
 /* ============================================================
@@ -144,7 +194,7 @@
 
 /* 5. Ma'lumotlar bo'limi (Nomi va Narxi) */
 .fav-info-premium {
-    padding: 12px;
+    padding: 12px; 
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -795,16 +845,26 @@
         </div>
     </div>
 
-    <div id="chatModal" class="modal-wrap" onclick="if(event.target==this)closeModal('chatModal')">
-        <div class="sheet" style="height:80vh;">
-            <h3 style="margin-bottom:15px;">Admin Chat</h3>
-            <div id="chatBox" style="flex:1; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:15px; padding:15px; margin-bottom:15px; min-height:300px;"></div>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="chatInp" placeholder="Xabar..." style="flex:1; background:rgba(255,255,255,0.1); border:none; padding:15px; border-radius:15px; color:white;">
-                <button onclick="sendChat()" class="tap" style="background:var(--primary); border:none; width:50px; border-radius:15px;"><i class="fa fa-paper-plane"></i></button>
-            </div>
+    <div id="chatModal" class="modal-wrap">
+    <div class="sheet">
+        <div class="chat-header">
+            <h3 style="margin:0; color:white;">Admin Chat</h3>
+            <span class="tap" onclick="closeModal('chatModal')" style="font-size:24px; color:#aaa;">✕</span>
+        </div>
+
+        <div id="chatBox"></div>
+
+        <div id="scrollBtn" onclick="scrollToBottom()">
+            <i class="fa fa-arrow-down"></i>
+        </div>
+
+        <div class="chat-inp-wrap">
+            <input type="text" id="chatInp" placeholder="Xabar yozing...">
+            <button onclick="sendChat()" class="tap"><i class="fa fa-paper-plane"></i></button>
         </div>
     </div>
+</div>
+
 
     <div id="mapModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#fff; z-index:9000; display:none;">
         <button onclick="document.getElementById('mapModal').style.display='none'" style="position:absolute; top:40px; left:20px; z-index:9001; padding:10px 20px; border-radius:20px; border:none; background:white; font-weight:bold; box-shadow:0 5px 20px rgba(0,0,0,0.2);">⬅️ Orqaga</button>
@@ -918,44 +978,66 @@
             document.getElementById('gpsBtn').innerHTML="Manzilni aniqlash"; document.getElementById('gpsBtn').classList.remove('gps-success');
         }
 
-        function loadChat() {
+        // CHATNI YUKLASH
+function loadChat() {
     const chatBox = document.getElementById('chatBox');
-    
-    // child_added ishlatamiz - bu tezroq va silliq ishlaydi
+    const scrollBtn = document.getElementById('scrollBtn');
+
+    // SCROLLNI TEKSHIRISH (Tugmani chiqarish/yashirish uchun)
+    chatBox.onscroll = () => {
+        // Agar foydalanuvchi tepaga chiqqan bo'lsa (pastdan 100px uzoqlashsa)
+        if (chatBox.scrollTop + chatBox.clientHeight < chatBox.scrollHeight - 100) {
+            scrollBtn.style.display = 'flex';
+        } else {
+            scrollBtn.style.display = 'none';
+        }
+    };
+
     db.ref('messages/' + user.phone.replace('+', '')).on('child_added', s => {
         const m = s.val();
         const isMe = m.from === 'user';
         
-        // VAQTNI TEKSHIRISH (Invalid Date xatosini oldini olish)
-        let timeString = "";
-        if (m.time) {
-            timeString = new Date(m.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        // Vaqtni to'g'ri formatlash (Invalid Date oldini olish)
+        let timeStr = "";
+        if(m.time) {
+            timeStr = new Date(m.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
         }
 
         const msgHtml = `
-            <div class="msg-bubble ${isMe ? 'msg-me' : 'msg-adm'}">
-                ${m.body}
-                ${timeString ? `<span class="msg-time">${timeString}</span>` : ''}
+            <div style="display:flex; width:100%; flex-direction:column;">
+                <div class="msg-bubble ${isMe ? 'msg-me' : 'msg-adm'}">
+                    ${m.body}
+                    ${timeStr ? `<span class="msg-time">${timeStr}</span>` : ''}
+                </div>
             </div>
         `;
         
         chatBox.innerHTML += msgHtml;
-
-        // Xabar kelganda pastga tushirish
-        chatBox.scrollTop = chatBox.scrollHeight;
+        
+        // Yangi xabar kelganda avtomatik pastga tushirish
+        scrollToBottom();
     });
 }
-
-// Chatni ochganda pastga tushirish
+// PASTGA TUSHIRISH FUNKSIYASI
+function scrollToBottom() {
+    const chatBox = document.getElementById('chatBox');
+    setTimeout(() => {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 50); // Biroz kutib tushiradi
+}
+// MODAL OCHILGANDA
 function openChatModal() {
     document.getElementById('chatModal').style.display = 'flex';
-    setTimeout(() => {
-        const chatBox = document.getElementById('chatBox');
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }, 100);
+    // Chat badge ni o'chirish
+    if(document.getElementById('chatBadge')) {
+        document.getElementById('chatBadge').classList.remove('active');
+    }
+    // Ochilganda pastga tushirish
+    scrollToBottom();
 }
 
-// Xabar yuborishda vaqtni (time: Date.now()) qo'shishni unutmang!
+
+        // XABAR YUBORISH
 function sendChat() {
     const inp = document.getElementById('chatInp');
     if(!inp.value.trim()) return;
@@ -963,28 +1045,12 @@ function sendChat() {
     db.ref('messages/' + user.phone.replace('+', '')).push({
         from: 'user',
         body: inp.value,
-        time: Date.now() // VAQT SHU YERDA SAQLANADI
+        time: Date.now()
     });
     inp.value = "";
+    // Yuborgandan keyin ham pastga tushsin
+    scrollToBottom();
 }
-
-        function sendChat(){
-            const t=document.getElementById('chatInp').value; if(!t)return;
-            db.ref('messages/'+user.phone.replace('+','')).push({from:'user', body:t, time:Date.now()});
-            document.getElementById('chatInp').value="";
-        }
-
-        var carIcon=L.icon({iconUrl:'https://cdn-icons-png.flaticon.com/512/3202/3202926.png',iconSize:[40,40],iconAnchor:[20,20]});
-        function track(cid){
-            document.getElementById('mapModal').style.display='block';
-            if(!map){map=L.map('map').setView([41,69],13); L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);}
-            setTimeout(()=>map.invalidateSize(),500);
-            db.ref('couriers/'+cid+'/location').on('value',s=>{
-                const d=s.val(); if(!d)return;
-                if(carMarker) carMarker.setLatLng([d.lat,d.long]); else carMarker=L.marker([d.lat,d.long],{icon:carIcon}).addTo(map);
-                map.panTo([d.lat,d.long]);
-            });
-        }
 
         function openPromoList(){
             openModal('promoListModal');
@@ -993,7 +1059,7 @@ function sendChat() {
                 let h=""; for(let k in d){if(d[k].limit>0) h+=`<div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:12px;margin-bottom:10px;display:flex;justify-content:space-between;"><b>${k}</b><span style="color:var(--green)">${d[k].discount}% Chegirma</span></div>`;}
                 document.getElementById('promoListContent').innerHTML=h||"Aktiv kod yo'q";
             });
-        }
+}
 
         function nav(p,el){document.querySelectorAll('.page-cont').forEach(x=>x.classList.remove('active'));document.getElementById('p-'+p).classList.add('active');document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));el.classList.add('active');if(p=='cart')renderCart();}
         function openModal(id){document.getElementById(id).style.display='flex'; if(id=='chatModal')document.getElementById('chatBadge').classList.remove('active');}
