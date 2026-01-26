@@ -9,112 +9,125 @@
 
 <style>
 
-/* Sevimlilar ro'yxatidagi X tugmasi uchun maxsus stil */
-.fav-del { 
-    position: absolute; 
-    top: 5px; 
-    right: 5px; 
-    width: 26px; 
-    height: 26px; 
-    background: var(--danger); 
-    color: white; 
-    border-radius: 50%; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    font-size: 14px; 
-    z-index: 10; /* Tugmani rasmning ustiga chiqaradi */
-    cursor: pointer; /* Bosish mumkinligini ko'rsatadi */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    border: 2px solid var(--bg-card); /* Kontrast berish uchun */
-}
+/* ============================================================
+   SEVIMLILAR (FAVORITES) PREMIUM GRID STILI
+   ============================================================ */
 
-.fav-box {
-    position: relative; /* Ichidagi mutloq (absolute) elementlar uchun asos */
-}
-
-/* SEVIMLILAR GRIDINI ASOSIY GRID BILAN BIR XIL QILISH */
+/* 1. Sevimlilar konteyneri - 2 ustunli tartibli grid */
 .fav-grid-premium {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* 2 ustunli qilish */
+    grid-template-columns: 1fr 1fr; /* Qat'iy 2 ustun */
     gap: 15px;
-    padding: 10px 0;
+    padding: 15px 0;
+    width: 100%;
 }
 
+/* 2. Mahsulot kartasi */
 .fav-card-premium {
-    background: var(--bg-card);
-    border-radius: var(--radius);
+    background: var(--bg-card) !important; /* Fon rangi orqada qolib ketmasligi uchun */
+    border-radius: var(--radius-pro);
     overflow: hidden;
     display: flex;
     flex-direction: column;
     position: relative;
-    border: var(--border);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    transition: 0.3s ease;
 }
 
+/* 3. Rasm bo'limi */
 .fav-img-wrap {
     width: 100%;
-    height: 120px; /* Balandlikni biroz kichraytirdik modal uchun */
+    height: 120px;
     position: relative;
+    background: #000; /* Rasm yuklanguncha qora fon */
 }
 
 .fav-img-wrap img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: cover; /* Rasm cho'zilib ketmaydi */
 }
 
-.fav-info-premium {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-
-.fav-title-premium {
-    font-weight: 700;
-    font-size: 13px;
-    height: 32px;
-    overflow: hidden;
-    line-height: 1.2;
-    margin-bottom: 5px;
-}
-
-.fav-foot-premium {
-    margin-top: auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.fav-price-premium {
-    color: var(--gold);
-    font-weight: 800;
-    font-size: 14px;
-}
-
-/* O'chirish tugmasi (X) */
+/* 4. O'chirish tugmasi (X) - Eng yuqori qatlamda */
 .fav-del-btn {
     position: absolute;
     top: 8px;
     right: 8px;
-    width: 26px;
-    height: 26px;
-    background: rgba(255, 69, 58, 0.8);
-    color: white;
+    width: 28px;
+    height: 28px;
+    background: var(--danger) !important;
+    color: #fff !important;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
-    z-index: 5;
-    backdrop-filter: blur(4px);
+    font-size: 14px;
+    z-index: 20; /* Rasm va boshqa bloklardan ustun */
+    border: 2px solid var(--bg-card);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
 }
+
+/* 5. Ma'lumotlar bo'limi (Nomi va Narxi) */
+.fav-info-premium {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background: var(--bg-card); /* Matn foni aniq chiqishi uchun */
+}
+
+.fav-title-premium {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-main);
+    height: 34px;
+    overflow: hidden;
+    line-height: 1.2;
+    margin-bottom: 8px;
+}
+
+.fav-price-premium {
+    color: var(--primary); /* Oltin rang */
+    font-weight: 800;
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+
+/* 6. SAVATGA QO'SHISH TUGMASI - MAXSUS STIL */
 .fav-add-btn {
-    /* ... mavjud kodlar ... */
-    z-index: 999 !important; /* Tugmani hamma narsadan tepaga chiqaradi */
-    position: relative;     /* z-index ishlashi uchun position bo'lishi shart */
+    width: 100%;
+    padding: 12px;
+    background: var(--primary) !important; /* To'liq sariq/oltin fon */
+    color: #000 !important; /* Matn qora (kontrast uchun) */
+    border: none !important;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    
+    /* Qatlam va ko'rinish muammosi yechimi */
+    position: relative;
+    z-index: 999 !important; 
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    transition: 0.2s ease;
 }
+
+.fav-add-btn:active {
+    transform: scale(0.95); /* Bosish effekti */
+    filter: brightness(0.9);
+}
+
+/* Modal ichidagi grid bo'lsa, pointer eventlarini to'g'irlash */
+#favModal, .sheet {
+    pointer-events: auto !important;
+}
+
 
 
     /* ==========================================================================
@@ -790,30 +803,42 @@
         function pmQ(n){tempPmQty+=n;if(tempPmQty<1)tempPmQty=1;document.getElementById('pmQty').innerText=tempPmQty;}
         function addFromModal(){updCart(tempPmId,tempPmQty);closeModal('prodModal');}
         function togFav(id){if(favs[id])delete favs[id];else favs[id]=true;db.ref('users/'+user.phone.replace('+','')+'/favorites').set(favs);renderGrid(document.querySelector('.cat-pill.active').innerText);}
+        
+        
+        
         function openFavs() {
-    const l = products.filter(p => favs[p.id]);
-    document.getElementById('favList').innerHTML = l.map(p => `
-        <div class="fav-box grid-anim">
-            <div class="fav-del tap" onclick="event.stopPropagation(); togFav(${p.id}); openFavs();">
+    // Sevimli mahsulotlarni filtrlash
+    const l = products.filter(p => favs[p.id]); 
+    const favContainer = document.getElementById('favList');
+
+    // Grid konteyneriga yangi premium klassni beramiz
+    favContainer.className = "fav-grid-premium";
+
+    favContainer.innerHTML = l.map(p => `
+        <div class="fav-card-premium grid-anim">
+            <div class="fav-del-btn tap" onclick="event.stopPropagation(); togFav(${p.id}); openFavs();">
                 <i class="fa fa-times"></i>
             </div>
             
-            <img src="${p.img}" class="tap" onclick="openProd(${p.id})">
-            
-            <div style="font-size:12px; font-weight:600; margin-top:5px; height:32px; overflow:hidden;">
-                ${p.name}
+            <div class="fav-img-wrap" onclick="openProd(${p.id})">
+                <img src="${p.img}" alt="${p.name}">
             </div>
             
-            <button class="btn-main tap" 
-                    style="width:100%; margin-top:5px; padding:8px; font-size:12px; background:var(--gold); border-radius:8px;" 
-                    onclick="event.stopPropagation(); updCart(${p.id}, 1); closeModal('favModal'); toast('Savatga qo\\'shildi');">
-                <i class="fa fa-plus"></i> Savatga
-            </button>
+            <div class="fav-info-premium">
+                <div class="fav-title-premium">${p.name}</div>
+                <div class="fav-price-premium">${p.price.toLocaleString()} so'm</div>
+                
+                <button class="fav-add-btn tap" 
+                        onclick="event.stopPropagation(); updCart(${p.id}, 1); closeModal('favModal'); toast('Savatga qo\\'shildi');">
+                    <i class="fa fa-shopping-basket"></i> Savatga
+                </button>
+            </div>
         </div>
-    `).join('') || "<div style='grid-column:span 3; text-align:center; padding:20px; color:var(--sub);'>Sevimlilar ro'yxati bo'sh</div>";
+    `).join('') || "<div style='grid-column:span 2; text-align:center; padding:40px; color:var(--sub);'>Sevimlilar ro'yxati bo'sh</div>";
     
     openModal('favModal');
 }
+
 
 
         function checkPromo(){const c=document.getElementById('promoInp').value.toUpperCase();db.ref('promocodes/'+c).once('value',s=>{if(s.val()&&s.val().limit>0){activePromo=s.val().discount;document.getElementById('promoMsg').innerHTML=`<b style="color:var(--success)">✅ ${activePromo}% Chegirma!</b>`;renderCart();}else{document.getElementById('promoMsg').innerHTML=`<b style="color:var(--red)">❌ Xato kod</b>`;}});}
