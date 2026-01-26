@@ -54,22 +54,130 @@
     }
     .badge.active { display: block; }
 
-    /* Drawer Menu */
-    .drawer-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.8); z-index: 9000;
-        opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(5px);
-    }
-    .drawer-overlay.active { opacity: 1; visibility: visible; }
-    
-    .drawer {
-        position: fixed; top: 0; left: -85%; width: 80%; height: 100%;
-        background: var(--card); z-index: 9001;
-        transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-        display: flex; flex-direction: column; padding: 40px 25px;
-        box-shadow: 10px 0 50px rgba(0,0,0,0.5);
-    }
-    .drawer.active { left: 0; }
+/* DRAWER ASOSIY SOZLAMALARI */
+.drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9000; /* Headerdan baland */
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+.drawer-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.drawer-panel {
+    position: fixed;
+    top: 0;
+    left: -85%; /* Chap tomonda yashirin */
+    width: 85%;
+    height: 100%;
+    background: var(--bg-card); /* Sizdagi --card o'zgaruvchisi */
+    z-index: 9001; /* Eng tepada */
+    transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 5px 0 30px rgba(0,0,0,0.5);
+    border-right: 1px solid rgba(255,255,255,0.05);
+}
+.drawer-panel.active {
+    left: 0; /* Ochilganda */
+}
+
+/* HEADER QISMI */
+.drawer-header {
+    padding: 50px 20px 30px; /* Tepadagi bo'shliq (Status bar uchun) */
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    background: linear-gradient(180deg, rgba(255,215,0,0.05), transparent);
+}
+.drawer-logo {
+    width: 50px; height: 50px;
+    background: var(--gold);
+    color: #000;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 5px 15px rgba(255,215,0,0.2);
+}
+.drawer-title h2 { margin: 0; font-size: 20px; color: var(--text); }
+.drawer-title h2 span { color: var(--gold); }
+.drawer-title p { margin: 2px 0 0; font-size: 12px; color: var(--sub); }
+
+.drawer-close {
+    margin-left: auto;
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--sub);
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+}
+
+/* MENU QISMI */
+.drawer-menu {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+.menu-item {
+    display: flex; align-items: center; gap: 15px;
+    padding: 15px; margin-bottom: 10px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.03);
+    transition: 0.2s;
+}
+.menu-item:active { transform: scale(0.98); background: rgba(255,255,255,0.05); }
+
+.icon-box {
+    width: 35px; height: 35px;
+    background: rgba(255,215,0,0.1);
+    color: var(--gold);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+}
+.menu-item span {
+    flex: 1;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+}
+.arrow-icon, .toggle-icon {
+    color: var(--sub);
+    font-size: 14px;
+}
+
+/* FOOTER QISMI */
+.drawer-footer {
+    padding: 20px;
+    text-align: center;
+}
+.logout-btn {
+    width: 100%; padding: 15px;
+    background: rgba(255,69,58,0.1);
+    color: var(--danger);
+    border: 1px solid rgba(255,69,58,0.2);
+    border-radius: 15px;
+    font-weight: bold;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.version {
+    margin-top: 15px;
+    font-size: 11px;
+    color: var(--sub);
+    opacity: 0.5;
+}
+
     
     .d-head { margin-bottom: 40px; border-bottom: var(--border); padding-bottom: 20px; }
     .d-head h2 { color: var(--gold); margin: 0; font-size: 28px; }
@@ -306,17 +414,7 @@
         <div style="position:absolute; top:0; right:0; width:40%; height:100%; z-index:10000;" onclick="nextStory()"></div>
     </div>
 
-    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
-    <div class="drawer-panel" id="drawerPanel">
-        <div class="d-head">
-            <h2>CAFE 888</h2>
-            <p>Premium Service</p>
-        </div>
-        <div class="d-item tap" onclick="toggleTheme()"><i class="fa fa-moon"></i> <span id="themeTxt">Tungi rejim</span></div>
-        <div class="d-item tap" onclick="openModal('contactModal'); toggleDrawer()"><i class="fa fa-headset"></i> Bog'lanish</div>
-        <div class="d-item tap" onclick="location.reload()"><i class="fa fa-sync"></i> Yangilash</div>
-        <div class="d-footer tap" onclick="logout()"><i class="fa fa-sign-out-alt"></i> Chiqish</div>
-    </div>
+div id="drawerOverlay
 
     <header class="header">
         <div class="tap" onclick="toggleDrawer()"><i class="fa fa-bars" style="font-size:24px; color:var(--text)"></i></div>
