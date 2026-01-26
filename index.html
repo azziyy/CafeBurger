@@ -1,408 +1,419 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Cafe 888 Ultimate</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-<style>
-    /* =========================================================
-       1. GLOBAL SOZLAMALAR (PREMIUM DARK)
-       ========================================================= */
-    :root {
-        --bg: #09090b; --card: #18181b; --text: #ffffff; --sub: #a1a1aa;
-        --gold: #FFD700; --danger: #ef4444; --success: #22c55e; --blue: #3b82f6;
-        --glass: rgba(24, 24, 27, 0.95); --radius: 18px;
-        --border: 1px solid rgba(255,255,255,0.08);
-    }
-    body.light-mode {
-        --bg: #f4f4f5; --card: #ffffff; --text: #18181b; --sub: #71717a;
-        --glass: rgba(255, 255, 255, 0.95); --border: 1px solid rgba(0,0,0,0.08);
-    }
+    <meta charset="UTF-8">
     
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    body { 
-        margin: 0; padding: 0; background: var(--bg); color: var(--text); 
-        padding-bottom: 90px; overflow-x: hidden; transition: 0.3s;
-    }
+    <title>Cafe 888 Ultimate Pro</title>
 
-    /* Animatsiyalar */
-    .tap:active { transform: scale(0.95); opacity: 0.8; transition: 0.1s; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    /* =========================================================
-       2. HEADER & DRAWER
-       ========================================================= */
-    .header { 
-        position: fixed; top: 0; width: 100%; height: 60px; 
-        background: var(--glass); backdrop-filter: blur(20px); 
-        z-index: 5000; display: flex; align-items: center; justify-content: space-between; 
-        padding: 0 20px; border-bottom: var(--border);
-    }
-    .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; } 
-    .logo span { color: var(--gold); text-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
-    
-    .chat-wrap { position: relative; padding: 5px; }
-    .badge { 
-        position: absolute; top: 0; right: 0; width: 10px; height: 10px; 
-        background: var(--danger); border-radius: 50%; border: 2px solid var(--bg);
-        display: none; box-shadow: 0 0 5px var(--danger);
-    }
-    .badge.active { display: block; }
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-/* DRAWER ASOSIY SOZLAMALARI */
-.drawer-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 9000; /* Headerdan baland */
-    opacity: 0;
-    visibility: hidden;
-    transition: 0.3s ease;
-    backdrop-filter: blur(4px);
-}
-.drawer-overlay.active {
-    opacity: 1;
-    visibility: visible;
-}
 
-.drawer-panel {
-    position: fixed;
-    top: 0;
-    left: -85%; /* Chap tomonda yashirin */
-    width: 85%;
-    height: 100%;
-    background: var(--bg-card); /* Sizdagi --card o'zgaruvchisi */
-    z-index: 9001; /* Eng tepada */
-    transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-    display: flex;
-    flex-direction: column;
-    box-shadow: 5px 0 30px rgba(0,0,0,0.5);
-    border-right: 1px solid rgba(255,255,255,0.05);
-}
-.drawer-panel.active {
-    left: 0; /* Ochilganda */
-}
+    <style>
+        /* 1. ASOSIY O'ZGARUVCHILAR (VARIABLES)
+           Ranglarni shu yerdan o'zgartirsangiz, butun ilovada o'zgaradi.
+        */
+        :root {
+            /* Asosiy fon rangi (To'q qora) */
+            --bg: #09090b; 
+            
+            /* Kartalar va panellar foni (Biroz ochroq qora) */
+            --card: #18181b; 
+            
+            /* Asosiy matn rangi (Oq) */
+            --text: #ffffff; 
+            
+            /* Yordamchi matn rangi (Kulrang) */
+            --sub: #a1a1aa;
+            
+            /* Brend ranglari */
+            --gold: #FFD700;   /* Oltin */
+            --danger: #ef4444; /* Qizil (Xato/O'chirish) */
+            --success: #22c55e; /* Yashil (Muvaffaqiyat) */
+            --blue: #3b82f6;   /* Ko'k (Info/Login) */
+            
+            /* Oyna effekti (Glassmorphism) */
+            --glass: rgba(24, 24, 27, 0.95); 
+            
+            /* Burchaklar yumaloqligi */
+            --radius: 18px;
+            
+            /* Chegaralar (Ingichka chiziq) */
+            --border: 1px solid rgba(255,255,255,0.08);
+        }
 
-/* HEADER QISMI */
-.drawer-header {
-    padding: 50px 20px 30px; /* Tepadagi bo'shliq (Status bar uchun) */
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    background: linear-gradient(180deg, rgba(255,215,0,0.05), transparent);
-}
-.drawer-logo {
-    width: 50px; height: 50px;
-    background: var(--gold);
-    color: #000;
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px;
-    box-shadow: 0 5px 15px rgba(255,215,0,0.2);
-}
-.drawer-title h2 { margin: 0; font-size: 20px; color: var(--text); }
-.drawer-title h2 span { color: var(--gold); }
-.drawer-title p { margin: 2px 0 0; font-size: 12px; color: var(--sub); }
 
-.drawer-close {
-    margin-left: auto;
-    width: 30px; height: 30px;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--sub);
-    background: rgba(255,255,255,0.05);
-    border-radius: 50%;
-}
+        /* KUNDUZGI REJIM (LIGHT MODE)
+           Agar foydalanuvchi kunduzgi rejimni yoqsa, shu ranglar ishlaydi.
+        */
+        body.light-mode {
+            --bg: #f4f4f5; 
+            --card: #ffffff; 
+            --text: #18181b; 
+            --sub: #71717a;
+            --glass: rgba(255, 255, 255, 0.95);
+            --border: 1px solid rgba(0,0,0,0.08);
+        }
 
-/* MENU QISMI */
-.drawer-menu {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-}
-.menu-item {
-    display: flex; align-items: center; gap: 15px;
-    padding: 15px; margin-bottom: 10px;
-    background: rgba(255,255,255,0.02);
-    border-radius: 15px;
-    border: 1px solid rgba(255,255,255,0.03);
-    transition: 0.2s;
-}
-.menu-item:active { transform: scale(0.98); background: rgba(255,255,255,0.05); }
 
-.icon-box {
-    width: 35px; height: 35px;
-    background: rgba(255,215,0,0.1);
-    color: var(--gold);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-}
-.menu-item span {
-    flex: 1;
-    font-weight: 600;
-    font-size: 15px;
-    color: var(--text);
-}
-.arrow-icon, .toggle-icon {
-    color: var(--sub);
-    font-size: 14px;
-}
+        /* UMUMIY SOZLAMALAR
+           Barcha elementlar uchun "box-sizing" va bosish effektini to'g'irlash.
+        */
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; /* Mobil bosishda ko'k fonni yo'qotish */
+            outline: none; 
+            user-select: none; /* Matnni belgilashni taqiqlash */
+        }
+        
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif; /* Chiroyli shrift */
+            padding-bottom: 90px; /* Pastki menyu uchun joy */
+            overflow-x: hidden; /* Yon tomonga siljishni oldini olish */
+            transition: 0.3s; /* Rejim almashganda silliq o'tish */
+        }
 
-/* FOOTER QISMI */
-.drawer-footer {
-    padding: 20px;
-    text-align: center;
-}
-.logout-btn {
-    width: 100%; padding: 15px;
-    background: rgba(255,69,58,0.1);
-    color: var(--danger);
-    border: 1px solid rgba(255,69,58,0.2);
-    border-radius: 15px;
-    font-weight: bold;
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-}
-.version {
-    margin-top: 15px;
-    font-size: 11px;
-    color: var(--sub);
-    opacity: 0.5;
-}
 
-    
-    .d-head { margin-bottom: 40px; border-bottom: var(--border); padding-bottom: 20px; }
-    .d-head h2 { color: var(--gold); margin: 0; font-size: 28px; }
-    .d-head p { color: var(--sub); margin: 5px 0 0; font-size: 14px; }
-    
-    .d-item {
-        display: flex; align-items: center; gap: 15px; padding: 16px; margin-bottom: 10px;
-        background: rgba(255,255,255,0.03); border-radius: 15px;
-        font-weight: 600; border: var(--border); cursor: pointer;
-    }
-    .d-icon { width: 30px; text-align: center; font-size: 20px; color: var(--text); }
-    .d-footer { margin-top: auto; color: var(--danger); font-weight: bold; border: 1px solid rgba(255, 69, 58, 0.3); padding: 15px; text-align: center; border-radius: 15px; }
+        /* ANIMATSIYALAR
+           Tugma bosilganda va sahifa ochilganda ishlaydigan harakatlar.
+        */
+        .tap:active { 
+            transform: scale(0.95); /* Bosilganda kichrayish */
+            opacity: 0.8; 
+            transition: 0.1s; 
+        }
 
-    /* =========================================================
-       3. SAHIFALAR & MENU
-       ========================================================= */
-    .page { display: none; padding-top: 65px; animation: fadeIn 0.4s; }
-    .page.active { display: block; }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
 
-    .stories-row {
-        display: flex; gap: 12px; padding: 10px 15px; overflow-x: auto; scrollbar-width: none;
-    }
-    .story-c {
-        min-width: 76px; height: 76px; border-radius: 50%; padding: 3px;
-        background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366);
-        position: relative; flex-shrink: 0;
-    }
-    .story-c img {
-        width: 100%; height: 100%; border-radius: 50%;
-        border: 3px solid var(--bg); object-fit: cover;
-    }
+        @keyframes slideUp { 
+            from { transform: translateY(100%); } 
+            to { transform: translateY(0); } 
+        }
 
-    .cat-bar {
-        display: flex; gap: 10px; overflow-x: auto; padding: 5px 15px 15px;
-        position: sticky; top: 60px; z-index: 4000; background: var(--bg);
-        scrollbar-width: none;
-    }
-    .cat-pill {
-        padding: 8px 22px; border-radius: 25px; background: var(--card);
-        color: var(--sub); font-weight: 600; white-space: nowrap;
-        border: var(--border); transition: 0.3s;
-    }
-    .cat-pill.active {
-        background: var(--gold); color: #000; border-color: var(--gold);
-        transform: scale(1.05); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
-    }
 
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 15px 15px; }
-    
-    .card {
-        background: var(--card); border-radius: 18px; overflow: hidden;
-        display: flex; flex-direction: column; position: relative;
-        border: var(--border); box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-    .card-img-box { width: 100%; height: 160px; position: relative; }
-    .card-img-box img { width: 100%; height: 100%; object-fit: cover; } /* RASM TÒLIQ */
-    
-    /* YURAKCHA RASM ICHIDA */
-    .fav-btn-card {
-        position: absolute; top: 10px; right: 10px; width: 32px; height: 32px;
-        background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
-        border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        color: white; z-index: 2; font-size: 14px;
-    }
-    .fav-btn-card.active { background: white; color: var(--danger); }
+        /* 2. HEADER (TEPA QISM)
+           Logo va menyu tugmasi joylashgan qism.
+        */
+        .header { 
+            position: fixed; 
+            top: 0; 
+            width: 100%; 
+            height: 60px; 
+            background: var(--glass); 
+            backdrop-filter: blur(20px); /* Orqa fonni xiralashtirish */
+            z-index: 5000; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 0 20px; 
+            border-bottom: var(--border);
+        }
+        
+        .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; } 
+        .logo span { color: var(--gold); text-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
+        
+        .chat-wrap { position: relative; padding: 5px; }
+        
+        /* Chatdagi qizil nuqta (Yangi xabar) */
+        .badge { 
+            position: absolute; top: 0; right: 0; width: 10px; height: 10px; 
+            background: var(--danger); border-radius: 50%; border: 2px solid var(--bg);
+            display: none; box-shadow: 0 0 5px var(--danger);
+        }
+        .badge.active { display: block; }
 
-    .card-info { padding: 12px; flex: 1; display: flex; flex-direction: column; }
-    .card-title { font-weight: 700; font-size: 15px; margin-bottom: 5px; height: 38px; overflow: hidden; line-height: 1.3; }
-    .card-foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; }
-    .card-price { color: var(--gold); font-weight: 900; font-size: 16px; }
-    
-    .btn-add { width: 34px; height: 34px; background: var(--gold); color: #000; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; }
-    .qty-mini { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 10px; border: 1px solid var(--gold); }
-    .qm-btn { font-size: 18px; font-weight: bold; color: var(--gold); width: 20px; text-align: center; }
 
-    /* =========================================================
-       4. SAVAT (RASM KICHIKLASHTIRILDI)
-       ========================================================= */
-    .cart-item {
-        background: var(--card); padding: 10px; border-radius: 16px;
-        margin-bottom: 12px; display: flex; align-items: center; gap: 15px;
-        border: var(--border);
-    }
-    /* RASM O'LCHAMI: 60px */
-    .cart-thumb { 
-        width: 60px !important; height: 60px !important; 
-        border-radius: 12px; object-fit: cover; flex-shrink: 0; 
-    }
-    .cart-det { flex: 1; }
-    .cart-det h4 { margin: 0; font-size: 15px; }
-    .cart-det p { margin: 2px 0 0; color: var(--gold); font-weight: 600; font-size: 13px; }
-    
-    .cart-capsule {
-        display: flex; align-items: center; background: #222; 
-        border-radius: 20px; border: 1px solid #333; padding: 2px;
-    }
-    .cc-btn { width: 30px; height: 28px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; }
-    .cc-num { width: 25px; text-align: center; font-weight: bold; font-size: 14px; }
+        /* 3. DRAWER (YON MENYU)
+           Chap tomondan chiqadigan menyu.
+        */
+        .drawer-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 9000; /* Headerdan baland */
+            opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(5px);
+        }
+        .drawer-overlay.active { opacity: 1; visibility: visible; }
+        
+        .drawer-panel {
+            position: fixed; top: 0; left: -85%; width: 80%; height: 100%;
+            background: var(--card); z-index: 9001; /* Eng tepada */
+            transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1); /* Silliq chiqish */
+            display: flex; flex-direction: column; padding: 40px 25px;
+            box-shadow: 10px 0 50px rgba(0,0,0,0.5); border-right: var(--border);
+        }
+        .drawer-panel.active { left: 0; }
+        
+        .d-head { margin-bottom: 40px; border-bottom: var(--border); padding-bottom: 20px; }
+        .d-head h2 { color: var(--gold); margin: 0; font-size: 28px; }
+        .d-head p { color: var(--sub); margin: 5px 0 0; font-size: 14px; }
+        
+        .d-item {
+            display: flex; align-items: center; gap: 15px; padding: 16px; margin-bottom: 10px;
+            background: rgba(255,255,255,0.03); border-radius: 15px;
+            font-weight: 600; border: var(--border); cursor: pointer;
+        }
+        .d-icon { width: 30px; text-align: center; font-size: 20px; color: var(--text); }
+        
+        .d-footer { 
+            margin-top: auto; color: var(--danger); font-weight: bold; 
+            border: 1px solid rgba(255, 69, 58, 0.3); padding: 15px; 
+            text-align: center; border-radius: 15px; 
+        }
 
-    .cart-footer { padding: 20px; padding-bottom: 120px; }
-    .promo-row { display: flex; gap: 10px; background: var(--card); padding: 10px; border-radius: 15px; border: var(--border); margin-bottom: 15px; }
-    .promo-row input { flex: 1; background: transparent; border: none; color: var(--text); font-size: 16px; text-transform: uppercase; }
-    .promo-row button { background: var(--gold); border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; }
-    
-    .total-row { display: flex; justify-content: space-between; font-size: 20px; font-weight: 900; margin-bottom: 20px; }
-    .btn-main { width: 100%; padding: 16px; background: var(--gold); color: #000; border-radius: 18px; font-weight: 800; border: none; font-size: 16px; margin-top: 10px; }
-    .btn-gps { width: 100%; padding: 14px; background: #333; color: white; border-radius: 18px; margin-bottom: 10px; border: 1px solid #444; font-weight: 600; }
-    .btn-gps.ok { background: var(--success); border-color: var(--success); }
-    .btn-gps.err { background: var(--danger); border-color: var(--danger); }
 
-    /* =========================================================
-       5. TARIX (RANGLI STATUSLAR)
-       ========================================================= */
-    .hist-card {
-        background: var(--card); padding: 18px; border-radius: 18px;
-        margin-bottom: 15px; border-left: 5px solid; position: relative;
-    }
-    .h-head { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; color: var(--sub); }
-    .st-badge { padding: 4px 10px; border-radius: 6px; font-weight: 900; font-size: 11px; text-transform: uppercase; }
-    
-    /* Status Ranglari */
-    .s-new { border-color: var(--blue); } .s-new .st-badge { background: rgba(59,130,246,0.2); color: var(--blue); }
-    .s-cook { border-color: orange; } .s-cook .st-badge { background: rgba(255,165,0,0.2); color: orange; }
-    .s-deliv { border-color: var(--gold); } .s-deliv .st-badge { background: rgba(255,215,0,0.2); color: var(--gold); }
-    .s-done { border-color: var(--success); } .s-done .st-badge { background: rgba(34,197,94,0.2); color: var(--success); }
+        /* 4. ASOSIY SAHIFALAR (PAGES)
+           Menu, Savat, Tarix, Profil sahifalari.
+        */
+        .page { 
+            display: none; /* Boshida yashirin */
+            padding-top: 65px; /* Header balandligi qadar joy */
+            animation: fadeIn 0.4s; 
+        }
+        .page.active { display: block; } /* Aktiv bo'lsa ko'rinadi */
 
-    .track-btn {
-        width: 100%; padding: 12px; background: linear-gradient(45deg, #FFD700, #FFA500);
-        color: black; font-weight: 800; border-radius: 12px; margin-top: 15px; border: none;
-        display: flex; align-items: center; justify-content: center; gap: 8px; animation: pulse 2s infinite;
-    }
+        /* Stories (Instagram uslubi) */
+        .stories-row {
+            display: flex; gap: 12px; padding: 10px 15px; 
+            overflow-x: auto; scrollbar-width: none;
+        }
+        .story-c {
+            min-width: 76px; height: 76px; border-radius: 50%; padding: 3px;
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366);
+            position: relative; flex-shrink: 0;
+        }
+        .story-c img {
+            width: 100%; height: 100%; border-radius: 50%;
+            border: 3px solid var(--bg); object-fit: cover;
+        }
 
-    /* =========================================================
-       6. PROFIL (AVATAR O'RNI)
-       ========================================================= */
-    .prof-head { text-align: center; padding: 50px 0 30px; background: linear-gradient(180deg, rgba(255,215,0,0.1), transparent); }
-    /* AVATAR TEPASIDAN JOY OCHILDI */
-    .avatar { width: 100px; height: 100px; background: var(--card); border: 3px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; color: var(--gold); margin: 30px auto 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-    
-    .prof-menu { padding: 0 20px; }
-    .mc-icon { width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-    .mc-icon.red { background: rgba(255,71,87,0.15); color: var(--danger); }
-    .mc-icon.blue { background: rgba(42,171,238,0.15); color: var(--blue); }
-    .mc-icon.green { background: rgba(46,204,113,0.15); color: var(--success); }
-    .mc-icon.gold { background: rgba(255,215,0,0.15); color: var(--gold); }
+        /* Kategoriyalar (Yopishqoq menyu) */
+        .cat-bar {
+            display: flex; gap: 10px; overflow-x: auto; padding: 5px 15px 15px;
+            position: sticky; top: 60px; z-index: 4000; background: var(--bg);
+            scrollbar-width: none;
+        }
+        .cat-pill {
+            padding: 8px 22px; border-radius: 25px; background: var(--card);
+            color: var(--sub); font-weight: 600; white-space: nowrap;
+            border: var(--border); transition: 0.3s;
+        }
+        .cat-pill.active {
+            background: var(--gold); color: #000; border-color: var(--gold);
+            transform: scale(1.05); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+        }
 
-    /* SEVIMLILAR GRID (KICHIK RASMLAR) */
-    .fav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .fav-box { 
-        background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px; 
-        text-align: center; position: relative; border: 1px solid rgba(255,255,255,0.05);
-        display: flex; flex-direction: column; align-items: center;
-    }
-    .fav-box img { width: 60px; height: 60px; object-fit: cover; border-radius: 10px; margin-bottom: 5px; }
-    .fav-del { 
-        position: absolute; top: -5px; right: -5px; width: 22px; height: 22px; 
-        background: var(--danger); color: white; border-radius: 50%; 
-        display: flex; align-items: center; justify-content: center; font-size: 12px;
-    }
 
-    /* =========================================================
-       7. MODALLAR & NAVBAR
-       ========================================================= */
-    .modal-wrap {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.85); z-index: 8000; display: none;
-        align-items: flex-end; justify-content: center; backdrop-filter: blur(5px);
-    }
-    .sheet {
-        background: #1c1c1e; width: 100%; max-width: 500px;
-        border-radius: 30px 30px 0 0; padding: 30px; 
-        position: relative; animation: slideUp 0.3s;
-        border-top: 1px solid rgba(255,255,255,0.1);
-        max-height: 85vh; overflow-y: auto;
-    }
-    .sheet-close { position: absolute; top: 20px; right: 20px; font-size: 24px; color: var(--sub); cursor: pointer; }
+        /* 5. MAHSULOT KARTASI (CARD)
+        */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 15px 15px; }
+        
+        .card {
+            background: var(--card); border-radius: 18px; overflow: hidden;
+            display: flex; flex-direction: column; position: relative;
+            border: var(--border); box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .card-img-box { width: 100%; height: 160px; position: relative; }
+        .card-img-box img { width: 100%; height: 100%; object-fit: cover; } /* Rasmni to'liq yoyish */
+        
+        /* Yurakcha (Card ichida) */
+        .fav-btn-card {
+            position: absolute; top: 10px; right: 10px; width: 32px; height: 32px;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; z-index: 2; font-size: 14px;
+        }
+        .fav-btn-card.active { background: white; color: var(--danger); }
 
-    /* Chat Bubble */
-    #chatBox { flex: 1; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 15px; padding: 15px; margin: 15px 0; min-height: 300px; }
-    .msg-bubble { padding: 10px 15px; border-radius: 18px; max-width: 80%; margin-bottom: 10px; font-size: 14px; position: relative; }
-    .me { background: var(--gold); color: black; margin-left: auto; border-bottom-right-radius: 4px; }
-    .adm { background: #333; color: white; align-self: flex-start; border-bottom-left-radius: 4px; }
-    .chat-inp { display: flex; gap: 10px; }
-    .chat-inp input { flex: 1; background: #333; border: none; padding: 12px; border-radius: 12px; color: white; }
-    .chat-inp button { width: 50px; background: var(--gold); border: none; border-radius: 12px; font-size: 18px; }
+        .card-info { padding: 12px; flex: 1; display: flex; flex-direction: column; }
+        .card-title { font-weight: 700; font-size: 15px; margin-bottom: 5px; height: 38px; overflow: hidden; line-height: 1.3; }
+        .card-foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; }
+        .card-price { color: var(--gold); font-weight: 900; font-size: 16px; }
+        
+        /* Card Tugmalari */
+        .btn-add { width: 34px; height: 34px; background: var(--gold); color: #000; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; }
+        
+        .qty-mini { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 10px; border: 1px solid var(--gold); }
+        .qm-btn { font-size: 18px; font-weight: bold; color: var(--gold); width: 20px; text-align: center; }
 
-    /* Login */
-    #loginModal { align-items: center; z-index: 99999; background: var(--bg); display: flex; }
-    .login-box { text-align: center; width: 85%; }
-    .login-icon { width: 80px; height: 80px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; color: white; margin: 0 auto 20px; box-shadow: 0 0 40px rgba(59,130,246,0.4); }
 
-    /* Map */
-    #mapModal { background: #fff; z-index: 9500; }
-    #map { width: 100%; height: 100%; }
-    .map-back { position: absolute; top: 40px; left: 20px; z-index: 9501; padding: 10px 20px; border: none; background: white; font-weight: bold; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        /* 6. SAVAT (CART)
+        */
+        .cart-item {
+            background: var(--card); padding: 10px; border-radius: 16px;
+            margin-bottom: 12px; display: flex; align-items: center; gap: 15px;
+            border: var(--border);
+        }
+        /* Rasm o'lchamini qotirish */
+        .cart-thumb { 
+            width: 60px !important; height: 60px !important; 
+            border-radius: 12px; object-fit: cover; flex-shrink: 0; 
+        }
+        .cart-det { flex: 1; }
+        .cart-det h4 { margin: 0; font-size: 15px; }
+        .cart-det p { margin: 2px 0 0; color: var(--gold); font-weight: 600; font-size: 13px; }
+        
+        /* Oval Tugmalar */
+        .cart-capsule {
+            display: flex; align-items: center; background: #222; 
+            border-radius: 20px; border: 1px solid #333; padding: 2px;
+        }
+        .cc-btn { width: 30px; height: 28px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; }
+        .cc-num { width: 25px; text-align: center; font-weight: bold; font-size: 14px; }
 
-    /* Navbar */
-    .navbar {
-        position: fixed; bottom: 0; width: 100%; height: 75px;
-        background: var(--glass); backdrop-filter: blur(15px);
-        display: flex; justify-content: space-around; align-items: center;
-        border-radius: 25px 25px 0 0; z-index: 4500; border-top: var(--border);
-    }
-    .nav-btn { display: flex; flex-direction: column; align-items: center; color: var(--sub); font-size: 10px; font-weight: 700; transition: 0.3s; position: relative; }
-    .nav-btn i { font-size: 24px; margin-bottom: 5px; }
-    .nav-btn.active { color: var(--gold); transform: translateY(-5px); }
-    .nav-badge { position: absolute; top: -2px; right: 5px; background: var(--danger); color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px; }
+        .cart-footer { padding: 20px; padding-bottom: 120px; }
+        .promo-row { display: flex; gap: 10px; background: var(--card); padding: 10px; border-radius: 15px; border: var(--border); margin-bottom: 15px; }
+        .promo-row input { flex: 1; background: transparent; border: none; color: var(--text); font-size: 16px; text-transform: uppercase; }
+        .promo-row button { background: var(--gold); border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; }
+        
+        .total-row { display: flex; justify-content: space-between; font-size: 20px; font-weight: 900; margin-bottom: 20px; }
+        
+        /* Katta tugmalar */
+        .btn-main { width: 100%; padding: 16px; background: var(--gold); color: #000; border-radius: 18px; font-weight: 800; border: none; font-size: 16px; margin-top: 10px; }
+        .btn-gps { width: 100%; padding: 14px; background: #333; color: white; border-radius: 18px; margin-bottom: 10px; border: 1px solid #444; font-weight: 600; }
+        .btn-gps.ok { background: var(--success); border-color: var(--success); }
+        .btn-gps.err { background: var(--danger); border-color: var(--danger); }
 
-    /* Story Viewer */
-    #storyViewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; }
-    .s-bars { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; gap: 5px; z-index: 100; }
-    .s-bg { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 2px; }
-    .s-fill { height: 100%; background: white; width: 0%; }
-    .s-fill.anim { animation: fill 5s linear forwards; }
-    .s-fill.seen { width: 100%; }
-    @keyframes fill { to{width:100%} }
-    .s-img { width: 100%; height: 100%; object-fit: contain; }
-    .s-close { position: absolute; top: 30px; right: 20px; font-size: 30px; color: white; z-index: 101; cursor: pointer; }
-    .tap-zone { position: absolute; top: 0; height: 100%; width: 40%; z-index: 99; }
 
-    #toastBox { position: fixed; top: 20px; left: 20px; right: 20px; z-index: 10000; pointer-events: none; }
-    .toast { background: rgba(30,30,30,0.95); color: white; padding: 15px; border-radius: 12px; border-left: 4px solid var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: fadeIn 0.3s; font-weight: 600; margin-bottom: 10px; }
-    .hidden { display: none !important; }
-    .strike { text-decoration: line-through; color: #666; font-size: 13px; margin-right: 5px; }
-</style>
+        /* 7. TARIX (HISTORY) - RANGLI STATUSLAR
+        */
+        .hist-card {
+            background: var(--card); padding: 18px; border-radius: 18px;
+            margin-bottom: 15px; border-left: 5px solid; position: relative;
+        }
+        .h-head { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; color: var(--sub); }
+        .st-badge { padding: 4px 10px; border-radius: 6px; font-weight: 900; font-size: 11px; text-transform: uppercase; }
+        
+        /* Ranglar */
+        .s-new { border-color: var(--blue); } 
+        .s-new .st-badge { background: rgba(59,130,246,0.2); color: var(--blue); }
+        
+        .s-cook { border-color: orange; } 
+        .s-cook .st-badge { background: rgba(255,165,0,0.2); color: orange; }
+        
+        .s-deliv { border-color: var(--gold); } 
+        .s-deliv .st-badge { background: rgba(255,215,0,0.2); color: var(--gold); }
+        
+        .s-done { border-color: var(--success); } 
+        .s-done .st-badge { background: rgba(34,197,94,0.2); color: var(--success); }
+
+        .track-btn {
+            width: 100%; padding: 12px; background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: black; font-weight: 800; border-radius: 12px; margin-top: 15px; border: none;
+            display: flex; align-items: center; justify-content: center; gap: 8px; animation: pulse 2s infinite;
+        }
+
+
+        /* 8. PROFIL (PROFILE)
+        */
+        .prof-head { text-align: center; padding: 50px 0 30px; background: linear-gradient(180deg, rgba(255,215,0,0.1), transparent); }
+        
+        .avatar { 
+            width: 100px; height: 100px; background: var(--card); border: 3px solid var(--gold); 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            font-size: 40px; color: var(--gold); margin: 20px auto 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+        }
+        
+        .prof-menu { padding: 0 20px; }
+        .mc-icon { width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .mc-icon.red { background: rgba(255,71,87,0.15); color: var(--danger); }
+        .mc-icon.blue { background: rgba(42,171,238,0.15); color: var(--blue); }
+        .mc-icon.green { background: rgba(46,204,113,0.15); color: var(--success); }
+        .mc-icon.gold { background: rgba(255,215,0,0.15); color: var(--gold); }
+
+
+        /* 9. MODALLAR (BOTTOM SHEETS)
+        */
+        .modal-wrap {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 8000; display: none;
+            align-items: flex-end; justify-content: center; backdrop-filter: blur(5px);
+        }
+        .sheet {
+            background: #1c1c1e; width: 100%; max-width: 500px;
+            border-radius: 30px 30px 0 0; padding: 30px; 
+            position: relative; animation: slideUp 0.3s;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            max-height: 85vh; overflow-y: auto;
+        }
+        .sheet-close { position: absolute; top: 20px; right: 20px; font-size: 24px; color: var(--sub); cursor: pointer; }
+
+        /* Login Modal (To'liq ekran) */
+        #loginModal { align-items: center; z-index: 99999; background: var(--bg); display: flex; }
+        .login-box { text-align: center; width: 85%; }
+        .login-icon { width: 80px; height: 80px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; color: white; margin: 0 auto 20px; box-shadow: 0 0 40px rgba(59,130,246,0.4); }
+
+        /* Chat */
+        #chatBox { flex: 1; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 15px; padding: 15px; margin: 15px 0; min-height: 300px; }
+        .msg-bubble { padding: 10px 15px; border-radius: 18px; max-width: 80%; margin-bottom: 10px; font-size: 14px; position: relative; }
+        .me { background: var(--gold); color: black; margin-left: auto; border-bottom-right-radius: 4px; }
+        .adm { background: #333; color: white; align-self: flex-start; border-bottom-left-radius: 4px; }
+        .chat-inp { display: flex; gap: 10px; }
+        .chat-inp input { flex: 1; background: #333; border: none; padding: 12px; border-radius: 12px; color: white; }
+        .chat-inp button { width: 50px; background: var(--gold); border: none; border-radius: 12px; font-size: 18px; }
+
+        /* Sevimlilar Grid (Tuzatilgan) */
+        .fav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .fav-box { 
+            background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px; 
+            text-align: center; position: relative; border: 1px solid rgba(255,255,255,0.05);
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .fav-box img { width: 60px; height: 60px; object-fit: cover; border-radius: 10px; margin-bottom: 5px; }
+        .fav-del { 
+            position: absolute; top: -5px; right: -5px; width: 22px; height: 22px; 
+            background: var(--danger); color: white; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; font-size: 12px;
+        }
+
+        /* Map */
+        #mapModal { background: #fff; z-index: 9500; }
+        #map { width: 100%; height: 100%; }
+        .map-back { position: absolute; top: 40px; left: 20px; z-index: 9501; padding: 10px 20px; border: none; background: white; font-weight: bold; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+
+        /* Navbar */
+        .navbar {
+            position: fixed; bottom: 0; width: 100%; height: 75px;
+            background: var(--glass); backdrop-filter: blur(15px);
+            display: flex; justify-content: space-around; align-items: center;
+            border-radius: 25px 25px 0 0; z-index: 4500; border-top: var(--border);
+        }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; color: var(--sub); font-size: 10px; font-weight: 700; transition: 0.3s; position: relative; }
+        .nav-btn i { font-size: 24px; margin-bottom: 5px; }
+        .nav-btn.active { color: var(--gold); transform: translateY(-5px); }
+        .nav-badge { position: absolute; top: -2px; right: 5px; background: var(--danger); color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px; }
+
+        /* Story Viewer */
+        #storyViewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; }
+        .s-bars { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; gap: 5px; z-index: 100; }
+        .s-bg { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 2px; }
+        .s-fill { height: 100%; background: white; width: 0%; }
+        .s-fill.anim { animation: fill 5s linear forwards; }
+        .s-fill.seen { width: 100%; }
+        @keyframes fill { to{width:100%} }
+        .s-img { width: 100%; height: 100%; object-fit: contain; }
+        .s-close { position: absolute; top: 30px; right: 20px; font-size: 30px; color: white; z-index: 101; cursor: pointer; }
+        .tap-zone { position: absolute; top: 0; height: 100%; width: 40%; z-index: 99; }
+
+        /* Toast Xabar */
+        #toastBox { position: fixed; top: 20px; left: 20px; right: 20px; z-index: 10000; pointer-events: none; }
+        .toast { background: rgba(30,30,30,0.95); color: white; padding: 15px; border-radius: 12px; border-left: 4px solid var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: fadeIn 0.3s; font-weight: 600; margin-bottom: 10px; }
+        
+        .hidden { display: none !important; }
+        .strike { text-decoration: line-through; color: #666; font-size: 13px; margin-right: 5px; }
+
+    </style>
 </head>
 <body>
 
@@ -414,32 +425,48 @@
         <div style="position:absolute; top:0; right:0; width:40%; height:100%; z-index:10000;" onclick="nextStory()"></div>
     </div>
 
-div id="drawerOverlay
+    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+    <div class="drawer-panel" id="drawerPanel">
+        <div class="d-head">
+            <h2>CAFE 888</h2>
+            <p>Premium Service</p>
+        </div>
+        <div class="d-item tap" onclick="toggleTheme()"><div class="d-icon"><i class="fa fa-moon"></i></div> <span id="themeTxt">Tungi rejim</span></div>
+        <div class="d-item tap" onclick="openModal('contactModal'); toggleDrawer()"><div class="d-icon"><i class="fa fa-headset"></i></div> Bog'lanish</div>
+        <div class="d-item tap" onclick="location.reload()"><div class="d-icon"><i class="fa fa-sync"></i></div> Yangilash</div>
+        <div class="d-footer tap" onclick="logout()"><i class="fa fa-sign-out-alt"></i> Chiqish</div>
+    </div>
 
     <header class="header">
         <div class="tap" onclick="toggleDrawer()"><i class="fa fa-bars" style="font-size:24px; color:var(--text)"></i></div>
         <div class="logo">CAFE <span>888</span></div>
-        <div class="tap" onclick="openModal('chatModal')"><i class="fa fa-comment-dots" style="font-size:24px; color:var(--text)"></i><div id="chatBadge" class="badge"></div></div>
+        <div class="tap chat-wrap" onclick="openModal('chatModal')">
+            <i class="fa fa-comment-dots" style="font-size:24px; color:var(--text)"></i>
+            <div id="chatBadge" class="badge"></div>
+        </div>
     </header>
 
     <div id="p-menu" class="page active">
         <div id="storiesContainer" class="stories-row"></div>
-        <div id="catNav" class="cat-bar"></div>
-        <div id="menuGrid" class="grid"></div>
+        <div class="cat-wrapper">
+            <div id="catNav" class="cat-scroll"></div>
+        </div>
+        <div id="menuGrid" class="grid-container"></div>
+        <div class="spacer"></div>
     </div>
 
     <div id="p-cart" class="page">
         <h2 style="padding:0 20px; margin-bottom:20px;">Savat</h2>
-        <div id="cartList" style="padding:0 20px;"></div>
+        <div id="cartList" class="cart-list"></div>
         
-        <div class="cart-footer">
+        <div class="cart-footer-fixed">
             <div class="promo-row">
                 <input type="text" id="promoInp" placeholder="Promokod">
                 <button class="tap" onclick="checkPromo()">OK</button>
             </div>
-            <div id="promoMsg" style="font-size:13px; margin-bottom:20px;"></div>
+            <div id="promoMsg" style="font-size:13px; margin-bottom:10px;"></div>
 
-            <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:900; margin-bottom:20px;">
+            <div class="total-row">
                 <span>Jami:</span> <span id="cartTotal" style="color:var(--gold);">0 so'm</span>
             </div>
             
@@ -479,6 +506,7 @@ div id="drawerOverlay
             <div class="login-icon"><i class="fab fa-telegram-plane"></i></div>
             <h2>Xush kelibsiz</h2>
             <p style="color:var(--sub); margin-bottom:30px;">Davom etish uchun Telegram orqali kiring</p>
+            <div id="loadSpinner" class="hidden" style="color:var(--gold); margin-bottom:15px;">Tasdiqlash kutilmoqda...</div>
             <button id="tgBtn" class="btn-main tap" style="background:var(--blue); color:white; width:100%; margin-top:0;" onclick="doLogin()">KIRISH</button>
         </div>
     </div>
@@ -486,7 +514,7 @@ div id="drawerOverlay
     <div id="prodModal" class="modal-wrap" onclick="if(event.target==this)closeModal('prodModal')">
         <div class="sheet">
             <div class="tap" onclick="closeModal('prodModal')" style="position:absolute; top:15px; right:15px; background:rgba(0,0,0,0.5); width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white;">✕</div>
-            <img id="pmImg" src="" style="width:100%; height:250px; object-fit:cover; border-radius:15px; margin-bottom:15px;">
+            <img id="pmImg" src="" class="sheet-img">
             <h2 id="pmName" style="margin-bottom:5px;"></h2>
             <h3 id="pmPrice" style="color:var(--gold); margin-bottom:15px;"></h3>
             <p id="pmDesc" style="color:var(--sub); line-height:1.5; margin-bottom:30px;"></p>
@@ -500,12 +528,12 @@ div id="drawerOverlay
     </div>
 
     <div id="chatModal" class="modal-wrap" onclick="if(event.target==this)closeModal('chatModal')">
-        <div class="sheet" style="height:80vh;">
-            <h3 style="margin-bottom:15px;">Admin Chat</h3>
-            <div id="chatBox" style="flex:1; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:15px; padding:15px; margin-bottom:15px;"></div>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="chatInp" placeholder="Xabar..." style="flex:1; background:rgba(255,255,255,0.1); border:none; padding:15px; border-radius:15px; color:white;">
-                <button onclick="sendChat()" class="tap" style="background:var(--gold); border:none; width:50px; border-radius:15px;"><i class="fa fa-paper-plane"></i></button>
+        <div class="sheet h-90">
+            <div class="sheet-top"><h3>Admin Chat</h3><span onclick="closeModal('chatModal')">✕</span></div>
+            <div id="chatBox"></div>
+            <div class="chat-input-wrap">
+                <input type="text" id="chatInp" placeholder="Xabar...">
+                <button onclick="sendChat()" class="tap"><i class="fa fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
@@ -536,8 +564,11 @@ div id="drawerOverlay
             db.ref('info/location').on('value',s=>shopLoc=s.val());
         };
 
+        // AUTH
         function doLogin(){
             const t='req_'+Date.now();
+            document.getElementById('tgBtn').style.display='none';
+            document.getElementById('loadSpinner').classList.remove('hidden');
             window.open(`https://t.me/${BOT_USER}?start=login_${t}`, '_blank');
             db.ref('auth_tokens/'+t).on('value', s=>{
                 if(s.val()){
@@ -551,6 +582,7 @@ div id="drawerOverlay
         function checkAuth(uid){ db.ref('users/'+uid).on('value',s=>{ if(s.val()){ user=s.val(); document.getElementById('loginModal').style.display='none'; initApp(); } else document.getElementById('loginModal').style.display='flex'; }); }
         function initApp(){ document.getElementById('uName').innerText=user.name; document.getElementById('uPhone').innerText=user.phone; favs=user.favorites||{}; loadHistory(); loadChat(); }
 
+        // DATA
         function loadData(){
             fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`).then(r=>r.text()).then(t=>{
                 const j=JSON.parse(t.substr(47).slice(0,-2));
@@ -562,19 +594,11 @@ div id="drawerOverlay
             fetch(`https://docs.google.com/spreadsheets/d/${ADS_ID}/gviz/tq?tqx=out:json`).then(r=>r.text()).then(t=>{
                 const j=JSON.parse(t.substr(47).slice(0,-2));
                 stories=j.table.rows.map(r=>r.c[0]?.v).filter(u=>u);
-                document.getElementById('storiesContainer').innerHTML = stories.map((u,i)=>`<div class="story-c tap" onclick="openStory(${i})"><img src="${u}"></div>`).join('');
+                document.getElementById('storiesContainer').innerHTML = stories.map((u,i)=>`<div class="story-bubble tap" onclick="openStory(${i})"><img src="${u}"></div>`).join('');
             });
         }
 
-        function openStory(i){ stIdx=i; document.getElementById('storyViewer').style.display='flex'; showStory(); }
-        function showStory(){
-            if(stIdx>=stories.length){closeStory();return;}
-            document.getElementById('storyImg').src=stories[stIdx];
-            document.getElementById('storyBars').innerHTML=stories.map((_,i)=>`<div class="bar-bg"><div class="bar-fill ${i===stIdx?'anim':(i<stIdx?'seen':'')}"></div></div>`).join('');
-            clearTimeout(stTimer); stTimer=setTimeout(nextStory,5000);
-        }
-        function nextStory(){ stIdx++; showStory(); } function prevStory(){ if(stIdx>0)stIdx--; showStory(); } function closeStory(){ clearTimeout(stTimer); document.getElementById('storyViewer').style.display='none'; }
-
+        // UI
         function renderCats(){ const c=['Barchasi',...new Set(products.map(p=>p.cat))]; document.getElementById('catNav').innerHTML=c.map(k=>`<div class="cat-pill tap ${k=='Barchasi'?'active':''}" onclick="filt('${k}',this)">${k}</div>`).join(''); }
         function filt(c,el){ document.querySelectorAll('.cat-pill').forEach(x=>x.classList.remove('active')); el.classList.add('active'); renderGrid(c); }
         function renderGrid(c){
@@ -582,23 +606,24 @@ div id="drawerOverlay
             document.getElementById('menuGrid').innerHTML=l.map((p, i) => {
                 const qty = cart[p.id] || 0;
                 const btn = qty > 0 
-                    ? `<div class="qty-mini tap" onclick="event.stopPropagation()"><div class="qm-btn" onclick="updCart(${p.id},-1)">-</div><b style="color:white;font-size:14px;">${qty}</b><div class="qm-btn" onclick="updCart(${p.id},1)">+</div></div>`
+                    ? `<div class="qty-pill tap" onclick="event.stopPropagation()"><div class="qp-btn" onclick="updCart(${p.id},-1)">-</div><b style="color:white;font-size:14px;">${qty}</b><div class="qp-btn" onclick="updCart(${p.id},1)">+</div></div>`
                     : `<div class="btn-plus tap" onclick="updCart(${p.id},1);event.stopPropagation()">+</div>`;
-                
-                return `
-                <div class="card tap" onclick="openProd(${p.id})">
-                    <div class="card-img-box"><img src="${p.img}"><div class="fav-btn-card ${favs[p.id]?'active':''}" onclick="toggleFav(${p.id});event.stopPropagation()"><i class="fa fa-heart"></i></div></div>
+                return `<div class="card tap" onclick="openProd(${p.id})">
+                    <div class="card-img-box"><img src="${p.img}"><div class="fav-btn-card ${favs[p.id]?'active':''}" onclick="togFav(${p.id});event.stopPropagation()"><i class="fa fa-heart"></i></div></div>
                     <div class="card-info"><div class="card-title">${p.name}</div><div class="card-foot"><div class="card-price">${p.price.toLocaleString()} so'm</div>${btn}</div></div>
                 </div>`;
             }).join('');
         }
 
+        // CART
         function updCart(id,n){ cart[id]=(cart[id]||0)+n; if(cart[id]<=0)delete cart[id]; renderGrid(document.querySelector('.cat-pill.active').innerText); renderCart(); }
         function renderCart(){
             let t=0, h='';
+            const k=Object.keys(cart);
+            document.getElementById('navBadge').innerText=k.length; document.getElementById('navBadge').classList.toggle('hidden',k.length===0);
             for(let id in cart){
                 const p=products.find(x=>x.id==id); t+=p.price*cart[id];
-                h+=`<div class="cart-item"><img src="${p.img}" class="cart-thumb"><div class="cart-det"><h4>${p.name}</h4><p>${p.price.toLocaleString()} so'm</p></div><div class="cart-capsule"><div class="cc-btn tap" onclick="updCart(${p.id},-1)">-</div><div class="cc-num">${cart[id]}</div><div class="cc-btn tap" onclick="updCart(${p.id},1)">+</div></div></div>`;
+                h+=`<div class="cart-item"><img src="${p.img}" class="c-img"><div class="c-info"><h4>${p.name}</h4><p>${p.price.toLocaleString()} so'm</p></div><div class="cart-capsule"><div class="cc-btn tap" onclick="updCart(${p.id},-1)">-</div><div class="cc-num">${cart[id]}</div><div class="cc-btn tap" onclick="updCart(${p.id},1)">+</div></div></div>`;
             }
             let disp=t.toLocaleString()+" so'm";
             if(activePromo) disp=`<span class="strike">${t.toLocaleString()}</span> ${(t-(t*activePromo/100)).toLocaleString()} so'm`;
@@ -607,6 +632,7 @@ div id="drawerOverlay
             const b=document.getElementById('orderBtn'); if(t>0&&loc){b.style.opacity='1';b.style.pointerEvents='all';}else{b.style.opacity='0.5';b.style.pointerEvents='none';}
         }
 
+        // GPS
         function getGPS(){
             const b=document.getElementById('gpsBtn'); b.innerHTML="Aniqlanmoqda...";
             if(window.Android && window.Android.checkGPS) window.Android.checkGPS();
@@ -628,6 +654,17 @@ div id="drawerOverlay
             document.getElementById('gpsBtn').innerHTML=`<i class="fa fa-map-marker-alt"></i> Manzilni aniqlash`; document.getElementById('gpsBtn').className='btn-gps tap';
         }
 
+        // STORIES
+        function openStory(i){ stIdx=i; document.getElementById('storyViewer').style.display='flex'; showStory(); }
+        function showStory(){
+            if(stIdx>=stories.length){closeStory();return;}
+            document.getElementById('storyImg').src=stories[stIdx];
+            document.getElementById('storyBars').innerHTML=stories.map((_,i)=>`<div class="bar-bg"><div class="bar-fill ${i===stIdx?'anim':(i<stIdx?'seen':'')}"></div></div>`).join('');
+            clearTimeout(stTimer); stTimer=setTimeout(nextStory,5000);
+        }
+        function nextStory(){ stIdx++; showStory(); } function prevStory(){ if(stIdx>0)stIdx--; showStory(); } function closeStory(){ clearTimeout(stTimer); document.getElementById('storyViewer').style.display='none'; }
+
+        // CHAT
         function loadChat(){
             db.ref('messages/'+user.phone.replace('+','')).limitToLast(50).on('child_added', s=>{
                 const m=s.val();
@@ -642,6 +679,19 @@ div id="drawerOverlay
             document.getElementById('chatInp').value="";
         }
 
+        // HISTORY
+        function loadHistory(){
+            db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value',s=>{
+                const d=s.val(); if(!d)return;
+                document.getElementById('histList').innerHTML=Object.values(d).reverse().map(o=>{
+                    let st=o.status,cls='s-new',txt='YANGI';
+                    if(st=='kuryerda'){cls='s-deliv';txt='KURYERDA';}if(st=='yetkazildi'){cls='s-done';txt='YETKAZILDI';}if(st=='tayyorlanmoqda'){cls='s-cook';txt='TAYYORLANMOQDA';}
+                    let trk=(st=='kuryerda'&&o.courier_id)?`<button class="track-btn" onclick="track('${o.courier_id}')">Kuryerni Kuzatish</button>`:'';
+                    return `<div class="hist-card ${cls}"><div class="h-head"><span>${o.time}</span><span class="st-badge">${txt}</span></div><div style="font-size:14px;margin-bottom:10px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div><div style="font-size:18px;font-weight:bold;">${parseInt(o.total).toLocaleString()} so'm</div>${trk}</div>`;
+                }).join('');
+            });
+        }
+        
         var carIcon=L.icon({iconUrl:'https://cdn-icons-png.flaticon.com/512/3202/3202926.png',iconSize:[40,40],iconAnchor:[20,20]});
         function track(cid){
             document.getElementById('mapModal').style.display='block';
@@ -654,15 +704,7 @@ div id="drawerOverlay
             });
         }
 
-        function openPromoList(){
-            openModal('promoListModal');
-            db.ref('promocodes').once('value',s=>{
-                const d=s.val(); if(!d){document.getElementById('promoListContent').innerHTML="Kod yo'q";return;}
-                let h=""; for(let k in d){if(d[k].limit>0) h+=`<div style="background:rgba(255,255,255,0.05);padding:10px;border-radius:10px;margin-bottom:5px;display:flex;justify-content:space-between;"><b>${k}</b><span style="color:var(--success)">${d[k].discount}%</span></div>`;}
-                document.getElementById('promoListContent').innerHTML=h||"Kod yo'q";
-            });
-        }
-
+        // UTILS
         function nav(p,el){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById('p-'+p).classList.add('active');document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));el.classList.add('active');if(p=='cart')renderCart();}
         function openModal(id){document.getElementById(id).style.display='flex'; if(id=='chatModal')document.getElementById('chatBadge').classList.remove('active');}
         function closeModal(id){document.getElementById(id).style.display='none';}
@@ -674,12 +716,13 @@ div id="drawerOverlay
         function togFav(id){if(favs[id])delete favs[id];else favs[id]=true;db.ref('users/'+user.phone.replace('+','')+'/favorites').set(favs);renderGrid(document.querySelector('.cat-pill.active').innerText);}
         function openFavs(){const l=products.filter(p=>favs[p.id]);document.getElementById('favList').innerHTML=l.map(p=>`<div class="fav-box"><div class="fav-del" onclick="togFav(${p.id});openFavs()">✕</div><img src="${p.img}"><div style="font-size:11px;">${p.name}</div><button style="width:100%;margin-top:5px;background:var(--gold);border:none;border-radius:6px;" onclick="updCart(${p.id},1);closeModal('favModal')">+</button></div>`).join('')||"Bo'sh";openModal('favModal');}
         function checkPromo(){const c=document.getElementById('promoInp').value.toUpperCase();db.ref('promocodes/'+c).once('value',s=>{if(s.val()&&s.val().limit>0){activePromo=s.val().discount;document.getElementById('promoMsg').innerHTML=`<b style="color:var(--success)">✅ ${activePromo}% Chegirma!</b>`;renderCart();}else{document.getElementById('promoMsg').innerHTML=`<b style="color:var(--danger)">❌ Xato kod</b>`;}});}
-        function loadHistory(){db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value',s=>{const d=s.val();if(!d)return;document.getElementById('histList').innerHTML=Object.values(d).reverse().map(o=>{let st=o.status,cls='s-new',txt='YANGI';if(st=='kuryerda'){cls='s-deliv';txt='KURYERDA';}if(st=='yetkazildi'){cls='s-done';txt='YETKAZILDI';}if(st=='tayyorlanmoqda'){cls='s-cook';txt='TAYYORLANMOQDA';}let trk=(st=='kuryerda'&&o.courier_id)?`<button class="track-btn" onclick="track('${o.courier_id}')">Kuryerni Kuzatish</button>`:'';return `<div class="hist-card ${cls}"><div class="h-head"><span>${o.time}</span><span class="st-badge">${txt}</span></div><div style="font-size:14px;margin-bottom:10px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div><div style="font-size:18px;font-weight:bold;">${parseInt(o.total).toLocaleString()} so'm</div>${trk}</div>`;}).join('');});}
         function getDist(lat1,lon1,lat2,lon2){var R=6371;var dLat=(lat2-lat1)*Math.PI/180;var dLon=(lon2-lon1)*Math.PI/180;var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);var c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));return R*c;}
         function logout(){localStorage.removeItem('cafe_uid');location.reload();}
         function copy(t){navigator.clipboard.writeText(t);toast("Nusxalandi");}
         function toggleTheme(){document.body.classList.toggle('light-mode');localStorage.setItem('theme',document.body.classList.contains('light-mode')?'light':'dark');document.getElementById('themeTxt').innerText=document.body.classList.contains('light-mode')?"Kunduzgi rejim":"Tungi rejim";}
         function openNews(){db.ref('news').limitToLast(10).once('value',s=>{document.getElementById('newsContent').innerHTML=Object.values(s.val()||{}).reverse().map(n=>`<div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:15px;margin-bottom:10px;"><div style="font-weight:700;margin-bottom:5px;">${n.text}</div><div style="font-size:11px;color:gray;">${n.date}</div></div>`).join('')||"Yo'q";openModal('newsModal');});}
+        function openPromoList(){db.ref('promocodes').once('value',s=>{const d=s.val();let h="";for(let k in d){if(d[k].limit>0)h+=`<div style="background:rgba(255,255,255,0.05);padding:10px;border-radius:10px;margin-bottom:5px;display:flex;justify-content:space-between;"><b>${k}</b><span style="color:var(--success)">${d[k].discount}%</span></div>`;}document.getElementById('promoListContent').innerHTML=h||"Kod yo'q";openModal('promoListModal');});}
     </script>
 </body>
 </html>
+
