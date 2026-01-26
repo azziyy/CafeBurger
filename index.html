@@ -8,6 +8,30 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <style>
+/* Sevimlilar ro'yxatidagi X tugmasi uchun maxsus stil */
+.fav-del { 
+    position: absolute; 
+    top: 5px; 
+    right: 5px; 
+    width: 26px; 
+    height: 26px; 
+    background: var(--danger); 
+    color: white; 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-size: 14px; 
+    z-index: 10; /* Tugmani rasmning ustiga chiqaradi */
+    cursor: pointer; /* Bosish mumkinligini ko'rsatadi */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    border: 2px solid var(--bg-card); /* Kontrast berish uchun */
+}
+
+.fav-box {
+    position: relative; /* Ichidagi mutloq (absolute) elementlar uchun asos */
+}
+
 /* SEVIMLILAR GRIDINI ASOSIY GRID BILAN BIR XIL QILISH */
 .fav-grid-premium {
     display: grid;
@@ -760,39 +784,30 @@
         function addFromModal(){updCart(tempPmId,tempPmQty);closeModal('prodModal');}
         function togFav(id){if(favs[id])delete favs[id];else favs[id]=true;db.ref('users/'+user.phone.replace('+','')+'/favorites').set(favs);renderGrid(document.querySelector('.cat-pill.active').innerText);}
         function openFavs() {
-    const list = products.filter(p => favs[p.id]);
-    const favContainer = document.getElementById('favList');
-    
-    // Konteyner klassini o'zgartiramiz
-    favContainer.className = "fav-grid-premium";
-    
-    favContainer.innerHTML = list.map(p => `
-        <div class="fav-card-premium fade-in">
-            <div class="fav-del-btn tap" onclick="toggleFav(${p.id}); openFavs()">
+    const l = products.filter(p => favs[p.id]);
+    document.getElementById('favList').innerHTML = l.map(p => `
+        <div class="fav-box grid-anim">
+            <div class="fav-del tap" onclick="event.stopPropagation(); togFav(${p.id}); openFavs();">
                 <i class="fa fa-times"></i>
             </div>
             
-            <div class="fav-img-wrap">
-                <img src="${p.img}" alt="${p.name}">
+            <img src="${p.img}" class="tap" onclick="openProd(${p.id})">
+            
+            <div style="font-size:12px; font-weight:600; margin-top:5px; height:32px; overflow:hidden;">
+                ${p.name}
             </div>
             
-            <div class="fav-info-premium">
-                <div class="fav-title-premium">${p.name}</div>
-                
-                <div class="fav-foot-premium">
-                    <div class="fav-price-premium">${p.price.toLocaleString()}</div>
-                    
-                    <div class="btn-plus tap" style="width:30px; height:30px; font-size:16px;" 
-                         onclick="updCart(${p.id}, 1); closeModal('favModal'); toast('Savatga qo\\'shildi')">
-                        <i class="fa fa-plus"></i>
-                    </div>
-                </div>
-            </div>
+            <button class="btn-main tap" 
+                    style="width:100%; margin-top:5px; padding:8px; font-size:12px; background:var(--gold); border-radius:8px;" 
+                    onclick="event.stopPropagation(); updCart(${p.id}, 1); closeModal('favModal'); toast('Savatga qo\\'shildi');">
+                <i class="fa fa-plus"></i> Savatga
+            </button>
         </div>
-    `).join('') || `<div style="grid-column: span 2; text-align:center; padding:40px; color:var(--sub);">Sevimlilar ro'yxati bo'sh</div>`;
+    `).join('') || "<div style='grid-column:span 3; text-align:center; padding:20px; color:var(--sub);'>Sevimlilar ro'yxati bo'sh</div>";
     
     openModal('favModal');
 }
+
 
         function checkPromo(){const c=document.getElementById('promoInp').value.toUpperCase();db.ref('promocodes/'+c).once('value',s=>{if(s.val()&&s.val().limit>0){activePromo=s.val().discount;document.getElementById('promoMsg').innerHTML=`<b style="color:var(--success)">✅ ${activePromo}% Chegirma!</b>`;renderCart();}else{document.getElementById('promoMsg').innerHTML=`<b style="color:var(--red)">❌ Xato kod</b>`;}});}
         function loadHistory(){db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value',s=>{const d=s.val();if(!d)return;document.getElementById('histList').innerHTML=Object.values(d).reverse().map(o=>{let st=o.status,cls='status-new',txt='YANGI';if(st=='kuryerda'){cls='status-deliv';txt='KURYERDA';}if(st=='yetkazildi'){cls='status-done';txt='YETKAZILDI';}if(st=='tayyorlanmoqda'){cls='status-cook';txt='TAYYORLANMOQDA';}let trk=(st=='kuryerda'&&o.courier_id)?`<button class="btn-track" onclick="track('${o.courier_id}')">Kuryerni Kuzatish</button>`:'';return `<div class="hist-card ${cls}"><div class="h-header"><span style="font-size:12px;color:gray;">${o.time}</span><span class="h-badge">${txt}</span></div><div style="font-size:14px;margin-bottom:10px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div><div style="font-size:18px;font-weight:800;">${parseInt(o.total).toLocaleString()} so'm</div>${trk}</div>`;}).join('');});}
