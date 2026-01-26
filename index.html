@@ -902,58 +902,64 @@
             document.getElementById('gpsBtn').innerHTML="Manzilni aniqlash"; document.getElementById('gpsBtn').classList.remove('gps-success');
         }
 
-        function loadChat() {
+        // --- CHATNI YUKLASH VA AVTOMATIK SCROLL ---
+function loadChat() {
     const chatBox = document.getElementById('chatBox');
     
-    // Firebase-dan xabarlarni olish
-    db.ref('messages/' + user.phone.replace('+', '')).limitToLast(50).on('child_added', s => {
-        const m = s.val();
-        
-        // Chat badge (nuqta) mantiqi
-        if (m.from === 'admin' && document.getElementById('chatModal').style.display === 'none') {
-            document.getElementById('chatBadge').classList.add('show');
-        }
+    // Firebase'dan xabarlarni real vaqtda eshitish
+    db.ref('messages/' + user.phone.replace('+', '')).on('value', snapshot => {
+        const data = snapshot.val();
+        if (!data) return;
 
-        const isMe = m.from === 'user';
-        const msgHtml = `
-            <div style="display: flex; flex-direction: column; width: 100%;">
-                <div class="msg-bubble ${isMe ? 'msg-me' : 'msg-adm'}">
-                    ${m.body}
-                    <span class="msg-time" style="color: ${isMe ? '#333' : '#aaa'}">
-                        ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                    </span>
+        // Xabarlarni tozalab qayta render qilamiz (tartib buzilmasligi uchun)
+        chatBox.innerHTML = "";
+        
+        Object.values(data).forEach(m => {
+            const isMe = m.from === 'user';
+            const msgHtml = `
+                <div style="display: flex; flex-direction: column; width: 100%;">
+                    <div class="msg-bubble ${isMe ? 'me' : 'adm'}">
+                        ${m.body}
+                        <span class="msg-time" style="color: ${isMe ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.5)'}">
+                            ${new Date(m.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </span>
+                    </div>
                 </div>
-            </div>
-        `;
-        
-        chatBox.innerHTML += msgHtml;
-        
-        // --- OXIRGI XABARGA TUSHISH (SCROLL) ---
-        // Xabar qo'shilishi bilan chatni eng pastga tushiradi
-        chatBox.scrollTop = chatBox.scrollHeight;
+            `;
+            chatBox.innerHTML += msgHtml;
+        });
+
+        // MUHIM: Xabarlar render bo'lib bo'lgandan keyin pastga tushiramiz
+        forceScrollBottom();
     });
 }
 
-// Chatni ochish funksiyasi
-function openChatModal() {
-    // Chat modalini ko'rsatish
-    document.getElementById('chatModal').style.display = 'flex';
-    
-    // Chat kontenerini olish
+// Pastga tushirish uchun maxsus "aqlli" funksiya
+function forceScrollBottom() {
     const chatBox = document.getElementById('chatBox');
-    
-    // Modal to'liq ochilishi va elementlar render bo'lishi uchun 100ms kutib, 
-    // keyin eng pastga (oxirgi xabarga) tushiradi
+    // Brauzer elementlarni chizib bo'lishini kutish uchun qisqa interval
     setTimeout(() => {
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }, 150);
+        chatBox.scrollTo({
+            top: chatBox.scrollHeight,
+            behavior: 'smooth' // Silliq tushish
+        });
+    }, 100);
 }
 
-// Xabar kelganda ham avtomatik pastga tushirish (loadChat ichida bo'lishi shart)
-db.ref('messages/' + user.phone.replace('+', '')).on('child_added', s => {
-    // ... xabarni yaratish kodi ...
-    document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
-});
+// Chat modalini ochuvchi tugma funksiyasi
+function openChatModal() {
+    // Modalni ko'rsatish
+    const modal = document.getElementById('chatModal');
+    modal.style.display = 'flex';
+    
+    // Badge'ni (qizil nuqta) yo'qotish
+    const badge = document.getElementById('chatBadge');
+    if(badge) badge.classList.remove('active');
+
+    // Modal ochilganda yana bir bor majburiy pastga tushiramiz
+    forceScrollBottom();
+}
+
 
 
         function sendChat(){
