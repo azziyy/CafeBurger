@@ -34,30 +34,87 @@
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); } }
 
-    /* =========================================================
-       2. DRAWER (YON MENYU)
-       ========================================================= */
-    .drawer-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.8); z-index: 9000;
-        opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(5px);
-    }
-    .drawer-overlay.active { opacity: 1; visibility: visible; }
-    
-    .drawer-panel {
-        position: fixed; top: 0; left: -85%; width: 80%; height: 100%;
-        background: var(--card); z-index: 9001;
-        transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-        display: flex; flex-direction: column; padding: 40px 25px;
-        box-shadow: 10px 0 50px rgba(0,0,0,0.5);
-    }
-    .drawer-panel.active { left: 0; }
-    
-    .drawer-item {
-        display: flex; align-items: center; gap: 20px; padding: 15px; margin-bottom: 10px;
-        background: rgba(255,255,255,0.03); border-radius: 15px; font-weight: 600;
-        border: 1px solid rgba(255,255,255,0.02);
-    }
+/* --- DRAWER (PREMIUM STYLE) --- */
+
+/* Overlay (Orqa fon qorayishi) */
+.drawer-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7); z-index: 9000;
+    opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(3px);
+}
+.drawer-overlay.active { opacity: 1; visibility: visible; }
+
+/* Asosiy Panel */
+.drawer-panel {
+    position: fixed; top: 0; left: -85%; width: 85%; height: 100%;
+    background: var(--bg); z-index: 9001;
+    transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    display: flex; flex-direction: column;
+    box-shadow: 5px 0 30px rgba(0,0,0,0.5);
+    border-right: 1px solid rgba(255,255,255,0.05);
+}
+.drawer-panel.active { left: 0; }
+
+/* Header Qismi */
+.drawer-header-premium {
+    padding: 40px 20px 30px;
+    background: linear-gradient(135deg, rgba(255,215,0,0.1), transparent);
+    display: flex; align-items: center; gap: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.drawer-logo-box {
+    width: 50px; height: 50px; background: var(--gold); color: #000;
+    border-radius: 15px; display: flex; align-items: center; justify-content: center;
+    font-size: 24px; box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+}
+.drawer-info h2 { margin: 0; font-size: 20px; color: var(--text); font-weight: 800; }
+.drawer-info h2 span { color: var(--gold); }
+.drawer-info p { margin: 2px 0 0; font-size: 12px; color: var(--sub); letter-spacing: 1px; text-transform: uppercase; }
+.drawer-close-btn { 
+    margin-left: auto; width: 35px; height: 35px; 
+    background: rgba(255,255,255,0.05); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; color: var(--sub);
+}
+
+/* Menu Qismi */
+.drawer-content-premium { padding: 20px; flex: 1; overflow-y: auto; }
+
+.d-item-pro {
+    display: flex; align-items: center; gap: 15px;
+    padding: 15px; margin-bottom: 12px;
+    background: var(--card); border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.03);
+    transition: 0.2s;
+}
+.d-item-pro:active { transform: scale(0.98); background: rgba(255,255,255,0.05); }
+
+.d-icon-box {
+    width: 40px; height: 40px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+/* Icon orqa fon ranglari */
+.purple { background: rgba(157, 0, 255, 0.15); color: #be5eff; }
+.gold { background: rgba(255, 215, 0, 0.15); color: var(--gold); }
+.blue { background: rgba(10, 132, 255, 0.15); color: var(--blue); }
+
+.d-text { display: flex; flex-direction: column; flex: 1; }
+.d-text span { font-weight: 700; font-size: 15px; color: var(--text); }
+.d-text small { font-size: 11px; color: var(--sub); margin-top: 2px; }
+
+.d-arrow { color: var(--sub); font-size: 12px; }
+
+/* Footer Qismi */
+.drawer-footer-premium { padding: 20px; text-align: center; }
+
+.btn-logout-pro {
+    width: 100%; padding: 15px;
+    background: rgba(255, 69, 58, 0.1); color: var(--danger);
+    border: 1px solid rgba(255, 69, 58, 0.2); border-radius: 18px;
+    font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-bottom: 15px;
+}
+.app-ver { color: var(--sub); font-size: 11px; opacity: 0.5; }
+
 
     /* =========================================================
        3. HEADER & STORIES
