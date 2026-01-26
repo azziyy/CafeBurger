@@ -297,17 +297,59 @@
         <div style="position:absolute; top:0; right:0; width:40%; height:100%; z-index:10000;" onclick="nextStory()"></div>
     </div>
 
-    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
-    <div class="drawer-panel" id="drawerPanel">
-        <div class="d-header">
-            <h2>CAFE 888</h2>
-            <p>Premium Service</p>
+      <div id="drawerOverlay" class="drawer-overlay" onclick="toggleDrawer()"></div>
+    
+    <div id="drawerPanel" class="drawer-panel">
+        <div class="drawer-header-premium">
+            <div class="drawer-logo-box">
+                <i class="fa fa-utensils"></i>
+            </div>
+            <div class="drawer-info">
+                <h2>CAFE <span>888</span></h2>
+                <p>Premium Delivery</p>
+            </div>
+            <div class="drawer-close-btn tap" onclick="toggleDrawer()">
+                <i class="fa fa-chevron-left"></i>
+            </div>
         </div>
-        <div class="d-item tap" onclick="toggleTheme()"><i class="fa fa-moon"></i> <span id="themeTxt">Tungi rejim</span></div>
-        <div class="d-item tap" onclick="openModal('contactModal'); toggleDrawer()"><i class="fa fa-headset"></i> Bog'lanish</div>
-        <div class="d-item tap" onclick="location.reload()"><i class="fa fa-sync"></i> Yangilash</div>
-        <div class="d-item tap" style="margin-top:auto; color:var(--danger); border-color:rgba(239,68,68,0.2);" onclick="logout()"><i class="fa fa-sign-out-alt"></i> Chiqish</div>
+
+        <div class="drawer-content-premium">
+            <div class="d-item-pro tap" onclick="toggleTheme()">
+                <div class="d-icon-box purple"><i class="fa fa-moon"></i></div>
+                <div class="d-text">
+                    <span>Tungi rejim</span>
+                    <small>Ko'rinishni o'zgartirish</small>
+                </div>
+                <div class="d-arrow"><i class="fa fa-toggle-on" style="color:var(--text-sub)"></i></div>
+            </div>
+
+            <div class="d-item-pro tap" onclick="openModal('contactModal'); toggleDrawer()">
+                <div class="d-icon-box gold"><i class="fa fa-headset"></i></div>
+                <div class="d-text">
+                    <span>Biz bilan aloqa</span>
+                    <small>Call-markaz</small>
+                </div>
+                <div class="d-arrow"><i class="fa fa-chevron-right"></i></div>
+            </div>
+
+            <div class="d-item-pro tap" onclick="location.reload()">
+                <div class="d-icon-box blue"><i class="fa fa-sync-alt"></i></div>
+                <div class="d-text">
+                    <span>Ilovani yangilash</span>
+                    <small>Ma'lumotlarni yuklash</small>
+                </div>
+                <div class="d-arrow"><i class="fa fa-chevron-right"></i></div>
+            </div>
+        </div>
+
+        <div class="drawer-footer-premium">
+            <button class="btn-logout-pro tap" onclick="logout()">
+                <i class="fa fa-sign-out-alt"></i> Tizimdan chiqish
+            </button>
+            <p class="app-ver">Versiya 3.5.0 Pro</p>
+        </div>
     </div>
+
 
     <header class="header">
         <div class="tap" onclick="toggleDrawer()"><i class="fa fa-bars" style="font-size:24px; color:var(--text)"></i></div>
