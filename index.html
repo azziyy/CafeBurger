@@ -1,210 +1,463 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Cafe 888 Ultimate</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Cafe 888 Ultimate</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-    <div id="loaderScreen" class="loader-wrap">
-        <div class="spinner"></div>
-    </div>
+<style>
+    /* =========================================================
+       1. GLOBAL SOZLAMALAR (PREMIUM DARK THEME)
+       ========================================================= */
+    :root {
+        --bg: #09090b; 
+        --card: #18181b; 
+        --text: #ffffff; 
+        --sub: #a1a1aa;
+        --gold: #FFD700; 
+        --red: #ef4444; 
+        --green: #22c55e; 
+        --blue: #3b82f6;
+        --glass: rgba(24, 24, 27, 0.95);
+        --border: 1px solid rgba(255,255,255,0.08);
+        --header-h: 60px;
+    }
+    
+    body.light-mode {
+        --bg: #f4f4f5; --card: #ffffff; --text: #18181b; --sub: #71717a;
+        --glass: rgba(255, 255, 255, 0.95); --border: 1px solid rgba(0,0,0,0.08);
+    }
 
-    <header class="app-header">
-        <div class="icon-btn tap" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
-        <div class="brand">CAFE <span>888</span></div>
-        <div class="icon-btn tap" onclick="openModal('chatModal')">
-            <i class="fa fa-comment-dots"></i>
-            <div id="chatBadge" class="badge"></div>
-        </div>
-    </header>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
+    
+    body { 
+        margin: 0; padding: 0; background: var(--bg); color: var(--text); 
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Roboto, sans-serif;
+        padding-bottom: 90px; overflow-x: hidden; transition: background 0.3s;
+    }
 
-    <div id="drawerOverlay" class="drawer-overlay" onclick="toggleDrawer()"></div>
-    <div id="drawerPanel" class="drawer-panel">
-        <div class="drawer-top">
-            <h2>CAFE 888</h2>
-            <p>Premium Delivery</p>
-        </div>
-        <div class="drawer-menu">
-            <div class="d-item tap" onclick="toggleTheme()">
-                <div class="d-icon"><i class="fa fa-moon"></i></div>
-                <span>Tungi rejim</span>
-            </div>
-            <div class="d-item tap" onclick="openModal('contactModal'); toggleDrawer()">
-                <div class="d-icon"><i class="fa fa-headset"></i></div>
-                <span>Bog'lanish</span>
-            </div>
-            <div class="d-item tap" onclick="location.reload()">
-                <div class="d-icon"><i class="fa fa-sync-alt"></i></div>
-                <span>Yangilash</span>
-            </div>
-        </div>
-        <div class="drawer-bottom tap" onclick="logout()">
-            <i class="fa fa-sign-out-alt"></i> Chiqish
-        </div>
-    </div>
+    /* Animatsiyalar */
+    .tap:active { transform: scale(0.96); opacity: 0.8; transition: 0.1s; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+    @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(255, 215, 0, 0.4)} 70%{box-shadow:0 0 0 10px rgba(255, 215, 0, 0)} 100%{box-shadow:0 0 0 0 rgba(255, 215, 0, 0)} }
 
-    <div id="p-menu" class="page active">
-        <div id="storiesContainer" class="stories-row"></div>
-        <div class="cat-wrapper">
-            <div id="catNav" class="cat-scroll"></div>
-        </div>
-        <div id="menuGrid" class="grid-container"></div>
-        <div class="spacer"></div>
-    </div>
+    /* =========================================================
+       2. HEADER & DRAWER (MUXIM QISM)
+       ======================================================== */
+    .header {
+        position: fixed; top: 0; left: 0; width: 100%; height: var(--header-h);
+        background: var(--glass); backdrop-filter: blur(15px);
+        z-index: 5000; display: flex; align-items: center; justify-content: space-between;
+        padding: 0 20px; border-bottom: var(--border);
+    }
+    .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; } 
+    .logo span { color: var(--gold); text-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
+    
+    .chat-wrap { position: relative; padding: 5px; }
+    .badge { 
+        position: absolute; top: 0; right: 0; width: 10px; height: 10px; 
+        background: var(--red); border-radius: 50%; border: 2px solid var(--bg);
+        display: none; box-shadow: 0 0 5px var(--red);
+    }
+    .badge.active { display: block; }
 
-    <div id="p-cart" class="page">
-        <h2 class="page-title">Savat</h2>
-        <div id="cartList" class="cart-list"></div>
-        
-        <div class="cart-footer-fixed">
-            <div class="promo-row">
-                <input type="text" id="promoInp" placeholder="Promokod">
-                <button class="tap" onclick="checkPromo()">OK</button>
-            </div>
-            <div id="promoMsg"></div>
-            
-            <div class="total-row">
-                <span>Jami:</span>
-                <span id="cartTotal">0 so'm</span>
-            </div>
-            
-            <button id="gpsBtn" class="btn-gps tap" onclick="getGPS()">
-                <i class="fa fa-map-marker-alt"></i> Manzilni aniqlash
-            </button>
-            <button id="orderBtn" class="btn-main tap" onclick="sendOrder()">
-                BUYURTMA BERISH
-            </button>
-        </div>
-    </div>
+    /* Drawer Menu */
+    .drawer-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8); z-index: 9000;
+        opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(5px);
+    }
+    .drawer-overlay.active { opacity: 1; visibility: visible; }
+    
+    .drawer {
+        position: fixed; top: 0; left: -85%; width: 80%; height: 100%;
+        background: var(--card); z-index: 9001;
+        transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        display: flex; flex-direction: column; padding: 40px 25px;
+        box-shadow: 10px 0 50px rgba(0,0,0,0.5);
+    }
+    .drawer.active { left: 0; }
+    
+    .d-head { margin-bottom: 40px; border-bottom: var(--border); padding-bottom: 20px; }
+    .d-head h2 { color: var(--gold); margin: 0; font-size: 28px; }
+    .d-head p { color: var(--sub); margin: 5px 0 0; font-size: 14px; }
+    
+    .d-item {
+        display: flex; align-items: center; gap: 15px; padding: 16px; margin-bottom: 10px;
+        background: rgba(255,255,255,0.03); border-radius: 15px;
+        font-weight: 600; border: var(--border); cursor: pointer;
+    }
+    .d-icon { width: 30px; text-align: center; font-size: 20px; color: var(--text); }
+    .d-footer { margin-top: auto; color: var(--red); font-weight: bold; border: 1px solid rgba(255, 69, 58, 0.3); padding: 15px; text-align: center; border-radius: 15px; }
 
-    <div id="p-history" class="page">
-        <h2 class="page-title">Buyurtmalar</h2>
-        <div id="histList" class="history-list"></div>
-        <div class="spacer"></div>
-    </div>
+    /* =========================================================
+       3. STORIES & MENU
+       ======================================================== */
+    .page { display: none; padding-top: 65px; animation: fadeIn 0.4s; }
+    .page.active { display: block; }
 
-    <div id="p-profile" class="page">
-        <div class="profile-header">
-            <div class="user-avatar">
-                <i class="fa fa-user"></i>
-            </div>
-            <h2 id="uName">Foydalanuvchi</h2>
-            <p id="uPhone">+998...</p>
-        </div>
-        
-        <div class="profile-menu-list">
-            <div class="menu-card tap" onclick="openFavs()">
-                <div class="mc-icon red"><i class="fa fa-heart"></i></div>
-                <span>Sevimlilar</span>
-                <i class="fa fa-chevron-right arrow"></i>
-            </div>
-            <div class="menu-card tap" onclick="openModal('chatModal')">
-                <div class="mc-icon blue"><i class="fa fa-envelope"></i></div>
-                <span>Admin Chat</span>
-                <i class="fa fa-chevron-right arrow"></i>
-            </div>
-            <div class="menu-card tap" onclick="openPromoList()">
-                <div class="mc-icon green"><i class="fa fa-ticket-alt"></i></div>
-                <span>Promokodlar</span>
-                <i class="fa fa-chevron-right arrow"></i>
-            </div>
-            <div class="menu-card tap" onclick="openNews()">
-                <div class="mc-icon gold"><i class="fa fa-bullhorn"></i></div>
-                <span>Yangiliklar</span>
-                <i class="fa fa-chevron-right arrow"></i>
-            </div>
-        </div>
-        <div class="spacer"></div>
-    </div>
+    .stories-row {
+        display: flex; gap: 12px; padding: 10px 15px; overflow-x: auto; scrollbar-width: none;
+    }
+    .story-c {
+        min-width: 76px; height: 76px; border-radius: 50%; padding: 3px;
+        background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366);
+        position: relative; flex-shrink: 0;
+    }
+    .story-c img {
+        width: 100%; height: 100%; border-radius: 50%;
+        border: 3px solid var(--bg); object-fit: cover;
+    }
 
-    <nav class="navbar">
-        <div class="nav-item active" onclick="nav('menu', this)">
-            <i class="fa fa-utensils"></i><span>Menyu</span>
-        </div>
-        <div class="nav-item" onclick="nav('cart', this)">
-            <i class="fa fa-shopping-basket"></i><span>Savat</span>
-            <div id="navBadge" class="nav-badge hidden">0</div>
-        </div>
-        <div class="nav-item" onclick="nav('history', this)">
-            <i class="fa fa-clock"></i><span>Tarix</span>
-        </div>
-        <div class="nav-item" onclick="nav('profile', this)">
-            <i class="fa fa-user"></i><span>Profil</span>
-        </div>
-    </nav>
+    /* Kategoriya */
+    .cat-bar {
+        display: flex; gap: 10px; overflow-x: auto; padding: 5px 15px 15px;
+        position: sticky; top: var(--header-h); z-index: 4000; background: var(--bg);
+        scrollbar-width: none;
+    }
+    .cat-pill {
+        padding: 8px 22px; border-radius: 25px; background: var(--card);
+        color: var(--sub); font-weight: 600; white-space: nowrap;
+        border: var(--border); transition: 0.3s;
+    }
+    .cat-pill.active {
+        background: var(--gold); color: #000; border-color: var(--gold);
+        transform: scale(1.05); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+    }
 
-    <div id="loginModal" class="modal-full">
-        <div class="login-box">
-            <div class="login-logo"><i class="fab fa-telegram-plane"></i></div>
-            <h2>Xush kelibsiz</h2>
-            <p>Davom etish uchun kiring</p>
-            <button class="btn-main tap" onclick="doLogin()">Telegram orqali kirish</button>
-        </div>
-    </div>
+    /* Card */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 15px 15px; }
+    
+    .card {
+        background: var(--card); border-radius: 18px; overflow: hidden;
+        display: flex; flex-direction: column; position: relative;
+        border: var(--border); box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .card-img-box { width: 100%; height: 160px; position: relative; }
+    .card-img-box img { width: 100%; height: 100%; object-fit: cover; } /* Toliq rasm */
+    
+    .fav-btn-card {
+        position: absolute; top: 10px; right: 10px; width: 32px; height: 32px;
+        background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        color: white; z-index: 2; font-size: 14px;
+    }
+    .fav-btn-card.active { background: white; color: var(--red); }
 
-    <div id="prodModal" class="modal-bg" onclick="if(event.target==this)closeModal('prodModal')">
-        <div class="sheet">
-            <div class="sheet-close tap" onclick="closeModal('prodModal')">✕</div>
-            <img id="pmImg" src="" class="sheet-img">
-            <h2 id="pmName"></h2>
-            <h3 id="pmPrice"></h3>
-            <p id="pmDesc"></p>
-            <div class="sheet-foot">
-                <div class="qty-control big">
-                    <button onclick="pmQ(-1)">-</button>
-                    <span id="pmQty">1</span>
-                    <button onclick="pmQ(1)">+</button>
-                </div>
-                <button class="btn-main tap" onclick="addFromModal()">Savatga</button>
-            </div>
-        </div>
-    </div>
+    .card-info { padding: 12px; flex: 1; display: flex; flex-direction: column; }
+    .card-title { font-weight: 700; font-size: 15px; margin-bottom: 5px; height: 38px; overflow: hidden; line-height: 1.3; }
+    .card-foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; }
+    .card-price { color: var(--gold); font-weight: 900; font-size: 16px; }
+    
+    .btn-add { width: 34px; height: 34px; background: var(--gold); color: #000; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; }
+    .qty-mini { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 10px; border: 1px solid var(--gold); }
+    .qm-btn { font-size: 18px; font-weight: bold; color: var(--gold); width: 20px; text-align: center; }
 
-    <div id="favModal" class="modal-bg" onclick="if(event.target==this)closeModal('favModal')">
-        <div class="sheet">
-            <h3>Sevimlilar ❤️</h3>
-            <div id="favList" class="fav-grid"></div>
-        </div>
-    </div>
+    /* =========================================================
+       4. SAVAT (TUZATILDI)
+       ======================================================== */
+    .cart-item {
+        background: var(--card); padding: 10px; border-radius: 16px;
+        margin-bottom: 12px; display: flex; align-items: center; gap: 15px;
+        border: var(--border);
+    }
+    /* RASM MUAMMOSI HALI: FIXED SIZE */
+    .cart-img { 
+        width: 65px !important; height: 65px !important; 
+        border-radius: 12px; object-fit: cover; flex-shrink: 0; 
+    }
+    .cart-det { flex: 1; }
+    .cart-det h4 { margin: 0; font-size: 15px; }
+    .cart-det p { margin: 2px 0 0; color: var(--gold); font-weight: 600; font-size: 13px; }
+    
+    .cart-capsule {
+        display: flex; align-items: center; background: #222; 
+        border-radius: 20px; border: 1px solid #333; padding: 2px;
+    }
+    .cc-btn { width: 30px; height: 28px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; }
+    .cc-num { width: 25px; text-align: center; font-weight: bold; font-size: 14px; }
 
-    <div id="chatModal" class="modal-bg" onclick="if(event.target==this)closeModal('chatModal')">
-        <div class="sheet h-90">
-            <div class="sheet-top"><h3>Admin Chat</h3><span onclick="closeModal('chatModal')">✕</span></div>
-            <div id="chatBox"></div>
-            <div class="chat-input-wrap">
-                <input type="text" id="chatInp" placeholder="Xabar...">
-                <button onclick="sendChat()" class="tap"><i class="fa fa-paper-plane"></i></button>
-            </div>
-        </div>
-    </div>
+    .cart-footer { padding: 20px; padding-bottom: 120px; }
+    .promo-row { display: flex; gap: 10px; background: var(--card); padding: 10px; border-radius: 15px; border: var(--border); margin-bottom: 15px; }
+    .promo-row input { flex: 1; background: transparent; border: none; color: var(--text); font-size: 16px; text-transform: uppercase; }
+    .promo-row button { background: var(--gold); border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; }
+    
+    .total-row { display: flex; justify-content: space-between; font-size: 20px; font-weight: 900; margin-bottom: 20px; }
+    .btn-main { width: 100%; padding: 16px; background: var(--gold); color: #000; border-radius: 18px; font-weight: 800; border: none; font-size: 16px; margin-top: 10px; }
+    .btn-gps { width: 100%; padding: 14px; background: #333; color: white; border-radius: 18px; margin-bottom: 10px; border: 1px solid #444; font-weight: 600; }
+    .btn-gps.ok { background: var(--green); border-color: var(--green); }
+    .btn-gps.err { background: var(--red); border-color: var(--red); }
 
-    <div id="mapModal" class="modal-full hidden">
-        <button class="map-back tap" onclick="document.getElementById('mapModal').style.display='none'">Orqaga</button>
-        <div id="map"></div>
-    </div>
+    /* =========================================================
+       5. TARIX (RANGLI STATUSLAR)
+       ======================================================== */
+    .hist-card {
+        background: var(--card); padding: 18px; border-radius: 18px;
+        margin-bottom: 15px; border-left: 5px solid; position: relative;
+    }
+    .h-head { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; color: var(--sub); }
+    .st-badge { padding: 4px 10px; border-radius: 6px; font-weight: 900; font-size: 11px; text-transform: uppercase; }
+    
+    /* Status Ranglari */
+    .s-new { border-color: var(--blue); } .s-new .st-badge { background: rgba(59,130,246,0.2); color: var(--blue); }
+    .s-cook { border-color: orange; } .s-cook .st-badge { background: rgba(255,165,0,0.2); color: orange; }
+    .s-deliv { border-color: var(--gold); } .s-deliv .st-badge { background: rgba(255,215,0,0.2); color: var(--gold); }
+    .s-done { border-color: var(--green); } .s-done .st-badge { background: rgba(34,197,94,0.2); color: var(--success); }
 
-    <div id="storyViewer" class="modal-full hidden black">
-        <div class="st-bars" id="storyBars"></div>
-        <div class="st-close tap" onclick="closeStory()">✕</div>
-        <img id="stImg" src="">
-        <div class="st-nav left" onclick="prevStory()"></div>
-        <div class="st-nav right" onclick="nextStory()"></div>
-    </div>
+    .track-btn {
+        width: 100%; padding: 12px; background: linear-gradient(45deg, #FFD700, #FFA500);
+        color: black; font-weight: 800; border-radius: 12px; margin-top: 15px; border: none;
+        display: flex; align-items: center; justify-content: center; gap: 8px; animation: pulse 2s infinite;
+    }
 
-    <div id="promoListModal" class="modal-bg" onclick="if(event.target==this)closeModal('promoListModal')"><div class="sheet"><h3>Promokodlar</h3><div id="promoListContent"></div></div></div>
-    <div id="newsModal" class="modal-bg" onclick="if(event.target==this)closeModal('newsModal')"><div class="sheet"><h3>Yangiliklar</h3><div id="newsContent"></div></div></div>
-    <div id="contactModal" class="modal-bg" onclick="if(event.target==this)closeModal('contactModal')"><div class="sheet"><h3>Aloqa</h3><div class="d-item"><i class="fa fa-phone"></i> +998 93 978 29 26</div></div></div>
+    /* =========================================================
+       6. PROFIL
+       ======================================================== */
+    .prof-head { text-align: center; padding: 50px 0 30px; background: linear-gradient(180deg, rgba(255,215,0,0.1), transparent); }
+    .avatar { width: 100px; height: 100px; background: var(--card); border: 3px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; color: var(--gold); margin: 0 auto 15px; }
+    .prof-menu { padding: 0 20px; }
+    
+    .mc-icon { width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .mc-icon.red { background: rgba(255,71,87,0.15); color: var(--red); }
+    .mc-icon.blue { background: rgba(42,171,238,0.15); color: var(--blue); }
+    .mc-icon.green { background: rgba(46,204,113,0.15); color: var(--green); }
+    .mc-icon.gold { background: rgba(255,215,0,0.15); color: var(--gold); }
 
-    <div id="toastBox"></div>
+    /* =========================================================
+       7. MODALLAR & CHAT
+       ======================================================== */
+    .modal-wrap {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.85); z-index: 8000; display: none;
+        align-items: flex-end; justify-content: center; backdrop-filter: blur(5px);
+    }
+    .sheet {
+        background: #1c1c1e; width: 100%; max-width: 500px;
+        border-radius: 30px 30px 0 0; padding: 30px; 
+        position: relative; animation: slideUp 0.3s;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        max-height: 85vh; overflow-y: auto;
+    }
+    .sheet-close { position: absolute; top: 20px; right: 20px; font-size: 24px; color: var(--sub); cursor: pointer; }
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="script.js"></script>
+    /* Chat Bubble */
+    #chatBox { flex: 1; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 15px; padding: 15px; margin: 15px 0; min-height: 300px; }
+    .msg-bubble { padding: 10px 15px; border-radius: 18px; max-width: 80%; margin-bottom: 10px; font-size: 14px; position: relative; }
+    .me { background: var(--gold); color: black; margin-left: auto; border-bottom-right-radius: 4px; }
+    .adm { background: #333; color: white; align-self: flex-start; border-bottom-left-radius: 4px; }
+    .chat-inp { display: flex; gap: 10px; }
+    .chat-inp input { flex: 1; background: #333; border: none; padding: 12px; border-radius: 12px; color: white; }
+    .chat-inp button { width: 50px; background: var(--gold); border: none; border-radius: 12px; font-size: 18px; }
+
+    /* Login */
+    #loginModal { align-items: center; z-index: 99999; background: var(--bg); display: flex; }
+    .login-box { text-align: center; width: 85%; }
+    .login-icon { width: 80px; height: 80px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; color: white; margin: 0 auto 20px; box-shadow: 0 0 40px rgba(59,130,246,0.4); }
+
+    /* Map */
+    #mapModal { background: #fff; z-index: 9500; }
+    #map { width: 100%; height: 100%; }
+    .map-back { position: absolute; top: 40px; left: 20px; z-index: 9501; padding: 10px 20px; border: none; background: white; font-weight: bold; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+
+    /* Navbar */
+    .navbar {
+        position: fixed; bottom: 0; width: 100%; height: 75px;
+        background: var(--glass); backdrop-filter: blur(15px);
+        display: flex; justify-content: space-around; align-items: center;
+        border-radius: 25px 25px 0 0; z-index: 4500; border-top: var(--border);
+    }
+    .nav-btn { display: flex; flex-direction: column; align-items: center; color: var(--sub); font-size: 10px; font-weight: 700; transition: 0.3s; position: relative; }
+    .nav-btn i { font-size: 24px; margin-bottom: 5px; }
+    .nav-btn.active { color: var(--gold); transform: translateY(-5px); }
+    .nav-badge { position: absolute; top: -2px; right: 5px; background: var(--red); color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px; }
+
+    /* Story Viewer */
+    #storyViewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; }
+    .s-bars { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; gap: 5px; z-index: 100; }
+    .s-bg { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 2px; }
+    .s-fill { height: 100%; background: white; width: 0%; }
+    .s-fill.anim { animation: fill 5s linear forwards; }
+    .s-fill.seen { width: 100%; }
+    @keyframes fill { to{width:100%} }
+    .s-img { width: 100%; height: 100%; object-fit: contain; }
+    .s-close { position: absolute; top: 30px; right: 20px; font-size: 30px; color: white; z-index: 101; cursor: pointer; }
+    .tap-zone { position: absolute; top: 0; height: 100%; width: 40%; z-index: 99; }
+
+    #toastBox { position: fixed; top: 20px; left: 20px; right: 20px; z-index: 10000; pointer-events: none; }
+    .toast { background: rgba(30,30,30,0.95); color: white; padding: 15px; border-radius: 12px; border-left: 4px solid var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: fadeIn 0.3s; font-weight: 600; margin-bottom: 10px; }
+    .hidden { display: none !important; }
+    .strike { text-decoration: line-through; color: #666; font-size: 13px; margin-right: 5px; }
+    .fav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .fav-box { background: rgba(255,255,255,0.05); padding: 8px; border-radius: 12px; text-align: center; position: relative; }
+    .fav-box img { width: 100%; height: 60px; object-fit: cover; border-radius: 8px; margin-bottom: 5px; }
+    .fav-x { position: absolute; top: -5px; right: -5px; background: var(--red); color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+</style>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+    const BOT_USER="Cafe888adminbot", SHEET_ID="1j6VojbeSYWgYj3UY98xCxHLCzHcGlEg0nXjYwHDkKQk", ADS_ID="1ENQ4bnzBxj7x5jmrXUwdDZhmEMQ7umPTPwq2bgXfj3k";
+    firebase.initializeApp({apiKey:"AIzaSyCVSfWRZ77PFFxip93NcD5QZ9Fc0gMUyW8",authDomain:"cafe888-c2d7d.firebaseapp.com",databaseURL:"https://cafe888-c2d7d-default-rtdb.firebaseio.com",projectId:"cafe888-c2d7d",storageBucket:"cafe888-c2d7d.firebasestorage.app",messagingSenderId:"286769489924",appId:"1:286769489924:web:f778a8d15d46abaf1b2d51"});
+    const db=firebase.database();
+    
+    let products=[], cart={}, user=null, loc=null, favs={}, stories=[], stIdx=0, stTimer, shopLoc=null, activePromo=null;
+    let tempPmId=null, tempPmQty=1, map=null, carMarker=null;
+
+    window.onload=()=>{
+        if(localStorage.getItem('theme')==='light')document.body.classList.add('light-mode');
+        const uid=localStorage.getItem('cafe_uid');
+        if(uid)checkAuth(uid); else {document.getElementById('loginModal').style.display='flex';}
+        loadData(); loadStories();
+        db.ref('info/location').on('value',s=>shopLoc=s.val());
+    };
+
+    function doLogin(){
+        const t='req_'+Date.now();
+        window.open(`https://t.me/${BOT_USER}?start=login_${t}`, '_blank');
+        db.ref('auth_tokens/'+t).on('value', s=>{
+            if(s.val()){
+                user=s.val(); localStorage.setItem('cafe_uid',user.phone.replace('+',''));
+                db.ref('auth_tokens/'+t).remove();
+                document.getElementById('loginModal').style.display='none';
+                initApp();
+            }
+        });
+    }
+    function checkAuth(uid){ db.ref('users/'+uid).on('value',s=>{ if(s.val()){ user=s.val(); document.getElementById('loginModal').style.display='none'; initApp(); } else document.getElementById('loginModal').style.display='flex'; }); }
+    function initApp(){ document.getElementById('userName').innerText=user.name; document.getElementById('userPhone').innerText=user.phone; favs=user.favorites||{}; loadHistory(); loadChat(); }
+
+    function loadData(){
+        fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`).then(r=>r.text()).then(t=>{
+            const j=JSON.parse(t.substr(47).slice(0,-2));
+            products=j.table.rows.map(r=>({id:r.c[0]?.v, cat:r.c[1]?.v||"Boshqa", name:r.c[2]?.v, price:r.c[3]?.v||0, img:r.c[4]?.v, desc:r.c[5]?.v||""}));
+            renderCats(); renderGrid('Barchasi');
+        });
+    }
+    function loadStories(){
+        fetch(`https://docs.google.com/spreadsheets/d/${ADS_ID}/gviz/tq?tqx=out:json`).then(r=>r.text()).then(t=>{
+            const j=JSON.parse(t.substr(47).slice(0,-2));
+            stories=j.table.rows.map(r=>r.c[0]?.v).filter(u=>u);
+            document.getElementById('storiesBox').innerHTML = stories.map((u,i)=>`<div class="story-c tap" onclick="openStory(${i})"><img src="${u}"></div>`).join('');
+        });
+    }
+
+    function openStory(i){ stIdx=i; document.getElementById('storyViewer').style.display='flex'; showStory(); }
+    function showStory(){
+        if(stIdx>=stories.length){closeStory();return;}
+        document.getElementById('storyImg').src=stories[stIdx];
+        document.getElementById('storyBars').innerHTML=stories.map((_,i)=>`<div class="s-bg"><div class="s-fill ${i===stIdx?'anim':(i<stIdx?'seen':'')}"></div></div>`).join('');
+        clearTimeout(stTimer); stTimer=setTimeout(nextStory,5000);
+    }
+    function nextStory(){ stIdx++; showStory(); } function prevStory(){ if(stIdx>0)stIdx--; showStory(); } function closeStory(){ clearTimeout(stTimer); document.getElementById('storyViewer').style.display='none'; }
+
+    function renderCats(){ const c=['Barchasi',...new Set(products.map(p=>p.cat))]; document.getElementById('categoryList').innerHTML=c.map(k=>`<div class="cat-pill tap ${k=='Barchasi'?'active':''}" onclick="filt('${k}',this)">${k}</div>`).join(''); }
+    function filt(c,el){ document.querySelectorAll('.cat-pill').forEach(x=>x.classList.remove('active')); el.classList.add('active'); renderGrid(c); }
+    function renderGrid(c){
+        const l=c=='Barchasi'?products:products.filter(p=>p.cat==c);
+        document.getElementById('productGrid').innerHTML=l.map(p=>{
+            const q=cart[p.id]||0;
+            const btn = q>0 ? `<div class="qty-mini tap" onclick="event.stopPropagation()"><div class="qm-btn" onclick="updCart(${p.id},-1)">-</div><b>${q}</b><div class="qm-btn" onclick="updCart(${p.id},1)">+</div></div>` : `<div class="btn-plus tap" onclick="updCart(${p.id},1);event.stopPropagation()">+</div>`;
+            return `<div class="card tap" onclick="openProd(${p.id})">
+                <div class="card-img-box"><img src="${p.img}"><div class="fav-btn-card ${favs[p.id]?'active':''}" onclick="togFav(${p.id});event.stopPropagation()"><i class="fa fa-heart"></i></div></div>
+                <div class="card-body"><div class="card-title">${p.name}</div><div class="card-foot"><div class="card-price">${p.price.toLocaleString()} so'm</div>${btn}</div></div>
+            </div>`;
+        }).join('');
+    }
+
+    function updCart(id,n){ cart[id]=(cart[id]||0)+n; if(cart[id]<=0)delete cart[id]; renderGrid(document.querySelector('.cat-pill.active').innerText); renderCart(); }
+    function renderCart(){
+        let t=0, h='';
+        const k=Object.keys(cart);
+        document.getElementById('cartBadge').innerText=k.length; document.getElementById('cartBadge').classList.toggle('hidden',k.length===0);
+        for(let id in cart){
+            const p=products.find(x=>x.id==id); t+=p.price*cart[id];
+            h+=`<div class="cart-item"><img src="${p.img}" class="cart-img"><div class="cart-det"><h4>${p.name}</h4><p>${p.price.toLocaleString()} so'm</p></div><div class="cart-capsule"><div class="cc-btn tap" onclick="updCart(${p.id},-1)">-</div><div class="cc-num">${cart[id]}</div><div class="cc-btn tap" onclick="updCart(${p.id},1)">+</div></div></div>`;
+        }
+        let disp=t.toLocaleString()+" so'm";
+        if(activePromo) disp=`<span class="strike">${t.toLocaleString()}</span> ${(t-(t*activePromo/100)).toLocaleString()}`;
+        document.getElementById('cartContainer').innerHTML=h||"<div style='text-align:center;padding:30px;color:#666'>Savat bo'sh</div>";
+        document.getElementById('finalPrice').innerHTML=disp;
+        const b=document.getElementById('btnOrder'); if(t>0&&loc){b.style.opacity='1';b.style.pointerEvents='all';}else{b.style.opacity='0.5';b.style.pointerEvents='none';}
+    }
+
+    function getGPS(){
+        const b=document.getElementById('btnGps'); b.innerHTML="Aniqlanmoqda...";
+        if(window.Android && window.Android.checkGPS) window.Android.checkGPS();
+        navigator.geolocation.getCurrentPosition(p=>{
+            const lat=p.coords.latitude, lng=p.coords.longitude;
+            if(shopLoc && shopLoc.radius){
+                const d=getDist(lat,lng,shopLoc.lat,shopLoc.long);
+                if(d>shopLoc.radius){ b.innerHTML="❌ Uzoq masofa"; b.className='btn-gps err tap'; loc=null; renderCart(); return; }
+            }
+            loc={lat,long:lng}; b.innerHTML="✅ Manzil aniqlandi"; b.className='btn-gps ok tap'; renderCart();
+        },()=>{b.innerHTML="❌ GPS Xatosi";},{enableHighAccuracy:true});
+    }
+
+    function sendOrder(){
+        const items=[]; let t=0; for(let id in cart){const p=products.find(x=>x.id==id); items.push({name:p.name, qty:cart[id]}); t+=p.price*cart[id];}
+        let f=activePromo?t-(t*activePromo/100):t;
+        db.ref('orders').push({user_id:user.phone, user_info:`${user.name} (${user.phone})`, items, total:f, original_total:t, promo_discount:activePromo||0, location:loc, status:'yangi', time:new Date().toLocaleString()});
+        cart={}; loc=null; activePromo=null; toast("✅ Buyurtma yuborildi"); nav('history',document.querySelectorAll('.nav-btn')[2]);
+        document.getElementById('btnGps').innerHTML=`<i class="fa fa-map-marker-alt"></i> Manzilni aniqlash`; document.getElementById('btnGps').className='btn-gps tap';
+    }
+
+    function loadChat(){
+        db.ref('messages/'+user.phone.replace('+','')).limitToLast(50).on('child_added', s=>{
+            const m=s.val();
+            if(m.from==='admin' && document.getElementById('chatModal').style.display==='none') document.getElementById('chatBadge').classList.add('active');
+            document.getElementById('chatBox').innerHTML+=`<div style="display:flex;justify-content:${m.from=='user'?'flex-end':'flex-start'}"><div class="msg-bubble ${m.from=='user'?'me':'adm'}">${m.body}</div></div>`;
+            setTimeout(()=>document.getElementById('chatBox').scrollTop=document.getElementById('chatBox').scrollHeight, 100);
+        });
+    }
+    function sendChat(){
+        const t=document.getElementById('chatInp').value; if(!t)return;
+        db.ref('messages/'+user.phone.replace('+','')).push({from:'user', body:t, time:Date.now()});
+        document.getElementById('chatInp').value="";
+    }
+
+    var carIcon=L.icon({iconUrl:'https://cdn-icons-png.flaticon.com/512/3202/3202926.png',iconSize:[40,40],iconAnchor:[20,20]});
+    function track(cid){
+        document.getElementById('mapModal').style.display='block';
+        if(!map){map=L.map('map').setView([41,69],13); L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);}
+        setTimeout(()=>map.invalidateSize(),500);
+        db.ref('couriers/'+cid+'/location').on('value',s=>{
+            const d=s.val(); if(!d)return;
+            if(carMarker) carMarker.setLatLng([d.lat,d.long]); else carMarker=L.marker([d.lat,d.long],{icon:carIcon}).addTo(map);
+            map.panTo([d.lat,d.long]);
+        });
+    }
+
+    function openPromoList(){
+        openModal('promoListModal');
+        db.ref('promocodes').once('value',s=>{
+            const d=s.val(); if(!d){document.getElementById('promoListContent').innerHTML="Kod yo'q";return;}
+            let h=""; for(let k in d){if(d[k].limit>0) h+=`<div style="background:rgba(255,255,255,0.05);padding:10px;border-radius:10px;margin-bottom:5px;display:flex;justify-content:space-between;"><b>${k}</b><span style="color:var(--success)">${d[k].discount}%</span></div>`;}
+            document.getElementById('promoListContent').innerHTML=h||"Kod yo'q";
+        });
+    }
+
+    function nav(p,el){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById('page-'+p).classList.add('active');document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));el.classList.add('active');if(p=='cart')renderCart();}
+    function openModal(id){document.getElementById(id).style.display='flex'; if(id=='chatModal')document.getElementById('chatBadge').classList.remove('active');}
+    function closeModal(id){document.getElementById(id).style.display='none';}
+    function toggleDrawer(){document.getElementById('drawerPanel').classList.toggle('active');document.getElementById('drawerOverlay').classList.toggle('active');}
+    function toast(m){const d=document.createElement('div');d.className='toast';d.innerText=m;document.getElementById('toastBox').appendChild(d);setTimeout(()=>d.remove(),3000);}
+    function openProd(id){const p=products.find(x=>x.id==id);tempPmId=id;tempPmQty=1;document.getElementById('pmImg').src=p.img;document.getElementById('pmName').innerText=p.name;document.getElementById('pmPrice').innerText=p.price.toLocaleString()+" so'm";document.getElementById('pmDesc').innerText=p.desc;document.getElementById('pmQty').innerText="1";openModal('prodModal');}
+    function pmQ(n){tempPmQty+=n;if(tempPmQty<1)tempPmQty=1;document.getElementById('pmQty').innerText=tempPmQty;}
+    function addFromModal(){updCart(tempPmId,tempPmQty);closeModal('prodModal');}
+    function togFav(id){if(favs[id])delete favs[id];else favs[id]=true;db.ref('users/'+user.phone.replace('+','')+'/favorites').set(favs);renderGrid(document.querySelector('.cat-pill.active').innerText);}
+    function openFavs(){const l=products.filter(p=>favs[p.id]);document.getElementById('favList').innerHTML=l.map(p=>`<div class="fav-box"><div class="fav-del" onclick="togFav(${p.id});openFavs()">✕</div><img src="${p.img}"><div style="font-size:11px;">${p.name}</div><button style="width:100%;margin-top:5px;background:var(--gold);border:none;border-radius:6px;" onclick="updCart(${p.id},1);closeModal('favModal')">+</button></div>`).join('')||"Bo'sh";openModal('favModal');}
+    function checkPromo(){const c=document.getElementById('promoInput').value.toUpperCase();db.ref('promocodes/'+c).once('value',s=>{if(s.val()&&s.val().limit>0){activePromo=s.val().discount;document.getElementById('promoMsg').innerHTML=`<b style="color:var(--success)">✅ ${activePromo}% Chegirma!</b>`;renderCart();}else{document.getElementById('promoMsg').innerHTML=`<b style="color:var(--red)">❌ Xato kod</b>`;}});}
+    function loadHistory(){db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value',s=>{const d=s.val();if(!d)return;document.getElementById('histList').innerHTML=Object.values(d).reverse().map(o=>{let st=o.status,cls='s-new',txt='YANGI';if(st=='kuryerda'){cls='s-deliv';txt='KURYERDA';}if(st=='yetkazildi'){cls='s-done';txt='YETKAZILDI';}if(st=='tayyorlanmoqda'){cls='s-cook';txt='TAYYORLANMOQDA';}let trk=(st=='kuryerda'&&o.courier_id)?`<button class="track-btn" onclick="track('${o.courier_id}')">Kuryerni Kuzatish</button>`:'';return `<div class="hist-card ${cls}"><div class="h-head"><span>${o.time}</span><span class="st-badge">${txt}</span></div><div style="font-size:14px;margin-bottom:10px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div><div style="font-size:18px;font-weight:bold;">${parseInt(o.total).toLocaleString()} so'm</div>${trk}</div>`;}).join('');});}
+    function getDist(lat1,lon1,lat2,lon2){var R=6371;var dLat=(lat2-lat1)*Math.PI/180;var dLon=(lon2-lon1)*Math.PI/180;var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);var c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));return R*c;}
+    function logout(){localStorage.removeItem('cafe_uid');location.reload();}
+    function copy(t){navigator.clipboard.writeText(t);toast("Nusxalandi");}
+    function toggleTheme(){document.body.classList.toggle('light-mode');localStorage.setItem('theme',document.body.classList.contains('light-mode')?'light':'dark');}
+    function openNews(){db.ref('news').limitToLast(10).once('value',s=>{document.getElementById('newsContent').innerHTML=Object.values(s.val()||{}).reverse().map(n=>`<div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:15px;margin-bottom:10px;"><div style="font-weight:700;margin-bottom:5px;">${n.text}</div><div style="font-size:11px;color:gray;">${n.date}</div></div>`).join('')||"Yo'q";openModal('newsModal');});}
+</script>
 </body>
 </html>
