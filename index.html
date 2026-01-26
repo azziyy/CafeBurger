@@ -8,150 +8,128 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <style>
-/* ============================================================
-   CHAT BO'LIMI (TO'LIQ FLEXBOX TIZIMI)
-   ============================================================ */
-
-/* 1. Modalning ichki qismi (Sheet) - Asosiy ramka */
+/* --- CHAT MODAL STRUKTURASI (FLEXBOX) --- */
+/* Modal oynasi butun ekran bo'yicha to'g'ri joylashishi uchun */
 #chatModal .sheet {
-    height: 90vh !important; /* Ekran bo'yining 90% qismi */
-    max-height: 90vh;
+    height: 90vh; /* Ekran balandligining 90% ini egallaydi */
     display: flex;
-    flex-direction: column; /* Elementlarni ustma-ust joylash */
-    padding: 0 !important;  /* Ichki bo'shliqlarni olib tashlash */
-    overflow: hidden;       /* Tashqariga chiqib ketishni bloklash */
+    flex-direction: column; /* Elementlar ustma-ust joylashadi */
+    padding: 0; /* Ichki hoshiyani olib tashlaymiz */
+    overflow: hidden; /* Tashqariga chiqib ketishni oldini olish */
     position: relative;
-    background: #1c1c1e;    /* Umumiy fon */
-    border-radius: 25px 25px 0 0;
 }
 
-/* 2. Chat Header (Tepa qism - Qotib turadi) */
+/* Chat Header (Tepa qism) */
 .chat-header {
-    flex-shrink: 0; /* Qisqarmaslik */
     padding: 15px 20px;
-    background: #1c1c1e;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    z-index: 10;
+    background: #1c1c1e;
+    flex-shrink: 0; /* Qisqarmaydi */
 }
 
-/* 3. Chat Box (O'rta qism - Scroll bo'ladi) */
+/* Chat Box (Xabarlar yuradigan joy) */
 #chatBox {
-    flex: 1; /* Bo'sh qolgan barcha joyni egallaydi */
+    flex: 1; /* Bo'sh qolgan hamma joyni egallaydi */
     overflow-y: auto; /* Faqat shu qism scroll bo'ladi */
     padding: 15px;
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Xabarlar orasi */
-    background: #09090b; /* Xabarlar foni (To'q) */
+    gap: 10px;
+    background: #000; /* Qora fon */
     scroll-behavior: smooth;
-    position: relative;
 }
 
-/* 4. Chat Input (Pastki qism - Qotib turadi) */
+/* Chat Input (Yozish joyi - Pastda qotib turadi) */
 .chat-inp-wrap {
-    flex-shrink: 0; /* Qisqarmaslik */
     padding: 15px;
     background: #1c1c1e;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255,255,255,0.1);
     display: flex;
     gap: 10px;
-    align-items: center;
-    z-index: 10;
+    flex-shrink: 0; /* Qisqarmaydi */
 }
 
 .chat-inp-wrap input {
     flex: 1;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255,255,255,0.1);
+    border: none;
     border-radius: 12px;
-    padding: 12px 15px;
+    padding: 12px;
     color: white;
-    font-size: 15px;
     outline: none;
 }
 
 .chat-inp-wrap button {
     width: 45px;
     height: 45px;
-    background: var(--primary); /* Oltin rang */
+    background: var(--gold);
     border: none;
     border-radius: 12px;
     font-size: 18px;
-    color: #000;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(255, 215, 0, 0.2);
 }
 
 /* --- XABARLAR DIZAYNI --- */
 .msg-bubble {
     max-width: 80%;
     padding: 10px 14px;
-    border-radius: 16px;
+    border-radius: 14px;
     font-size: 14px;
     line-height: 1.4;
     word-wrap: break-word;
     position: relative;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-/* Mijoz xabari (O'ngda) - Sariq va Qora */
+/* Mijoz (O'ngda) */
 .msg-me {
     align-self: flex-end;
-    background: var(--primary) !important; /* Aniq Sariq */
-    color: #000000 !important;             /* Aniq Qora */
-    border-bottom-right-radius: 4px;
-    font-weight: 600;
+    background: var(--gold);
+    color: #000;
+    border-bottom-right-radius: 2px;
 }
 
-/* Admin xabari (Chapda) - To'q va Oq */
+/* Admin (Chapda) */
 .msg-adm {
     align-self: flex-start;
-    background: #2c2c2e !important;
-    color: #ffffff !important;
-    border-bottom-left-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: #333;
+    color: #fff;
+    border-bottom-left-radius: 2px;
 }
 
-/* Vaqt ko'rsatkichi */
+/* Vaqt */
 .msg-time {
     font-size: 10px;
-    margin-top: 4px;
     display: block;
     text-align: right;
+    margin-top: 4px;
     opacity: 0.7;
-    font-weight: 400;
 }
-/* Mijoz vaqti qora, Adminniki oq bo'lishi uchun */
-.msg-me .msg-time { color: rgba(0,0,0,0.6) !important; }
-.msg-adm .msg-time { color: rgba(255,255,255,0.6) !important; }
 
-/* --- PASTGA TUSHIRISH TUGMASI (SCROLL BUTTON) --- */
+/* --- PASTGA TUSHIRISH TUGMASI (Scroll Button) --- */
 #scrollBtn {
     position: absolute;
-    bottom: 90px; /* Inputdan biroz tepada */
+    bottom: 80px; /* Inputdan teparoqda */
     right: 20px;
     width: 40px;
     height: 40px;
-    background: rgba(30, 30, 30, 0.9); /* Yarim shaffof qora */
+    background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(5px);
     border-radius: 50%;
-    display: none; /* JS orqali ko'rinadi */
+    display: none; /* Boshida yashirin */
     align-items: center;
     justify-content: center;
-    color: var(--primary);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    z-index: 20;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    color: white;
     cursor: pointer;
-    transition: transform 0.2s;
+    border: 1px solid rgba(255,255,255,0.1);
+    z-index: 100;
+    transition: 0.3s;
 }
-#scrollBtn:active { transform: scale(0.9); }
+#scrollBtn:active { background: var(--gold); color: black; }
 
 
 /* ============================================================
@@ -998,39 +976,48 @@
             db.ref('orders').push({user_id:user.phone, user_info:`${user.name} (${user.phone})`, items, total:f, original_total:t, promo_discount:activePromo||0, location:loc, status:'yangi', time:new Date().toLocaleString()});
             cart={}; loc=null; activePromo=null; toast("✅ Buyurtma ketdi"); nav('history',document.querySelectorAll('.nav-btn')[2]);
             document.getElementById('gpsBtn').innerHTML="Manzilni aniqlash"; document.getElementById('gpsBtn').classList.remove('gps-success');
-  }
+        }
 
-
-
-        function loadChat() {
+        // CHATNI YUKLASH
+function loadChat() {
     const chatBox = document.getElementById('chatBox');
-    
+    const scrollBtn = document.getElementById('scrollBtn');
+
+    // SCROLLNI TEKSHIRISH (Tugmani chiqarish/yashirish uchun)
+    chatBox.onscroll = () => {
+        // Agar foydalanuvchi tepaga chiqqan bo'lsa (pastdan 100px uzoqlashsa)
+        if (chatBox.scrollTop + chatBox.clientHeight < chatBox.scrollHeight - 100) {
+            scrollBtn.style.display = 'flex';
+        } else {
+            scrollBtn.style.display = 'none';
+        }
+    };
+
     db.ref('messages/' + user.phone.replace('+', '')).on('child_added', s => {
         const m = s.val();
         const isMe = m.from === 'user';
         
-        // Agar vaqt (time) bo'lmasa, hozirgi vaqtni olamiz (vaqtinchalik yechim)
-        // Yoki bazada time borligiga ishonch hosil qiling
-        let messageTime = m.time ? new Date(m.time) : new Date(); 
-        
-        let timeStr = messageTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        // Vaqtni to'g'ri formatlash (Invalid Date oldini olish)
+        let timeStr = "";
+        if(m.time) {
+            timeStr = new Date(m.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        }
 
         const msgHtml = `
             <div style="display:flex; width:100%; flex-direction:column;">
                 <div class="msg-bubble ${isMe ? 'msg-me' : 'msg-adm'}">
                     ${m.body}
-                    <span class="msg-time">${timeStr}</span>
+                    ${timeStr ? `<span class="msg-time">${timeStr}</span>` : ''}
                 </div>
             </div>
         `;
         
         chatBox.innerHTML += msgHtml;
+        
+        // Yangi xabar kelganda avtomatik pastga tushirish
         scrollToBottom();
     });
 }
-
-
-
 // PASTGA TUSHIRISH FUNKSIYASI
 function scrollToBottom() {
     const chatBox = document.getElementById('chatBox');
