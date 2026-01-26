@@ -10,155 +10,207 @@
 </head>
 <body>
 
-    <div id="storyViewer">
-        <div class="s-bars" id="storyBars"></div>
-        <div class="s-close tap" onclick="closeStory()">✕</div>
-        <img id="storyImg" class="s-img" src="">
-        <div class="s-left" onclick="prevStory()"></div>
-        <div class="s-right" onclick="nextStory()"></div>
+    <div id="appLoader" class="loader-screen">
+        <div class="spinner"></div>
     </div>
 
-    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
-    <div class="drawer-panel" id="drawerPanel">
-        <div class="d-header">
-            <h2>CAFE 888</h2>
-            <p>Premium Service</p>
+    <header class="header">
+        <div class="icon-btn tap" onclick="toggleDrawer()">
+            <i class="fa fa-bars"></i>
         </div>
-        <div class="d-content">
-            <div class="d-item tap" onclick="toggleTheme()">
-                <div class="d-icon"><i class="fa fa-moon"></i></div>
+        <div class="logo">CAFE <span>888</span></div>
+        <div class="icon-btn tap" onclick="openModal('chatModal')">
+            <i class="fa fa-comment-dots"></i>
+            <div id="msgBadge" class="badge"></div>
+        </div>
+    </header>
+
+    <div id="drawerOverlay" class="overlay" onclick="toggleDrawer()"></div>
+    <div id="drawerPanel" class="drawer">
+        <div class="drawer-head">
+            <h2>CAFE 888</h2>
+            <p>Premium Yetkazib Berish</p>
+        </div>
+        <div class="drawer-body">
+            <div class="menu-row tap" onclick="toggleTheme()">
+                <div class="icon-box"><i class="fa fa-moon"></i></div>
                 <span>Tungi rejim</span>
+                <div class="toggle-icon"><i class="fa fa-toggle-off" id="themeIcon"></i></div>
             </div>
-            <div class="d-item tap" onclick="openModal('contactModal'); toggleDrawer()">
-                <div class="d-icon"><i class="fa fa-headset"></i></div>
+            <div class="menu-row tap" onclick="openModal('contactModal'); toggleDrawer()">
+                <div class="icon-box"><i class="fa fa-headset"></i></div>
                 <span>Bog'lanish</span>
             </div>
-            <div class="d-item tap" onclick="location.reload()">
-                <div class="d-icon"><i class="fa fa-sync-alt"></i></div>
+            <div class="menu-row tap" onclick="location.reload()">
+                <div class="icon-box"><i class="fa fa-sync-alt"></i></div>
                 <span>Yangilash</span>
             </div>
         </div>
-        <div class="d-footer tap" onclick="logout()">
+        <div class="drawer-foot tap" onclick="logout()">
             <i class="fa fa-sign-out-alt"></i> Chiqish
         </div>
     </div>
 
-    <header class="header">
-        <div class="tap" onclick="toggleDrawer()"><i class="fa fa-bars" style="font-size:24px;"></i></div>
-        <div class="logo">CAFE <span>888</span></div>
-        <div class="chat-wrap tap" onclick="openModal('chatModal')">
-            <i class="fa fa-comment-dots" style="font-size:24px;"></i>
-            <div id="chatBadge" class="badge-dot"></div>
+    <div id="page-menu" class="page active">
+        <div id="storiesBox" class="stories-scroll"></div>
+        
+        <div class="sticky-nav">
+            <div id="categoryList" class="cat-scroll"></div>
         </div>
-    </header>
-
-    <div id="p-menu" class="page-cont active">
-        <div id="storiesContainer" class="stories-wrap"></div>
-        <div id="catNav" class="cat-bar"></div>
-        <div id="menuGrid" class="grid"></div>
+        
+        <div id="productGrid" class="grid-container"></div>
+        
+        <div style="height: 100px;"></div>
     </div>
 
-    <div id="p-cart" class="page-cont">
+    <div id="page-cart" class="page">
         <h2 class="page-title">Savat</h2>
-        <div id="cartList" class="list-container"></div>
-        <div class="cart-footer">
-            <div class="promo-box">
-                <input type="text" id="promoInp" placeholder="Promokod">
-                <button class="tap" onclick="checkPromo()">OK</button>
+        <div id="cartContainer" class="list-wrap"></div>
+        
+        <div class="cart-bottom">
+            <div class="promo-wrap">
+                <input type="text" id="promoInput" placeholder="Promokod">
+                <button onclick="checkPromo()">OK</button>
             </div>
-            <div id="promoMsg"></div>
-            <div class="total-row">
-                <span>Jami:</span> <span id="cartTotal">0 so'm</span>
+            <div id="promoStatus"></div>
+            
+            <div class="total-bar">
+                <span>Jami:</span>
+                <span id="finalPrice" class="price-text">0 so'm</span>
             </div>
-            <button id="gpsBtn" class="btn-gps tap" onclick="getGPS()"><i class="fa fa-map-marker-alt"></i> Manzilni aniqlash</button>
-            <button id="orderBtn" class="btn-main tap" onclick="sendOrder()">BUYURTMA BERISH</button>
+            
+            <button id="btnGps" class="btn secondary tap" onclick="getGPS()">
+                <i class="fa fa-map-marker-alt"></i> Manzilni aniqlash
+            </button>
+            <button id="btnOrder" class="btn primary tap disabled" onclick="submitOrder()">
+                BUYURTMA BERISH
+            </button>
         </div>
     </div>
 
-    <div id="p-history" class="page-cont">
-        <h2 class="page-title">Buyurtmalar</h2>
-        <div id="histList" class="list-container"></div>
+    <div id="page-history" class="page">
+        <h2 class="page-title">Buyurtmalarim</h2>
+        <div id="historyContainer" class="list-wrap"></div>
+        <div style="height: 100px;"></div>
     </div>
 
-    <div id="p-profile" class="page-cont" style="padding-top:0;">
-        <div class="prof-head">
+    <div id="page-profile" class="page">
+        <div class="profile-card">
             <div class="avatar"><i class="fa fa-user"></i></div>
-            <h2 id="uName">Mijoz</h2>
-            <p id="uPhone">+998...</p>
+            <h2 id="userName">Mijoz</h2>
+            <p id="userPhone">+998...</p>
         </div>
-        <div class="prof-list">
-            <div class="d-item tap" onclick="openFavs()">
-                <div class="d-icon red"><i class="fa fa-heart"></i></div><span>Sevimlilar</span><i class="fa fa-chevron-right arrow"></i>
+        <div class="profile-links">
+            <div class="menu-row tap" onclick="openFavs()">
+                <div class="icon-box red"><i class="fa fa-heart"></i></div>
+                <span>Sevimlilar</span>
+                <i class="fa fa-chevron-right arrow"></i>
             </div>
-            <div class="d-item tap" onclick="openModal('chatModal')">
-                <div class="d-icon blue"><i class="fa fa-envelope"></i></div><span>Admin Chat</span><i class="fa fa-chevron-right arrow"></i>
+            <div class="menu-row tap" onclick="openPromoList()">
+                <div class="icon-box green"><i class="fa fa-ticket-alt"></i></div>
+                <span>Promokodlar</span>
+                <i class="fa fa-chevron-right arrow"></i>
             </div>
-            <div class="d-item tap" onclick="openPromoList()">
-                <div class="d-icon green"><i class="fa fa-ticket-alt"></i></div><span>Promokodlar</span><i class="fa fa-chevron-right arrow"></i>
-            </div>
-            <div class="d-item tap" onclick="openNews()">
-                <div class="d-icon gold"><i class="fa fa-bullhorn"></i></div><span>Yangiliklar</span><i class="fa fa-chevron-right arrow"></i>
+            <div class="menu-row tap" onclick="openModal('newsModal')">
+                <div class="icon-box gold"><i class="fa fa-bullhorn"></i></div>
+                <span>Yangiliklar</span>
+                <i class="fa fa-chevron-right arrow"></i>
             </div>
         </div>
     </div>
 
     <nav class="navbar">
-        <div class="nav-item active" onclick="nav('menu', this)"><i class="fa fa-utensils"></i>Menyu</div>
-        <div class="nav-item" onclick="nav('cart', this)"><i class="fa fa-shopping-basket"></i>Savat</div>
-        <div class="nav-item" onclick="nav('history', this)"><i class="fa fa-clock"></i>Tarix</div>
-        <div class="nav-item" onclick="nav('profile', this)"><i class="fa fa-user"></i>Profil</div>
+        <div class="nav-btn active" onclick="nav('menu', this)">
+            <i class="fa fa-utensils"></i>
+            <span>Menyu</span>
+        </div>
+        <div class="nav-btn" onclick="nav('cart', this)">
+            <i class="fa fa-shopping-basket"></i>
+            <span>Savat</span>
+            <div id="cartBadge" class="nav-badge hidden">0</div>
+        </div>
+        <div class="nav-btn" onclick="nav('history', this)">
+            <i class="fa fa-clock"></i>
+            <span>Tarix</span>
+        </div>
+        <div class="nav-btn" onclick="nav('profile', this)">
+            <i class="fa fa-user"></i>
+            <span>Profil</span>
+        </div>
     </nav>
 
-    <div id="loginModal" class="modal-fs">
-        <div class="login-box">
-            <div class="login-icon"><i class="fab fa-telegram-plane"></i></div>
-            <h2>Xush kelibsiz</h2>
-            <p>Telegram orqali tizimga kiring</p>
-            <div id="loadSpinner" class="hidden">Tasdiqlash kutilmoqda...</div>
-            <button id="tgBtn" class="btn-main tap" onclick="doLogin()">KIRISH</button>
+    <div id="loginModal" class="modal-full">
+        <div class="login-content">
+            <div class="login-logo"><i class="fab fa-telegram-plane"></i></div>
+            <h2>Xush kelibsiz!</h2>
+            <p>Davom etish uchun Telegram orqali kiring</p>
+            <button class="btn telegram tap" onclick="startLogin()">Telegram orqali kirish</button>
         </div>
     </div>
 
-    <div id="prodModal" class="modal-wrap" onclick="if(event.target==this)closeModal('prodModal')">
+    <div id="prodModal" class="sheet-overlay" onclick="if(event.target==this)closeModal('prodModal')">
         <div class="sheet">
             <div class="sheet-close tap" onclick="closeModal('prodModal')">✕</div>
-            <img id="pmImg" src="">
-            <div class="sheet-body">
-                <h2 id="pmName"></h2>
-                <h3 id="pmPrice"></h3>
-                <p id="pmDesc"></p>
-                <div class="sheet-actions">
-                    <div class="qty-pill">
-                        <span onclick="pmQ(-1)">-</span><b id="pmQty">1</b><span onclick="pmQ(1)">+</span>
-                    </div>
-                    <button class="btn-main tap" onclick="addFromModal()">Savatga</button>
+            <img id="pmImg" src="" class="sheet-img">
+            <h2 id="pmName"></h2>
+            <h3 id="pmPrice" class="gold-text"></h3>
+            <p id="pmDesc"></p>
+            <div class="sheet-footer">
+                <div class="qty-control">
+                    <button onclick="changeQty(-1)">-</button>
+                    <span id="pmQty">1</span>
+                    <button onclick="changeQty(1)">+</button>
                 </div>
+                <button class="btn primary tap" onclick="addCartFromModal()">Savatga</button>
             </div>
         </div>
     </div>
 
-    <div id="chatModal" class="modal-wrap" onclick="if(event.target==this)closeModal('chatModal')">
+    <div id="favModal" class="sheet-overlay" onclick="if(event.target==this)closeModal('favModal')">
+        <div class="sheet h-70">
+            <div class="sheet-head">
+                <h3>Sevimlilar ❤️</h3>
+                <span onclick="closeModal('favModal')">Yopish</span>
+            </div>
+            <div id="favGrid" class="grid-3"></div>
+        </div>
+    </div>
+
+    <div id="promoModal" class="sheet-overlay" onclick="if(event.target==this)closeModal('promoModal')">
+        <div class="sheet h-50">
+            <div class="sheet-head"><h3>Promokodlar 🎟</h3><span onclick="closeModal('promoModal')">Yopish</span></div>
+            <div id="promoListContent"></div>
+        </div>
+    </div>
+
+    <div id="chatModal" class="sheet-overlay" onclick="if(event.target==this)closeModal('chatModal')">
         <div class="sheet h-90">
-            <div class="sheet-head"><h3>Admin Chat</h3><span onclick="closeModal('chatModal')">✕</span></div>
+            <div class="sheet-head"><h3>Admin Chat</h3><span onclick="closeModal('chatModal')">Yopish</span></div>
             <div id="chatBox"></div>
             <div class="chat-input">
-                <input type="text" id="chatInp" placeholder="Xabar yozing...">
-                <button onclick="sendChat()" class="tap"><i class="fa fa-paper-plane"></i></button>
+                <input type="text" id="chatInp" placeholder="Xabar...">
+                <button onclick="sendMsg()"><i class="fa fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
-
-    <div id="mapModal" class="modal-fs">
-        <button class="map-back tap" onclick="document.getElementById('mapModal').style.display='none'">⬅️ Orqaga</button>
+    
+    <div id="mapModal" class="modal-full hidden">
+        <button class="map-back" onclick="closeModal('mapModal')">Orqaga</button>
         <div id="map"></div>
     </div>
-
-    <div id="favModal" class="modal-wrap" onclick="if(event.target==this)closeModal('favModal')"><div class="sheet"><h3>Sevimlilar</h3><div id="favList" class="grid-fav"></div></div></div>
-    <div id="promoListModal" class="modal-wrap" onclick="if(event.target==this)closeModal('promoListModal')"><div class="sheet"><h3>Promokodlar</h3><div id="promoListContent"></div></div></div>
-    <div id="newsModal" class="modal-wrap" onclick="if(event.target==this)closeModal('newsModal')"><div class="sheet"><h3>Yangiliklar</h3><div id="newsContent"></div></div></div>
-    <div id="contactModal" class="modal-wrap" onclick="if(event.target==this)closeModal('contactModal')"><div class="sheet"><h3>Aloqa</h3><div class="d-item" onclick="copy('+998939782926')"><i class="fa fa-phone"></i> +998 93 978 29 26</div></div></div>
     
-    <div id="toastBox"></div>
+    <div id="storyViewer" class="modal-full hidden black-bg">
+        <div class="story-bars" id="storyBars"></div>
+        <div class="story-close" onclick="closeStory()">✕</div>
+        <img id="storyImgMain" src="">
+        <div class="tap-area left" onclick="prevStory()"></div>
+        <div class="tap-area right" onclick="nextStory()"></div>
+    </div>
+
+    <div id="toast"></div>
+
+    <div id="contactModal" class="sheet-overlay" onclick="if(event.target==this)closeModal('contactModal')"><div class="sheet"><h3>Aloqa</h3><div class="menu-row"><i class="fa fa-phone"></i> +998 93 978 29 26</div></div></div>
+    <div id="newsModal" class="sheet-overlay" onclick="if(event.target==this)closeModal('newsModal')"><div class="sheet h-70"><h3>Yangiliklar</h3><div id="newsList"></div></div></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
