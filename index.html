@@ -3,104 +3,145 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Cafe 888 Ultimate</title>
+<title>Cafe 888 Ultimate Pro</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <style>
-    /* =========================================================
-       1. GLOBAL SOZLAMALAR (PREMIUM DARK THEME)
-       ========================================================= */
+    /* ==========================================================================
+       1. GLOBAL O'ZGARUVCHILAR VA RESET (DARK THEME DEFAULT)
+       ========================================================================== */
     :root {
-        --bg: #09090b; 
-        --card: #18181b; 
-        --text: #ffffff; 
-        --sub: #a1a1aa;
-        --gold: #FFD700; 
-        --red: #ef4444; 
-        --green: #22c55e; 
-        --blue: #3b82f6;
-        --glass: rgba(24, 24, 27, 0.95);
-        --border: 1px solid rgba(255,255,255,0.08);
-        --header-h: 60px;
+        /* Asosiy Fonlar */
+        --bg-body: #09090b;       /* Juda to'q kulrang/qora */
+        --bg-card: #18181b;       /* Kartalar foni */
+        --bg-glass: rgba(24, 24, 27, 0.85); /* Glass effect */
+        
+        /* Matn Ranglari */
+        --text-main: #ffffff;
+        --text-muted: #a1a1aa;
+        
+        /* Brand Ranglari */
+        --primary: #FFD700;       /* Oltin */
+        --primary-glow: rgba(255, 215, 0, 0.3);
+        --danger: #ef4444;        /* Qizil */
+        --success: #22c55e;       /* Yashil */
+        --blue: #3b82f6;          /* Moviy */
+        
+        /* O'lchamlar */
+        --header-height: 65px;
+        --nav-height: 80px;
+        --radius-card: 20px;
+        --radius-btn: 14px;
+        
+        /* Animatsiya tezligi */
+        --anim-speed: 0.3s;
     }
-    
+
+    /* Light Mode */
     body.light-mode {
-        --bg: #f4f4f5; --card: #ffffff; --text: #18181b; --sub: #71717a;
-        --glass: rgba(255, 255, 255, 0.95); --border: 1px solid rgba(0,0,0,0.08);
+        --bg-body: #f4f4f5;
+        --bg-card: #ffffff;
+        --bg-glass: rgba(255, 255, 255, 0.9);
+        --text-main: #18181b;
+        --text-muted: #71717a;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
     
-    body { 
-        margin: 0; padding: 0; background: var(--bg); color: var(--text); 
-        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Roboto, sans-serif;
-        padding-bottom: 90px; overflow-x: hidden; transition: background 0.3s;
+    body {
+        margin: 0; padding: 0;
+        background-color: var(--bg-body);
+        color: var(--text-main);
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+        padding-bottom: var(--nav-height);
+        overflow-x: hidden;
+        transition: background-color var(--anim-speed), color var(--anim-speed);
     }
 
-    /* Animatsiyalar */
-    .tap:active { transform: scale(0.96); opacity: 0.8; transition: 0.1s; }
-    @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
-    @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(255, 215, 0, 0.4)} 70%{box-shadow:0 0 0 10px rgba(255, 215, 0, 0)} 100%{box-shadow:0 0 0 0 rgba(255, 215, 0, 0)} }
+    /* Scrollbar yo'q qilish */
+    ::-webkit-scrollbar { display: none; }
 
-    /* =========================================================
-       2. HEADER & DRAWER (MUXIM QISM)
-       ======================================================== */
-    .header {
-        position: fixed; top: 0; left: 0; width: 100%; height: var(--header-h);
-        background: var(--glass); backdrop-filter: blur(15px);
-        z-index: 5000; display: flex; align-items: center; justify-content: space-between;
-        padding: 0 20px; border-bottom: var(--border);
-    }
-    .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; } 
-    .logo span { color: var(--gold); text-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
-    
-    .chat-wrap { position: relative; padding: 5px; }
-    .badge { 
-        position: absolute; top: 0; right: 0; width: 10px; height: 10px; 
-        background: var(--red); border-radius: 50%; border: 2px solid var(--bg);
-        display: none; box-shadow: 0 0 5px var(--red);
-    }
-    .badge.active { display: block; }
+    /* ==========================================================================
+       2. ANIMATSIYALAR (PREMIUM FEEL)
+       ========================================================================== */
+    /* Bosganda ezilish effekti */
+    .tap { transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+    .tap:active { transform: scale(0.95); opacity: 0.8; }
 
-    /* Drawer Menu */
+    /* Sahifa almashish */
+    .fade-in { animation: fadeIn 0.4s ease forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Grid elementlari ketma-ket chiqishi (Stagger) */
+    @keyframes slideUpFade {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .grid-anim { animation: slideUpFade 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; }
+
+    /* Modal pastdan chiqishi */
+    @keyframes slideUpSheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+    /* Yurak urishi */
+    @keyframes heartbeat { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    .heart-anim { animation: heartbeat 0.3s ease-in-out; }
+
+    /* ==========================================================================
+       3. DRAWER (YON MENYU) - ENG TEPADA
+       ========================================================================== */
     .drawer-overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0,0,0,0.8); z-index: 9000;
-        opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(5px);
+        opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(4px);
     }
     .drawer-overlay.active { opacity: 1; visibility: visible; }
     
-    .drawer {
-        position: fixed; top: 0; left: -85%; width: 80%; height: 100%;
-        background: var(--card); z-index: 9001;
+    .drawer-panel {
+        position: fixed; top: 0; left: -85%; width: 85%; height: 100%;
+        background: var(--bg-card); z-index: 9001;
         transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
         display: flex; flex-direction: column; padding: 40px 25px;
         box-shadow: 10px 0 50px rgba(0,0,0,0.5);
     }
-    .drawer.active { left: 0; }
+    .drawer-panel.active { left: 0; }
     
-    .d-head { margin-bottom: 40px; border-bottom: var(--border); padding-bottom: 20px; }
-    .d-head h2 { color: var(--gold); margin: 0; font-size: 28px; }
-    .d-head p { color: var(--sub); margin: 5px 0 0; font-size: 14px; }
+    .d-header { margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
+    .d-header h2 { color: var(--primary); margin: 0; font-size: 28px; }
+    .d-header p { color: var(--text-muted); margin: 5px 0 0; font-size: 14px; }
     
     .d-item {
-        display: flex; align-items: center; gap: 15px; padding: 16px; margin-bottom: 10px;
+        display: flex; align-items: center; gap: 15px; padding: 16px; margin-bottom: 12px;
         background: rgba(255,255,255,0.03); border-radius: 15px;
-        font-weight: 600; border: var(--border); cursor: pointer;
+        font-weight: 600; font-size: 16px; border: 1px solid rgba(255,255,255,0.05);
     }
-    .d-icon { width: 30px; text-align: center; font-size: 20px; color: var(--text); }
-    .d-footer { margin-top: auto; color: var(--red); font-weight: bold; border: 1px solid rgba(255, 69, 58, 0.3); padding: 15px; text-align: center; border-radius: 15px; }
+    .d-item i { font-size: 20px; width: 25px; text-align: center; }
 
-    /* =========================================================
-       3. STORIES & MENU
-       ======================================================== */
-    .page { display: none; padding-top: 65px; animation: fadeIn 0.4s; }
-    .page.active { display: block; }
+    /* ==========================================================================
+       4. HEADER & STORIES
+       ========================================================================== */
+    .header {
+        position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height);
+        background: var(--bg-glass); backdrop-filter: blur(20px);
+        z-index: 5000; display: flex; align-items: center; justify-content: space-between;
+        padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; }
+    .logo span { color: var(--primary); text-shadow: 0 0 15px var(--primary-glow); }
+    
+    /* Xabar belgisi (Red Dot) */
+    .chat-icon-wrap { position: relative; }
+    .msg-badge {
+        position: absolute; top: -2px; right: -2px; width: 10px; height: 10px;
+        background: var(--danger); border-radius: 50%; border: 2px solid var(--bg-body);
+        display: none; box-shadow: 0 0 5px var(--danger);
+    }
+    .msg-badge.show { display: block; }
 
-    .stories-row {
-        display: flex; gap: 12px; padding: 10px 15px; overflow-x: auto; scrollbar-width: none;
+    /* Stories (Instagram) */
+    .stories-wrap {
+        display: flex; gap: 12px; padding: 15px; overflow-x: auto; scrollbar-width: none;
+        margin-top: var(--header-height);
     }
     .story-c {
         min-width: 76px; height: 76px; border-radius: 50%; padding: 3px;
@@ -109,130 +150,177 @@
     }
     .story-c img {
         width: 100%; height: 100%; border-radius: 50%;
-        border: 3px solid var(--bg); object-fit: cover;
+        border: 3px solid var(--bg-body); object-fit: cover;
     }
 
-    /* Kategoriya */
+    /* Full Screen Story */
+    #storyViewer {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: #000; z-index: 10000; display: none; flex-direction: column;
+    }
+    .s-bars { position: absolute; top: 15px; left: 10px; right: 10px; display: flex; gap: 5px; z-index: 10001; }
+    .s-bg { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; }
+    .s-fill { height: 100%; background: #fff; width: 0%; }
+    .s-fill.anim { animation: fillBar 5s linear forwards; }
+    .s-fill.full { width: 100%; }
+    @keyframes fillBar { to { width: 100%; } }
+    
+    .s-img { width: 100%; height: 100%; object-fit: contain; }
+    .s-close { position: absolute; top: 25px; right: 20px; font-size: 30px; color: white; z-index: 10002; cursor: pointer; text-shadow: 0 2px 10px black; }
+    .s-left, .s-right { position: absolute; top: 0; height: 100%; width: 40%; z-index: 10000; }
+    .s-left { left: 0; } .s-right { right: 0; }
+
+    /* ==========================================================================
+       5. MENU GRID & CARDS (TUZATILGAN)
+       ========================================================================== */
+    .page-cont { display: none; padding-bottom: 20px; }
+    .page-cont.active { display: block; }
+
     .cat-bar {
         display: flex; gap: 10px; overflow-x: auto; padding: 5px 15px 15px;
-        position: sticky; top: var(--header-h); z-index: 4000; background: var(--bg);
-        scrollbar-width: none;
+        position: sticky; top: var(--header-height); z-index: 4000; 
+        background: var(--bg-body); scrollbar-width: none;
     }
     .cat-pill {
-        padding: 8px 22px; border-radius: 25px; background: var(--card);
-        color: var(--sub); font-weight: 600; white-space: nowrap;
-        border: var(--border); transition: 0.3s;
+        padding: 8px 22px; border-radius: 25px; background: var(--bg-card);
+        color: var(--text-muted); font-weight: 600; white-space: nowrap;
+        border: 1px solid rgba(255,255,255,0.1); transition: 0.3s;
     }
     .cat-pill.active {
-        background: var(--gold); color: #000; border-color: var(--gold);
-        transform: scale(1.05); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+        background: var(--primary); color: #000; border-color: var(--primary);
+        transform: scale(1.05); box-shadow: 0 5px 15px var(--primary-glow);
     }
 
-    /* Card */
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 15px 15px; }
     
     .card {
-        background: var(--card); border-radius: 18px; overflow: hidden;
-        display: flex; flex-direction: column; position: relative;
-        border: var(--border); box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        background: var(--bg-card); border-radius: var(--radius-card);
+        overflow: hidden; position: relative; display: flex; flex-direction: column;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2); transition: 0.2s;
+        border: 1px solid rgba(255,255,255,0.05);
     }
-    .card-img-box { width: 100%; height: 160px; position: relative; }
-    .card-img-box img { width: 100%; height: 100%; object-fit: cover; } /* Toliq rasm */
+    .card:active { transform: scale(0.98); }
+
+    /* RASM MUAMMOSI HAL QILINDI: COVER */
+    .card-img { width: 100%; height: 160px; object-fit: cover; }
     
-    .fav-btn-card {
+    .card-body { padding: 12px; flex: 1; display: flex; flex-direction: column; }
+    .card-title { font-weight: 700; margin-bottom: 5px; font-size: 15px; line-height: 1.3; height: 40px; overflow: hidden; }
+    
+    .card-footer {
+        margin-top: auto; display: flex; justify-content: space-between; align-items: center;
+    }
+    .card-price { font-weight: 800; font-size: 16px; color: var(--primary); }
+    
+    /* +/- TUGMALARI ALOHIDA */
+    .btn-plus {
+        width: 34px; height: 34px; background: var(--primary); color: #000;
+        border-radius: 12px; display: flex; align-items: center; justify-content: center;
+        font-size: 20px; box-shadow: 0 4px 10px var(--primary-glow);
+    }
+    
+    .qty-wrap {
+        display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1);
+        padding: 4px 8px; border-radius: 10px; border: 1px solid var(--primary);
+    }
+    .qb { font-weight: bold; font-size: 16px; width: 20px; text-align: center; color: var(--primary); }
+    .qn { font-weight: bold; font-size: 14px; color: var(--text-main); }
+
+    /* Fav Icon */
+    .card-fav {
         position: absolute; top: 10px; right: 10px; width: 32px; height: 32px;
-        background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+        background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
         border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        color: white; z-index: 2; font-size: 14px;
+        color: white; font-size: 14px; z-index: 5;
     }
-    .fav-btn-card.active { background: white; color: var(--red); }
+    .card-fav.active { background: #fff; color: var(--danger); }
 
-    .card-info { padding: 12px; flex: 1; display: flex; flex-direction: column; }
-    .card-title { font-weight: 700; font-size: 15px; margin-bottom: 5px; height: 38px; overflow: hidden; line-height: 1.3; }
-    .card-foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; }
-    .card-price { color: var(--gold); font-weight: 900; font-size: 16px; }
+    /* ==========================================================================
+       6. SAVAT & TARIX (STATUS)
+       ========================================================================== */
+    .cart-box {
+        background: var(--bg-card); padding: 15px; border-radius: 20px;
+        margin-bottom: 15px; display: flex; align-items: center; gap: 15px;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+    .cart-pic { width: 70px; height: 70px; border-radius: 15px; object-fit: cover; }
+    .cart-btns { display: flex; gap: 10px; background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 10px; }
     
-    .btn-add { width: 34px; height: 34px; background: var(--gold); color: #000; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; }
-    .qty-mini { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 10px; border: 1px solid var(--gold); }
-    .qm-btn { font-size: 18px; font-weight: bold; color: var(--gold); width: 20px; text-align: center; }
-
-    /* =========================================================
-       4. SAVAT (TUZATILDI)
-       ======================================================== */
-    .cart-item {
-        background: var(--card); padding: 10px; border-radius: 16px;
-        margin-bottom: 12px; display: flex; align-items: center; gap: 15px;
-        border: var(--border);
+    .btn-main {
+        width: 100%; padding: 18px; background: var(--primary); color: #000;
+        font-weight: 800; border: none; border-radius: 20px; font-size: 16px;
+        margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;
+        box-shadow: 0 10px 20px var(--primary-glow);
     }
-    /* RASM MUAMMOSI HALI: FIXED SIZE */
-    .cart-img { 
-        width: 65px !important; height: 65px !important; 
-        border-radius: 12px; object-fit: cover; flex-shrink: 0; 
+    .btn-gps {
+        width: 100%; padding: 15px; background: #333; color: white;
+        border-radius: 20px; display: flex; align-items: center; justify-content: center; gap: 10px;
+        font-weight: 600; border: 1px solid rgba(255,255,255,0.1);
     }
-    .cart-det { flex: 1; }
-    .cart-det h4 { margin: 0; font-size: 15px; }
-    .cart-det p { margin: 2px 0 0; color: var(--gold); font-weight: 600; font-size: 13px; }
-    
-    .cart-capsule {
-        display: flex; align-items: center; background: #222; 
-        border-radius: 20px; border: 1px solid #333; padding: 2px;
-    }
-    .cc-btn { width: 30px; height: 28px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; }
-    .cc-num { width: 25px; text-align: center; font-weight: bold; font-size: 14px; }
+    .btn-gps.ok { background: var(--success); border-color: var(--success); }
+    .btn-gps.err { background: var(--danger); border-color: var(--danger); }
 
-    .cart-footer { padding: 20px; padding-bottom: 120px; }
-    .promo-row { display: flex; gap: 10px; background: var(--card); padding: 10px; border-radius: 15px; border: var(--border); margin-bottom: 15px; }
-    .promo-row input { flex: 1; background: transparent; border: none; color: var(--text); font-size: 16px; text-transform: uppercase; }
-    .promo-row button { background: var(--gold); border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; }
-    
-    .total-row { display: flex; justify-content: space-between; font-size: 20px; font-weight: 900; margin-bottom: 20px; }
-    .btn-main { width: 100%; padding: 16px; background: var(--gold); color: #000; border-radius: 18px; font-weight: 800; border: none; font-size: 16px; margin-top: 10px; }
-    .btn-gps { width: 100%; padding: 14px; background: #333; color: white; border-radius: 18px; margin-bottom: 10px; border: 1px solid #444; font-weight: 600; }
-    .btn-gps.ok { background: var(--green); border-color: var(--green); }
-    .btn-gps.err { background: var(--red); border-color: var(--red); }
-
-    /* =========================================================
-       5. TARIX (RANGLI STATUSLAR)
-       ======================================================== */
+    /* Tarix Statuslari */
     .hist-card {
-        background: var(--card); padding: 18px; border-radius: 18px;
+        background: var(--bg-card); padding: 20px; border-radius: 20px;
         margin-bottom: 15px; border-left: 5px solid; position: relative;
     }
-    .h-head { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; color: var(--sub); }
-    .st-badge { padding: 4px 10px; border-radius: 6px; font-weight: 900; font-size: 11px; text-transform: uppercase; }
+    .st-pill { padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 900; text-transform: uppercase; }
     
-    /* Status Ranglari */
-    .s-new { border-color: var(--blue); } .s-new .st-badge { background: rgba(59,130,246,0.2); color: var(--blue); }
-    .s-cook { border-color: orange; } .s-cook .st-badge { background: rgba(255,165,0,0.2); color: orange; }
-    .s-deliv { border-color: var(--gold); } .s-deliv .st-badge { background: rgba(255,215,0,0.2); color: var(--gold); }
-    .s-done { border-color: var(--green); } .s-done .st-badge { background: rgba(34,197,94,0.2); color: var(--success); }
+    .s-new { border-color: var(--blue); } .s-new .st-pill { background: rgba(59,130,246,0.15); color: var(--blue); }
+    .s-cook { border-color: orange; } .s-cook .st-pill { background: rgba(255,165,0,0.15); color: orange; }
+    .s-deliv { border-color: var(--primary); } .s-deliv .st-pill { background: rgba(255,215,0,0.15); color: var(--primary); }
+    .s-done { border-color: var(--success); } .s-done .st-pill { background: rgba(34,197,94,0.15); color: var(--success); }
 
     .track-btn {
         width: 100%; padding: 12px; background: linear-gradient(45deg, #FFD700, #FFA500);
         color: black; font-weight: 800; border-radius: 12px; margin-top: 15px; border: none;
-        display: flex; align-items: center; justify-content: center; gap: 8px; animation: pulse 2s infinite;
+        animation: pulse 2s infinite; display: flex; align-items: center; justify-content: center; gap: 8px;
     }
 
-    /* =========================================================
-       6. PROFIL
-       ======================================================== */
-    .prof-head { text-align: center; padding: 50px 0 30px; background: linear-gradient(180deg, rgba(255,215,0,0.1), transparent); }
-    .avatar { width: 100px; height: 100px; background: var(--card); border: 3px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; color: var(--gold); margin: 0 auto 15px; }
-    .prof-menu { padding: 0 20px; }
+    /* ==========================================================================
+       7. PROFIL (YANGI DIZAYN)
+       ========================================================================== */
+    .prof-head {
+        text-align: center; padding: 50px 20px 30px;
+        background: linear-gradient(180deg, rgba(255,215,0,0.1), transparent);
+    }
+    /* AVATAR MUAMMOSI HAL QILINDI (Margin Top) */
+    .avatar {
+        width: 100px; height: 100px; background: var(--bg-card); border: 3px solid var(--primary);
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        font-size: 40px; color: var(--primary); margin: 20px auto 15px; /* Margin Top berildi */
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
     
-    .mc-icon { width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-    .mc-icon.red { background: rgba(255,71,87,0.15); color: var(--red); }
-    .mc-icon.blue { background: rgba(42,171,238,0.15); color: var(--blue); }
-    .mc-icon.green { background: rgba(46,204,113,0.15); color: var(--green); }
-    .mc-icon.gold { background: rgba(255,215,0,0.15); color: var(--gold); }
+    .prof-menu { padding: 0 20px; }
+    .prof-btn {
+        background: var(--bg-card); padding: 20px; border-radius: 20px;
+        margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
+        font-weight: 600; border: 1px solid rgba(255,255,255,0.05);
+    }
 
-    /* =========================================================
-       7. MODALLAR & CHAT
-       ======================================================== */
+    /* Sevimlilar Grid */
+    .fav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .fav-box {
+        background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px;
+        text-align: center; position: relative; border: 1px solid rgba(255,255,255,0.05);
+    }
+    .fav-box img { width: 100%; height: 60px; object-fit: cover; border-radius: 10px; margin-bottom: 5px; }
+    .fav-del {
+        position: absolute; top: 5px; right: 5px; width: 22px; height: 22px;
+        background: var(--danger); color: white; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; font-size: 12px;
+    }
+
+    /* ==========================================================================
+       8. MODALLAR (BOTTOM SHEET) & NAVBAR
+       ========================================================================== */
     .modal-wrap {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.85); z-index: 8000; display: none;
-        align-items: flex-end; justify-content: center; backdrop-filter: blur(5px);
+        background: rgba(0,0,0,0.85); z-index: 8000;
+        display: none; align-items: flex-end; justify-content: center;
+        backdrop-filter: blur(5px);
     }
     .sheet {
         background: #1c1c1e; width: 100%; max-width: 500px;
@@ -241,223 +329,522 @@
         border-top: 1px solid rgba(255,255,255,0.1);
         max-height: 85vh; overflow-y: auto;
     }
-    .sheet-close { position: absolute; top: 20px; right: 20px; font-size: 24px; color: var(--sub); cursor: pointer; }
+    .sheet-close { position: absolute; top: 20px; right: 20px; font-size: 24px; color: var(--text-muted); cursor: pointer; }
 
-    /* Chat Bubble */
-    #chatBox { flex: 1; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 15px; padding: 15px; margin: 15px 0; min-height: 300px; }
-    .msg-bubble { padding: 10px 15px; border-radius: 18px; max-width: 80%; margin-bottom: 10px; font-size: 14px; position: relative; }
-    .me { background: var(--gold); color: black; margin-left: auto; border-bottom-right-radius: 4px; }
-    .adm { background: #333; color: white; align-self: flex-start; border-bottom-left-radius: 4px; }
-    .chat-inp { display: flex; gap: 10px; }
-    .chat-inp input { flex: 1; background: #333; border: none; padding: 12px; border-radius: 12px; color: white; }
-    .chat-inp button { width: 50px; background: var(--gold); border: none; border-radius: 12px; font-size: 18px; }
-
-    /* Login */
-    #loginModal { align-items: center; z-index: 99999; background: var(--bg); display: flex; }
-    .login-box { text-align: center; width: 85%; }
-    .login-icon { width: 80px; height: 80px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; color: white; margin: 0 auto 20px; box-shadow: 0 0 40px rgba(59,130,246,0.4); }
-
-    /* Map */
-    #mapModal { background: #fff; z-index: 9500; }
-    #map { width: 100%; height: 100%; }
-    .map-back { position: absolute; top: 40px; left: 20px; z-index: 9501; padding: 10px 20px; border: none; background: white; font-weight: bold; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+    /* Login Full Screen */
+    #loginModal { align-items: center; z-index: 99999; background: var(--bg-body); }
+    .tg-icon {
+        width: 90px; height: 90px; background: var(--blue); border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 45px; color: white; margin: 0 auto 30px;
+        box-shadow: 0 0 40px rgba(59,130,246,0.4);
+    }
 
     /* Navbar */
     .navbar {
-        position: fixed; bottom: 0; width: 100%; height: 75px;
-        background: var(--glass); backdrop-filter: blur(15px);
+        position: fixed; bottom: 0; width: 100%; height: var(--nav-height);
+        background: rgba(20, 20, 22, 0.95); backdrop-filter: blur(20px);
         display: flex; justify-content: space-around; align-items: center;
-        border-radius: 25px 25px 0 0; z-index: 4500; border-top: var(--border);
+        border-radius: 30px 30px 0 0; z-index: 4500;
+        border-top: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;
     }
-    .nav-btn { display: flex; flex-direction: column; align-items: center; color: var(--sub); font-size: 10px; font-weight: 700; transition: 0.3s; position: relative; }
-    .nav-btn i { font-size: 24px; margin-bottom: 5px; }
-    .nav-btn.active { color: var(--gold); transform: translateY(-5px); }
-    .nav-badge { position: absolute; top: -2px; right: 5px; background: var(--red); color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px; }
+    .nav-btn { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 10px; font-weight: 700; transition: 0.3s; }
+    .nav-btn i { font-size: 24px; margin-bottom: 6px; }
+    .nav-btn.active { color: var(--primary); transform: translateY(-5px); }
 
-    /* Story Viewer */
-    #storyViewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; }
-    .s-bars { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; gap: 5px; z-index: 100; }
-    .s-bg { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 2px; }
-    .s-fill { height: 100%; background: white; width: 0%; }
-    .s-fill.anim { animation: fill 5s linear forwards; }
-    .s-fill.seen { width: 100%; }
-    @keyframes fill { to{width:100%} }
-    .s-img { width: 100%; height: 100%; object-fit: contain; }
-    .s-close { position: absolute; top: 30px; right: 20px; font-size: 30px; color: white; z-index: 101; cursor: pointer; }
-    .tap-zone { position: absolute; top: 0; height: 100%; width: 40%; z-index: 99; }
+    /* Chat */
+    .chat-msg { padding: 12px 16px; border-radius: 18px; max-width: 80%; margin-bottom: 10px; font-size: 14px; }
+    .me { background: var(--primary); color: #000; align-self: flex-end; border-bottom-right-radius: 4px; }
+    .adm { background: #333; color: #fff; align-self: flex-start; border-bottom-left-radius: 4px; }
 
-    #toastBox { position: fixed; top: 20px; left: 20px; right: 20px; z-index: 10000; pointer-events: none; }
-    .toast { background: rgba(30,30,30,0.95); color: white; padding: 15px; border-radius: 12px; border-left: 4px solid var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: fadeIn 0.3s; font-weight: 600; margin-bottom: 10px; }
     .hidden { display: none !important; }
     .strike { text-decoration: line-through; color: #666; font-size: 13px; margin-right: 5px; }
-    .fav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .fav-box { background: rgba(255,255,255,0.05); padding: 8px; border-radius: 12px; text-align: center; position: relative; }
-    .fav-box img { width: 100%; height: 60px; object-fit: cover; border-radius: 8px; margin-bottom: 5px; }
-    .fav-x { position: absolute; top: -5px; right: -5px; background: var(--red); color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
-</style>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-<script>
-    const BOT_USER="Cafe888adminbot", SHEET_ID="1j6VojbeSYWgYj3UY98xCxHLCzHcGlEg0nXjYwHDkKQk", ADS_ID="1ENQ4bnzBxj7x5jmrXUwdDZhmEMQ7umPTPwq2bgXfj3k";
-    firebase.initializeApp({apiKey:"AIzaSyCVSfWRZ77PFFxip93NcD5QZ9Fc0gMUyW8",authDomain:"cafe888-c2d7d.firebaseapp.com",databaseURL:"https://cafe888-c2d7d-default-rtdb.firebaseio.com",projectId:"cafe888-c2d7d",storageBucket:"cafe888-c2d7d.firebasestorage.app",messagingSenderId:"286769489924",appId:"1:286769489924:web:f778a8d15d46abaf1b2d51"});
-    const db=firebase.database();
     
-    let products=[], cart={}, user=null, loc=null, favs={}, stories=[], stIdx=0, stTimer, shopLoc=null, activePromo=null;
-    let tempPmId=null, tempPmQty=1, map=null, carMarker=null;
+    /* Toast */
+    #toastBox { position: fixed; top: 20px; left: 20px; right: 20px; z-index: 10000; pointer-events: none; display: flex; flex-direction: column; gap: 10px; }
+    .toast { background: rgba(30,30,30,0.95); color: white; padding: 15px; border-radius: 12px; border-left: 4px solid var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: fadeIn 0.3s; font-weight: 600; }
+</style>
+</head>
+<body>
 
-    window.onload=()=>{
-        if(localStorage.getItem('theme')==='light')document.body.classList.add('light-mode');
-        const uid=localStorage.getItem('cafe_uid');
-        if(uid)checkAuth(uid); else {document.getElementById('loginModal').style.display='flex';}
-        loadData(); loadStories();
-        db.ref('info/location').on('value',s=>shopLoc=s.val());
-    };
+    <div id="storyViewer">
+        <div class="s-bars" id="storyBars"></div>
+        <div class="s-close tap" onclick="closeStory()">✕</div>
+        <img id="storyImg" class="s-img" src="">
+        <div class="s-left" onclick="prevStory()"></div>
+        <div class="s-right" onclick="nextStory()"></div>
+    </div>
 
-    function doLogin(){
-        const t='req_'+Date.now();
-        window.open(`https://t.me/${BOT_USER}?start=login_${t}`, '_blank');
-        db.ref('auth_tokens/'+t).on('value', s=>{
-            if(s.val()){
-                user=s.val(); localStorage.setItem('cafe_uid',user.phone.replace('+',''));
-                db.ref('auth_tokens/'+t).remove();
-                document.getElementById('loginModal').style.display='none';
-                initApp();
-            }
+    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+    <div class="drawer-panel" id="drawerPanel">
+        <div class="d-header">
+            <h2>CAFE 888</h2>
+            <p>Premium Service</p>
+        </div>
+        <div class="d-item tap" onclick="toggleTheme()"><i class="fa fa-moon"></i> <span id="themeTxt">Tungi rejim</span></div>
+        <div class="d-item tap" onclick="openModal('contactModal'); toggleDrawer()"><i class="fa fa-headset"></i> Bog'lanish</div>
+        <div class="d-item tap" onclick="location.reload()"><i class="fa fa-sync"></i> Yangilash</div>
+        <div class="d-item tap" style="margin-top:auto; color:var(--danger); border-color:rgba(239,68,68,0.2);" onclick="logout()"><i class="fa fa-sign-out-alt"></i> Chiqish</div>
+    </div>
+
+    <header class="header">
+        <div class="tap" onclick="toggleDrawer()"><i class="fa fa-bars" style="font-size:24px; color:var(--text-main)"></i></div>
+        <div class="logo">CAFE <span>888</span></div>
+        <div class="chat-icon-wrap tap" onclick="openModal('chatModal')">
+            <i class="fa fa-comment-dots" style="font-size:24px; color:var(--text-main)"></i>
+            <div id="chatBadge" class="msg-badge"></div>
+        </div>
+    </header>
+
+    <div id="p-menu" class="page-cont active" style="padding-top:65px;">
+        <div id="storiesContainer" class="stories-wrap"></div>
+        <div id="catNav" class="cat-bar"></div>
+        <div id="menuGrid" class="grid"></div>
+    </div>
+
+    <div id="p-cart" class="page-cont" style="padding-top:80px;">
+        <h2 style="padding:0 20px; margin-bottom:20px;">Savat</h2>
+        <div id="cartList" style="padding:0 20px;"></div>
+        
+        <div style="padding:20px 20px 120px;">
+            <div style="background:var(--bg-card); padding:15px; border-radius:18px; margin-bottom:20px; display:flex; gap:10px;">
+                <input type="text" id="promoInp" placeholder="Promokod" style="flex:1; background:transparent; border:none; color:var(--text-main); text-transform:uppercase;">
+                <button class="tap" onclick="checkPromo()" style="background:var(--primary); border:none; padding:0 20px; border-radius:12px; font-weight:bold;">OK</button>
+            </div>
+            <div id="promoMsg" style="font-size:13px; margin-bottom:20px;"></div>
+
+            <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:900; margin-bottom:20px;">
+                <span>Jami:</span> <span id="cartTotal" style="color:var(--primary);">0 so'm</span>
+            </div>
+            
+            <button id="gpsBtn" class="btn-gps tap" onclick="getGPS()"><i class="fa fa-map-marker-alt"></i> Manzilni aniqlash</button>
+            <button id="orderBtn" class="btn-main tap" onclick="sendOrder()" style="opacity:0.5; pointer-events:none;">BUYURTMA BERISH</button>
+        </div>
+    </div>
+
+    <div id="p-history" class="page-cont" style="padding-top:80px;">
+        <h2 style="padding:0 20px;">Buyurtmalar tarixi</h2>
+        <div id="histList" style="padding:0 20px 120px;"></div>
+    </div>
+
+    <div id="p-profile" class="page-cont" style="padding-top:0;">
+        <div class="prof-head">
+            <div class="avatar"><i class="fa fa-user"></i></div>
+            <h2 id="uName">Mijoz</h2>
+            <p id="uPhone" style="color:var(--text-muted)">+998...</p>
+        </div>
+        <div class="prof-menu">
+            <div class="prof-btn tap" onclick="openFavs()">
+                <span><i class="fa fa-heart" style="color:var(--danger); margin-right:10px;"></i> Sevimlilar</span> <i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="prof-btn tap" onclick="openModal('chatModal')">
+                <span><i class="fa fa-envelope" style="color:var(--blue); margin-right:10px;"></i> Admin Chat</span> <i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="prof-btn tap" onclick="openNews()">
+                <span><i class="fa fa-bullhorn" style="color:var(--primary); margin-right:10px;"></i> Yangiliklar</span> <i class="fa fa-chevron-right"></i>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-btn active" onclick="nav('menu', this)"><i class="fa fa-utensils"></i>Menyu</div>
+        <div class="nav-btn" onclick="nav('cart', this)"><i class="fa fa-shopping-basket"></i>Savat</div>
+        <div class="nav-btn" onclick="nav('history', this)"><i class="fa fa-clock"></i>Tarix</div>
+        <div class="nav-btn" onclick="nav('profile', this)"><i class="fa fa-user"></i>Profil</div>
+    </nav>
+
+    <div id="loginModal" class="modal-wrap">
+        <div class="modal-box" style="text-align:center; background:var(--bg-body);">
+            <div class="tg-icon"><i class="fab fa-telegram-plane"></i></div>
+            <h2>Xush kelibsiz</h2>
+            <p style="color:var(--text-muted); margin-bottom:30px;">Davom etish uchun Telegram orqali kiring</p>
+            <div id="loadSpinner" class="hidden" style="color:var(--primary); margin-bottom:15px;">Tasdiqlash kutilmoqda...</div>
+            <button id="tgBtn" class="btn-main tap" style="background:var(--blue); color:white; width:100%;" onclick="doLogin()">KIRISH</button>
+        </div>
+    </div>
+
+    <div id="prodModal" class="modal-wrap">
+        <div class="sheet">
+            <div class="sheet-close tap" onclick="closeModal('prodModal')">✕</div>
+            <img id="pmImg" src="" style="width:100%; height:250px; object-fit:contain; margin-bottom:20px;">
+            <h2 id="pmName" style="margin-bottom:5px;"></h2>
+            <h3 id="pmPrice" style="color:var(--primary); margin-bottom:15px;"></h3>
+            <p id="pmDesc" style="color:var(--text-muted); line-height:1.5; margin-bottom:30px;"></p>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:15px; background:rgba(255,255,255,0.05); padding:10px 20px; border-radius:15px;">
+                    <span onclick="pmQ(-1)" style="font-size:24px; font-weight:bold; cursor:pointer;">-</span>
+                    <b id="pmQty" style="font-size:18px;">1</b>
+                    <span onclick="pmQ(1)" style="font-size:24px; font-weight:bold; cursor:pointer;">+</span>
+                </div>
+                <button class="btn-main" style="width:auto; margin:0; padding:15px 40px;" onclick="addFromModal()">Savatga</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="favModal" class="modal-wrap">
+        <div class="sheet">
+            <div class="sheet-close" onclick="closeModal('favModal')">✕</div>
+            <h3 style="margin-bottom:20px;">Sevimlilar ❤️</h3>
+            <div id="favList" class="fav-grid"></div>
+        </div>
+    </div>
+
+    <div id="chatModal" class="modal-wrap">
+        <div class="sheet" style="height:80vh;">
+            <div class="sheet-close" onclick="closeModal('chatModal')">✕</div>
+            <h3 style="margin-bottom:15px;">Admin Chat</h3>
+            <div id="chatBox" style="flex:1; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:20px; padding:15px; margin-bottom:15px; min-height:300px;"></div>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="chatInp" placeholder="Xabar..." style="flex:1; background:rgba(255,255,255,0.1); border:none; padding:15px; border-radius:15px; color:white;">
+                <button onclick="sendChat()" class="tap" style="background:var(--primary); border:none; width:50px; border-radius:15px;"><i class="fa fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="mapModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#fff; z-index:9000; display:none;">
+        <button onclick="document.getElementById('mapModal').style.display='none'" style="position:absolute; top:40px; left:20px; z-index:9001; padding:12px 25px; border-radius:30px; border:none; background:white; font-weight:bold; box-shadow:0 5px 20px rgba(0,0,0,0.2);">⬅️ Orqaga</button>
+        <div id="map" style="width:100%; height:100%;"></div>
+    </div>
+
+    <div id="newsModal" class="modal-wrap" onclick="if(event.target==this)closeModal('newsModal')"><div class="sheet"><h3 style="color:var(--primary)">Yangiliklar</h3><div id="newsContent" style="margin-top:15px; max-height:300px; overflow-y:auto;"></div></div></div>
+    <div id="contactModal" class="modal-wrap" onclick="if(event.target==this)closeModal('contactModal')"><div class="sheet"><h3 style="color:var(--primary)">Aloqa</h3><div class="d-item" onclick="copy('+998939782926')">+998 93 978 29 26</div><button class="btn-main" onclick="window.location.href='https://t.me/Azikking'">Telegram Admin</button></div></div>
+    
+    <div id="toastBox"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // CONFIG
+        const BOT_USER = "Cafe888adminbot"; 
+        const SHEET_ID = "1j6VojbeSYWgYj3UY98xCxHLCzHcGlEg0nXjYwHDkKQk";
+        const ADS_ID = "1ENQ4bnzBxj7x5jmrXUwdDZhmEMQ7umPTPwq2bgXfj3k";
+        
+        firebase.initializeApp({
+            apiKey: "AIzaSyCVSfWRZ77PFFxip93NcD5QZ9Fc0gMUyW8",
+            authDomain: "cafe888-c2d7d.firebaseapp.com",
+            databaseURL: "https://cafe888-c2d7d-default-rtdb.firebaseio.com",
+            projectId: "cafe888-c2d7d",
+            storageBucket: "cafe888-c2d7d.firebasestorage.app",
+            messagingSenderId: "286769489924",
+            appId: "1:286769489924:web:f778a8d15d46abaf1b2d51"
         });
-    }
-    function checkAuth(uid){ db.ref('users/'+uid).on('value',s=>{ if(s.val()){ user=s.val(); document.getElementById('loginModal').style.display='none'; initApp(); } else document.getElementById('loginModal').style.display='flex'; }); }
-    function initApp(){ document.getElementById('userName').innerText=user.name; document.getElementById('userPhone').innerText=user.phone; favs=user.favorites||{}; loadHistory(); loadChat(); }
+        const db = firebase.database();
 
-    function loadData(){
-        fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`).then(r=>r.text()).then(t=>{
-            const j=JSON.parse(t.substr(47).slice(0,-2));
-            products=j.table.rows.map(r=>({id:r.c[0]?.v, cat:r.c[1]?.v||"Boshqa", name:r.c[2]?.v, price:r.c[3]?.v||0, img:r.c[4]?.v, desc:r.c[5]?.v||""}));
-            renderCats(); renderGrid('Barchasi');
-        });
-    }
-    function loadStories(){
-        fetch(`https://docs.google.com/spreadsheets/d/${ADS_ID}/gviz/tq?tqx=out:json`).then(r=>r.text()).then(t=>{
-            const j=JSON.parse(t.substr(47).slice(0,-2));
-            stories=j.table.rows.map(r=>r.c[0]?.v).filter(u=>u);
-            document.getElementById('storiesBox').innerHTML = stories.map((u,i)=>`<div class="story-c tap" onclick="openStory(${i})"><img src="${u}"></div>`).join('');
-        });
-    }
+        let products=[], cart={}, user=null, loc=null, favs={}, stories=[], stIdx=0, stTimer, shopLoc=null, activePromo=null;
+        let tempPmId=null, tempPmQty=1;
+        let map=null, courierMark=null;
 
-    function openStory(i){ stIdx=i; document.getElementById('storyViewer').style.display='flex'; showStory(); }
-    function showStory(){
-        if(stIdx>=stories.length){closeStory();return;}
-        document.getElementById('storyImg').src=stories[stIdx];
-        document.getElementById('storyBars').innerHTML=stories.map((_,i)=>`<div class="s-bg"><div class="s-fill ${i===stIdx?'anim':(i<stIdx?'seen':'')}"></div></div>`).join('');
-        clearTimeout(stTimer); stTimer=setTimeout(nextStory,5000);
-    }
-    function nextStory(){ stIdx++; showStory(); } function prevStory(){ if(stIdx>0)stIdx--; showStory(); } function closeStory(){ clearTimeout(stTimer); document.getElementById('storyViewer').style.display='none'; }
+        window.onload = () => {
+            if(localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+            const uid = localStorage.getItem('cafe_uid');
+            if(uid) checkAuth(uid); else document.getElementById('loginModal').style.display = 'flex';
+            
+            loadData(); loadStories();
+            db.ref('info/location').on('value', s => shopLoc=s.val());
+        };
 
-    function renderCats(){ const c=['Barchasi',...new Set(products.map(p=>p.cat))]; document.getElementById('categoryList').innerHTML=c.map(k=>`<div class="cat-pill tap ${k=='Barchasi'?'active':''}" onclick="filt('${k}',this)">${k}</div>`).join(''); }
-    function filt(c,el){ document.querySelectorAll('.cat-pill').forEach(x=>x.classList.remove('active')); el.classList.add('active'); renderGrid(c); }
-    function renderGrid(c){
-        const l=c=='Barchasi'?products:products.filter(p=>p.cat==c);
-        document.getElementById('productGrid').innerHTML=l.map(p=>{
-            const q=cart[p.id]||0;
-            const btn = q>0 ? `<div class="qty-mini tap" onclick="event.stopPropagation()"><div class="qm-btn" onclick="updCart(${p.id},-1)">-</div><b>${q}</b><div class="qm-btn" onclick="updCart(${p.id},1)">+</div></div>` : `<div class="btn-plus tap" onclick="updCart(${p.id},1);event.stopPropagation()">+</div>`;
-            return `<div class="card tap" onclick="openProd(${p.id})">
-                <div class="card-img-box"><img src="${p.img}"><div class="fav-btn-card ${favs[p.id]?'active':''}" onclick="togFav(${p.id});event.stopPropagation()"><i class="fa fa-heart"></i></div></div>
-                <div class="card-body"><div class="card-title">${p.name}</div><div class="card-foot"><div class="card-price">${p.price.toLocaleString()} so'm</div>${btn}</div></div>
-            </div>`;
-        }).join('');
-    }
-
-    function updCart(id,n){ cart[id]=(cart[id]||0)+n; if(cart[id]<=0)delete cart[id]; renderGrid(document.querySelector('.cat-pill.active').innerText); renderCart(); }
-    function renderCart(){
-        let t=0, h='';
-        const k=Object.keys(cart);
-        document.getElementById('cartBadge').innerText=k.length; document.getElementById('cartBadge').classList.toggle('hidden',k.length===0);
-        for(let id in cart){
-            const p=products.find(x=>x.id==id); t+=p.price*cart[id];
-            h+=`<div class="cart-item"><img src="${p.img}" class="cart-img"><div class="cart-det"><h4>${p.name}</h4><p>${p.price.toLocaleString()} so'm</p></div><div class="cart-capsule"><div class="cc-btn tap" onclick="updCart(${p.id},-1)">-</div><div class="cc-num">${cart[id]}</div><div class="cc-btn tap" onclick="updCart(${p.id},1)">+</div></div></div>`;
+        // --- AUTH ---
+        function doLogin() {
+            const token = 'req_' + Date.now();
+            document.getElementById('tgBtn').style.display='none';
+            document.getElementById('loadSpinner').classList.remove('hidden');
+            window.open(`https://t.me/${BOT_USER}?start=login_${token}`, '_blank');
+            
+            const ref = db.ref('auth_tokens/'+token);
+            ref.on('value', s => {
+                if(s.val()) {
+                    user = s.val();
+                    localStorage.setItem('cafe_uid', user.phone.replace('+',''));
+                    ref.remove();
+                    document.getElementById('loginModal').style.display='none';
+                    initApp();
+                }
+            });
         }
-        let disp=t.toLocaleString()+" so'm";
-        if(activePromo) disp=`<span class="strike">${t.toLocaleString()}</span> ${(t-(t*activePromo/100)).toLocaleString()}`;
-        document.getElementById('cartContainer').innerHTML=h||"<div style='text-align:center;padding:30px;color:#666'>Savat bo'sh</div>";
-        document.getElementById('finalPrice').innerHTML=disp;
-        const b=document.getElementById('btnOrder'); if(t>0&&loc){b.style.opacity='1';b.style.pointerEvents='all';}else{b.style.opacity='0.5';b.style.pointerEvents='none';}
-    }
+        function checkAuth(uid) {
+            db.ref('users/'+uid).on('value', s => {
+                if(s.val()) { user=s.val(); document.getElementById('loginModal').style.display='none'; initApp(); }
+                else document.getElementById('loginModal').style.display='flex';
+            });
+        }
+        function initApp() {
+            document.getElementById('uName').innerText = user.name;
+            document.getElementById('uPhone').innerText = user.phone;
+            favs = user.favorites || {};
+            loadHistory(); loadChat();
+        }
 
-    function getGPS(){
-        const b=document.getElementById('btnGps'); b.innerHTML="Aniqlanmoqda...";
-        if(window.Android && window.Android.checkGPS) window.Android.checkGPS();
-        navigator.geolocation.getCurrentPosition(p=>{
-            const lat=p.coords.latitude, lng=p.coords.longitude;
-            if(shopLoc && shopLoc.radius){
-                const d=getDist(lat,lng,shopLoc.lat,shopLoc.long);
-                if(d>shopLoc.radius){ b.innerHTML="❌ Uzoq masofa"; b.className='btn-gps err tap'; loc=null; renderCart(); return; }
+        // --- DATA & UI ---
+        function loadData() {
+            fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`).then(r=>r.text()).then(t=>{
+                const j = JSON.parse(t.substr(47).slice(0,-2));
+                products = j.table.rows.map(r=>({
+                    id:r.c[0]?.v, cat:r.c[1]?.v||"Boshqa", name:r.c[2]?.v, 
+                    price:r.c[3]?.v||0, img:r.c[4]?.v, desc:r.c[5]?.v||""
+                }));
+                renderCats(); renderGrid('Barchasi');
+            });
+        }
+        function renderCats() {
+            const cats = ['Barchasi', ...new Set(products.map(p=>p.cat))];
+            document.getElementById('catNav').innerHTML = cats.map(c=>
+                `<div class="cat-pill tap ${c=='Barchasi'?'active':''}" onclick="filter('${c}',this)">${c}</div>`
+            ).join('');
+        }
+        function filter(c, el) {
+            document.querySelectorAll('.cat-pill').forEach(x=>x.classList.remove('active'));
+            el.classList.add('active'); renderGrid(c);
+        }
+        function renderGrid(c) {
+            const list = c=='Barchasi' ? products : products.filter(p=>p.cat==c);
+            document.getElementById('menuGrid').innerHTML = list.map((p, i) => {
+                const qty = cart[p.id] || 0;
+                const btn = qty > 0 
+                    ? `<div class="qty-wrap tap" onclick="event.stopPropagation()">
+                         <div class="qb" onclick="updCart(${p.id},-1)">-</div>
+                         <div class="qn">${qty}</div>
+                         <div class="qb" onclick="updCart(${p.id},1)">+</div>
+                       </div>`
+                    : `<div class="btn-plus tap" onclick="updCart(${p.id},1);event.stopPropagation()">+</div>`;
+                
+                return `
+                <div class="card tap grid-anim" style="animation-delay:${i*0.05}s" onclick="openProd(${p.id})">
+                    <div class="card-img-wrap"><img src="${p.img}" class="card-img">
+                        <div class="card-fav ${favs[p.id]?'active':''}" onclick="toggleFav(${p.id});event.stopPropagation()">
+                            <i class="fa fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">${p.name}</div>
+                        <div class="card-footer">
+                            <div class="card-price">${p.price.toLocaleString()} so'm</div>
+                            ${btn}
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // --- CART & GPS ---
+        function updCart(id, n) { 
+            cart[id] = (cart[id]||0)+n; if(cart[id]<=0) delete cart[id]; 
+            renderGrid(document.querySelector('.cat-pill.active').innerText); 
+            renderCart(); 
+        }
+        function renderCart() {
+            let t=0, h='';
+            for(let id in cart) {
+                const p = products.find(x=>x.id==id);
+                t += p.price * cart[id];
+                h += `<div class="cart-item">
+                    <img src="${p.img}" class="cart-thumb">
+                    <div class="cart-info">
+                        <div style="font-weight:700;">${p.name}</div>
+                        <div style="color:var(--primary); font-size:13px;">${p.price.toLocaleString()} so'm</div>
+                    </div>
+                    <div class="cart-btns">
+                        <div onclick="updCart(${p.id},-1)" style="font-size:18px; font-weight:bold; cursor:pointer;">-</div>
+                        <b>${cart[id]}</b>
+                        <div onclick="updCart(${p.id},1)" style="font-size:18px; font-weight:bold; cursor:pointer;">+</div>
+                    </div>
+                </div>`;
             }
-            loc={lat,long:lng}; b.innerHTML="✅ Manzil aniqlandi"; b.className='btn-gps ok tap'; renderCart();
-        },()=>{b.innerHTML="❌ GPS Xatosi";},{enableHighAccuracy:true});
-    }
+            let disp = t.toLocaleString() + " so'm";
+            if(activePromo) disp = `<span class="strike">${t.toLocaleString()}</span> ${(t-(t*activePromo/100)).toLocaleString()} so'm`;
+            
+            document.getElementById('cartList').innerHTML = h || "<div style='text-align:center;color:#666;padding:30px;'>Savat bo'sh</div>";
+            document.getElementById('cartTotal').innerHTML = disp;
+            
+            const btn = document.getElementById('orderBtn');
+            if(t>0 && loc) { btn.style.opacity='1'; btn.style.pointerEvents='all'; btn.innerText="BUYURTMA BERISH"; }
+            else { btn.style.opacity='0.5'; btn.style.pointerEvents='none'; }
+        }
 
-    function sendOrder(){
-        const items=[]; let t=0; for(let id in cart){const p=products.find(x=>x.id==id); items.push({name:p.name, qty:cart[id]}); t+=p.price*cart[id];}
-        let f=activePromo?t-(t*activePromo/100):t;
-        db.ref('orders').push({user_id:user.phone, user_info:`${user.name} (${user.phone})`, items, total:f, original_total:t, promo_discount:activePromo||0, location:loc, status:'yangi', time:new Date().toLocaleString()});
-        cart={}; loc=null; activePromo=null; toast("✅ Buyurtma yuborildi"); nav('history',document.querySelectorAll('.nav-btn')[2]);
-        document.getElementById('btnGps').innerHTML=`<i class="fa fa-map-marker-alt"></i> Manzilni aniqlash`; document.getElementById('btnGps').className='btn-gps tap';
-    }
+        function getGPS() {
+            const b = document.getElementById('gpsBtn');
+            b.innerHTML = "<i class='fa fa-circle-notch fa-spin'></i> Aniqlanmoqda...";
+            if(window.Android && window.Android.checkGPS) window.Android.checkGPS();
 
-    function loadChat(){
-        db.ref('messages/'+user.phone.replace('+','')).limitToLast(50).on('child_added', s=>{
-            const m=s.val();
-            if(m.from==='admin' && document.getElementById('chatModal').style.display==='none') document.getElementById('chatBadge').classList.add('active');
-            document.getElementById('chatBox').innerHTML+=`<div style="display:flex;justify-content:${m.from=='user'?'flex-end':'flex-start'}"><div class="msg-bubble ${m.from=='user'?'me':'adm'}">${m.body}</div></div>`;
-            setTimeout(()=>document.getElementById('chatBox').scrollTop=document.getElementById('chatBox').scrollHeight, 100);
-        });
-    }
-    function sendChat(){
-        const t=document.getElementById('chatInp').value; if(!t)return;
-        db.ref('messages/'+user.phone.replace('+','')).push({from:'user', body:t, time:Date.now()});
-        document.getElementById('chatInp').value="";
-    }
+            navigator.geolocation.getCurrentPosition(p => {
+                const lat = p.coords.latitude, lng = p.coords.longitude;
+                if(shopLoc && shopLoc.radius) {
+                    const dist = getDist(lat, lng, shopLoc.lat, shopLoc.long);
+                    if(dist > shopLoc.radius) {
+                        b.innerHTML = "❌ Yetkazib berish hududidan tashqarisiz"; 
+                        b.classList.remove('ok'); b.classList.add('err');
+                        toast(`Faqat ${shopLoc.radius}km ichida ishlaymiz. Siz ${dist.toFixed(1)}km uzoqsiz.`);
+                        loc=null; renderCart(); return;
+                    }
+                }
+                loc = {lat, long:lng};
+                b.innerHTML = "✅ Manzil aniqlandi"; 
+                b.classList.remove('err'); b.classList.add('ok');
+                renderCart();
+            }, () => {
+                b.innerHTML = "❌ GPS Xatosi"; toast("GPS yoqilganligini tekshiring!");
+            }, {enableHighAccuracy:true, timeout:10000});
+        }
 
-    var carIcon=L.icon({iconUrl:'https://cdn-icons-png.flaticon.com/512/3202/3202926.png',iconSize:[40,40],iconAnchor:[20,20]});
-    function track(cid){
-        document.getElementById('mapModal').style.display='block';
-        if(!map){map=L.map('map').setView([41,69],13); L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);}
-        setTimeout(()=>map.invalidateSize(),500);
-        db.ref('couriers/'+cid+'/location').on('value',s=>{
-            const d=s.val(); if(!d)return;
-            if(carMarker) carMarker.setLatLng([d.lat,d.long]); else carMarker=L.marker([d.lat,d.long],{icon:carIcon}).addTo(map);
-            map.panTo([d.lat,d.long]);
-        });
-    }
+        function sendOrder() {
+            const items = []; let t=0;
+            for(let id in cart) { const p=products.find(x=>x.id==id); items.push({name:p.name, qty:cart[id]}); t+=p.price*cart[id]; }
+            let final = activePromo ? t - (t*activePromo/100) : t;
 
-    function openPromoList(){
-        openModal('promoListModal');
-        db.ref('promocodes').once('value',s=>{
-            const d=s.val(); if(!d){document.getElementById('promoListContent').innerHTML="Kod yo'q";return;}
-            let h=""; for(let k in d){if(d[k].limit>0) h+=`<div style="background:rgba(255,255,255,0.05);padding:10px;border-radius:10px;margin-bottom:5px;display:flex;justify-content:space-between;"><b>${k}</b><span style="color:var(--success)">${d[k].discount}%</span></div>`;}
-            document.getElementById('promoListContent').innerHTML=h||"Kod yo'q";
-        });
-    }
+            db.ref('orders').push({
+                user_id: user.phone, user_info: `${user.name} (${user.phone})`,
+                items, total: final, original_total: t, promo_discount: activePromo||0,
+                location: loc, status: 'yangi', time: new Date().toLocaleString()
+            }, (e) => {
+                if(!e) {
+                    cart={}; loc=null; activePromo=null;
+                    toast("✅ Buyurtma yuborildi!");
+                    nav('history', document.querySelectorAll('.nav-btn')[2]);
+                    document.getElementById('gpsBtn').innerHTML = `<i class="fa fa-map-marker-alt"></i> Manzilni aniqlash`;
+                    document.getElementById('gpsBtn').className = "btn-gps";
+                }
+            });
+        }
 
-    function nav(p,el){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById('page-'+p).classList.add('active');document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));el.classList.add('active');if(p=='cart')renderCart();}
-    function openModal(id){document.getElementById(id).style.display='flex'; if(id=='chatModal')document.getElementById('chatBadge').classList.remove('active');}
-    function closeModal(id){document.getElementById(id).style.display='none';}
-    function toggleDrawer(){document.getElementById('drawerPanel').classList.toggle('active');document.getElementById('drawerOverlay').classList.toggle('active');}
-    function toast(m){const d=document.createElement('div');d.className='toast';d.innerText=m;document.getElementById('toastBox').appendChild(d);setTimeout(()=>d.remove(),3000);}
-    function openProd(id){const p=products.find(x=>x.id==id);tempPmId=id;tempPmQty=1;document.getElementById('pmImg').src=p.img;document.getElementById('pmName').innerText=p.name;document.getElementById('pmPrice').innerText=p.price.toLocaleString()+" so'm";document.getElementById('pmDesc').innerText=p.desc;document.getElementById('pmQty').innerText="1";openModal('prodModal');}
-    function pmQ(n){tempPmQty+=n;if(tempPmQty<1)tempPmQty=1;document.getElementById('pmQty').innerText=tempPmQty;}
-    function addFromModal(){updCart(tempPmId,tempPmQty);closeModal('prodModal');}
-    function togFav(id){if(favs[id])delete favs[id];else favs[id]=true;db.ref('users/'+user.phone.replace('+','')+'/favorites').set(favs);renderGrid(document.querySelector('.cat-pill.active').innerText);}
-    function openFavs(){const l=products.filter(p=>favs[p.id]);document.getElementById('favList').innerHTML=l.map(p=>`<div class="fav-box"><div class="fav-del" onclick="togFav(${p.id});openFavs()">✕</div><img src="${p.img}"><div style="font-size:11px;">${p.name}</div><button style="width:100%;margin-top:5px;background:var(--gold);border:none;border-radius:6px;" onclick="updCart(${p.id},1);closeModal('favModal')">+</button></div>`).join('')||"Bo'sh";openModal('favModal');}
-    function checkPromo(){const c=document.getElementById('promoInput').value.toUpperCase();db.ref('promocodes/'+c).once('value',s=>{if(s.val()&&s.val().limit>0){activePromo=s.val().discount;document.getElementById('promoMsg').innerHTML=`<b style="color:var(--success)">✅ ${activePromo}% Chegirma!</b>`;renderCart();}else{document.getElementById('promoMsg').innerHTML=`<b style="color:var(--red)">❌ Xato kod</b>`;}});}
-    function loadHistory(){db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value',s=>{const d=s.val();if(!d)return;document.getElementById('histList').innerHTML=Object.values(d).reverse().map(o=>{let st=o.status,cls='s-new',txt='YANGI';if(st=='kuryerda'){cls='s-deliv';txt='KURYERDA';}if(st=='yetkazildi'){cls='s-done';txt='YETKAZILDI';}if(st=='tayyorlanmoqda'){cls='s-cook';txt='TAYYORLANMOQDA';}let trk=(st=='kuryerda'&&o.courier_id)?`<button class="track-btn" onclick="track('${o.courier_id}')">Kuryerni Kuzatish</button>`:'';return `<div class="hist-card ${cls}"><div class="h-head"><span>${o.time}</span><span class="st-badge">${txt}</span></div><div style="font-size:14px;margin-bottom:10px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div><div style="font-size:18px;font-weight:bold;">${parseInt(o.total).toLocaleString()} so'm</div>${trk}</div>`;}).join('');});}
-    function getDist(lat1,lon1,lat2,lon2){var R=6371;var dLat=(lat2-lat1)*Math.PI/180;var dLon=(lon2-lon1)*Math.PI/180;var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);var c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));return R*c;}
-    function logout(){localStorage.removeItem('cafe_uid');location.reload();}
-    function copy(t){navigator.clipboard.writeText(t);toast("Nusxalandi");}
-    function toggleTheme(){document.body.classList.toggle('light-mode');localStorage.setItem('theme',document.body.classList.contains('light-mode')?'light':'dark');}
-    function openNews(){db.ref('news').limitToLast(10).once('value',s=>{document.getElementById('newsContent').innerHTML=Object.values(s.val()||{}).reverse().map(n=>`<div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:15px;margin-bottom:10px;"><div style="font-weight:700;margin-bottom:5px;">${n.text}</div><div style="font-size:11px;color:gray;">${n.date}</div></div>`).join('')||"Yo'q";openModal('newsModal');});}
-</script>
+        // --- CHAT & BADGE ---
+        function loadChat() {
+            db.ref('messages/'+user.phone.replace('+','')).limitToLast(50).on('child_added', s=>{
+                const m=s.val();
+                if(m.from === 'admin' && !document.getElementById('chatModal').style.display.includes('flex')) {
+                    document.getElementById('chatBadge').classList.add('show');
+                }
+                document.getElementById('chatBox').innerHTML += `<div style="display:flex; justify-content:${m.from=='user'?'flex-end':'flex-start'}"><div class="chat-msg ${m.from=='user'?'me':'adm'}">${m.body}</div></div>`;
+                document.getElementById('chatBox').scrollTop = 99999;
+            });
+        }
+        function sendChat() {
+            const t=document.getElementById('chatInp').value; if(!t)return;
+            db.ref('messages/'+user.phone.replace('+','')).push({from:'user', body:t, time:Date.now()});
+            document.getElementById('chatInp').value="";
+        }
+
+        // --- STORIES ---
+        function loadStories() {
+            fetch(`https://docs.google.com/spreadsheets/d/${ADS_ID}/gviz/tq?tqx=out:json`).then(r=>r.text()).then(t=>{
+                const j = JSON.parse(t.substr(47).slice(0,-2));
+                stories = j.table.rows.map(r=>r.c[0]?.v).filter(u=>u);
+                document.getElementById('storiesContainer').innerHTML = stories.map((u,i)=>`
+                    <div class="story-c tap" onclick="openStory(${i})"><img src="${u}"></div>
+                `).join('');
+            });
+        }
+        function openStory(i) { stIdx=i; document.getElementById('storyViewer').style.display='flex'; showStory(); }
+        function showStory() {
+            if(stIdx >= stories.length) { closeStory(); return; }
+            document.getElementById('storyImg').src = stories[stIdx];
+            document.getElementById('storyBars').innerHTML = stories.map((_, i)=>`
+                <div class="s-bg"><div class="s-fill ${i===stIdx?'anim':(i<stIdx?'full':'')}"></div></div>
+            `).join('');
+            clearTimeout(stTimer); stTimer = setTimeout(nextStory, 5000);
+        }
+        function nextStory() { stIdx++; showStory(); }
+        function prevStory() { if(stIdx>0) stIdx--; showStory(); }
+        function closeStory() { clearTimeout(stTimer); document.getElementById('storyViewer').style.display='none'; }
+
+        // --- HISTORY ---
+        function loadHistory() {
+            db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value', s => {
+                const d = s.val(); if(!d) return;
+                document.getElementById('histList').innerHTML = Object.values(d).reverse().map(o => {
+                    let st=o.status, cls='s-new', txt='YANGI';
+                    if(st=='kuryerda'){cls='s-deliv'; txt='KURYERDA';}
+                    if(st=='yetkazildi'){cls='s-done'; txt='YETKAZILDI';}
+                    if(st=='tayyorlanmoqda'){cls='s-cook'; txt='TAYYORLANMOQDA';}
+                    
+                    let trk = (st=='kuryerda'&&o.courier_id) ? `<button class="track-btn" onclick="track('${o.courier_id}')">Kuryerni Kuzatish</button>` : '';
+                    
+                    return `<div class="hist-card ${cls}">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                            <span style="font-size:12px; color:gray;">${o.time}</span>
+                            <span class="st-pill">${txt}</span>
+                        </div>
+                        <div style="font-size:14px; margin-bottom:10px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div>
+                        <div style="font-size:18px; font-weight:800;">${parseInt(o.total).toLocaleString()} so'm</div>
+                        ${trk}
+                    </div>`;
+                }).join('');
+            });
+        }
+        function track(cid) {
+            document.getElementById('mapModal').style.display='block';
+            if(!map) { map = L.map('map').setView([41, 69], 13); L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map); }
+            setTimeout(()=>map.invalidateSize(), 500);
+            db.ref('couriers/'+cid+'/location').on('value', s=>{
+                const d=s.val(); if(!d) return;
+                if(courierMark) courierMark.setLatLng([d.lat, d.long]); else courierMark = L.marker([d.lat, d.long]).addTo(map);
+                map.panTo([d.lat, d.long]);
+            });
+        }
+
+        // --- UTILS ---
+        function getDist(lat1, lon1, lat2, lon2) {
+            var R = 6371; var dLat = (lat2-lat1)*Math.PI/180; var dLon = (lon2-lon1)*Math.PI/180;
+            var a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)*Math.sin(dLon/2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return R * c;
+        }
+        function nav(p, el) {
+            document.querySelectorAll('.page-cont').forEach(x=>x.classList.remove('active'));
+            document.getElementById('p-'+p).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+            el.classList.add('active');
+            if(p=='cart') renderCart();
+        }
+        function openProd(id) {
+            const p=products.find(x=>x.id==id); tempPmId=id; tempPmQty=1;
+            document.getElementById('pmImg').src=p.img; document.getElementById('pmName').innerText=p.name;
+            document.getElementById('pmPrice').innerText=p.price.toLocaleString()+" so'm";
+            document.getElementById('pmDesc').innerText=p.desc; document.getElementById('pmQty').innerText="1";
+            openModal('prodModal');
+        }
+        function pmQ(n){tempPmQty+=n; if(tempPmQty<1)tempPmQty=1; document.getElementById('pmQty').innerText=tempPmQty;}
+        function addFromModal(){ updCart(tempPmId, tempPmQty); closeModal('prodModal'); }
+        function openFavs() {
+            const list = products.filter(p=>favs[p.id]);
+            document.getElementById('favList').innerHTML = list.map(p=>`
+                <div class="fav-box">
+                    <div class="fav-del" onclick="toggleFav(${p.id}); openFavs()">✕</div>
+                    <img src="${p.img}"><div style="font-size:11px;">${p.name}</div>
+                    <button style="width:100%; margin-top:5px; background:var(--primary); border:none; border-radius:6px;" onclick="updCart(${p.id},1); closeModal('favModal')">+</button>
+                </div>
+            `).join('') || "Bo'sh";
+            openModal('favModal');
+        }
+        function toggleFav(id) {
+            if(favs[id]) delete favs[id]; else favs[id]=true;
+            db.ref('users/'+user.phone.replace('+','')+'/favorites').set(favs);
+            renderGrid(document.querySelector('.cat-pill.active').innerText);
+        }
+        function checkPromo(){
+            const c=document.getElementById('promoInp').value.toUpperCase();
+            db.ref('promocodes/'+c).once('value', s=>{
+                if(s.val() && s.val().limit>0) { activePromo=s.val().discount; document.getElementById('promoMsg').innerHTML=`<b style="color:var(--success)">✅ ${activePromo}% Chegirma!</b>`; renderCart(); }
+                else document.getElementById('promoMsg').innerHTML=`<b style="color:var(--danger)">❌ Xato kod</b>`;
+            });
+        }
+        function openNews() {
+            db.ref('news').limitToLast(10).once('value', s=>{
+                const d = s.val();
+                document.getElementById('newsContent').innerHTML = d ? Object.values(d).reverse().map(n=>`
+                    <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-bottom:10px;">
+                        <div style="font-weight:700; margin-bottom:5px;">${n.text}</div>
+                        <div style="font-size:11px; color:gray;">${n.date}</div>
+                    </div>`).join('') : "Yangilik yo'q";
+                openModal('newsModal');
+            });
+        }
+        function openModal(id) { document.getElementById(id).style.display='flex'; if(id=='chatModal') document.getElementById('chatBadge').classList.remove('show'); }
+        function closeModal(id) { document.getElementById(id).style.display='none'; }
+        function toggleDrawer() { document.getElementById('drawerPanel').classList.toggle('active'); document.getElementById('drawerOverlay').classList.toggle('active'); }
+        function toast(m) { const d=document.createElement('div'); d.className='toast'; d.innerText=m; document.getElementById('toastBox').appendChild(d); setTimeout(()=>d.remove(),3000); }
+        function logout() { localStorage.removeItem('cafe_uid'); location.reload(); }
+        function copy(t) { navigator.clipboard.writeText(t); toast("Nusxalandi"); }
+        function toggleTheme() { document.body.classList.toggle('light-mode'); document.getElementById('themeTxt').innerText=document.body.classList.contains('light-mode')?"Kunduzgi rejim":"Tungi rejim"; localStorage.setItem('theme', document.body.classList.contains('light-mode')?'light':'dark'); }
+    </script>
 </body>
 </html>
