@@ -54,8 +54,8 @@ function renderGrid(c){
         const q=cart[p.id]||0;
         const btn = q>0 ? `<div class="qty-mini tap" onclick="event.stopPropagation()"><div class="qm-btn" onclick="updCart(${p.id},-1)">-</div><b>${q}</b><div class="qm-btn" onclick="updCart(${p.id},1)">+</div></div>` : `<div class="btn-mini-add tap" onclick="updCart(${p.id},1);event.stopPropagation()">+</div>`;
         return `<div class="card tap" onclick="openProd(${p.id})">
-            <div class="card-img-wrap"><img src="${p.img}"><div class="fav-btn-abs ${favs[p.id]?'active':''}" onclick="togFav(${p.id});event.stopPropagation()"><i class="fa fa-heart"></i></div></div>
-            <div class="card-body"><div class="card-title">${p.name}</div><div class="card-footer"><div class="card-price">${p.price.toLocaleString()} so'm</div>${btn}</div></div>
+            <div class="card-img-wrap"><img src="${p.img}"><div class="fav-abs ${favs[p.id]?'active':''}" onclick="togFav(${p.id});event.stopPropagation()"><i class="fa fa-heart"></i></div></div>
+            <div class="card-body"><div class="card-title">${p.name}</div><div class="card-foot"><div class="card-price">${p.price.toLocaleString()} so'm</div>${btn}</div></div>
         </div>`;
     }).join('');
 }
@@ -65,7 +65,8 @@ function renderCart(){
     let t=0, h='';
     for(let id in cart){
         const p=products.find(x=>x.id==id); t+=p.price*cart[id];
-        h+=`<div class="cart-item"><img src="${p.img}" class="cart-img"><div class="cart-info"><h4>${p.name}</h4><p>${p.price.toLocaleString()} so'm</p></div><div class="cart-qty-pill"><div class="c-btn tap" onclick="updCart(${p.id},-1)">-</div><div class="c-num">${cart[id]}</div><div class="c-btn tap" onclick="updCart(${p.id},1)">+</div></div></div>`;
+        h+=`<div class="cart-item"><img src="${p.img}" class="cart-img"><div class="cart-info"><h4>${p.name}</h4><p>${p.price.toLocaleString()} so'm</p></div>
+        <div class="cart-qty-pill"><div class="c-btn tap" onclick="updCart(${p.id},-1)">-</div><div class="c-num">${cart[id]}</div><div class="c-btn tap" onclick="updCart(${p.id},1)">+</div></div></div>`;
     }
     let disp=t.toLocaleString()+" so'm";
     if(activePromo) disp = `<span class="strike">${t.toLocaleString()}</span> ${(t-(t*activePromo/100)).toLocaleString()} so'm`;
@@ -99,7 +100,7 @@ function loadChat(){
     db.ref('messages/'+user.phone.replace('+','')).limitToLast(50).on('child_added', s=>{
         const m=s.val();
         if(m.from==='admin' && document.getElementById('chatModal').style.display==='none') document.getElementById('chatBadge').classList.add('active');
-        document.getElementById('chatBox').innerHTML+=`<div style="display:flex;justify-content:${m.from=='user'?'flex-end':'flex-start'}"><div class="chat-msg ${m.from=='user'?'me':'adm'}">${m.body}</div></div>`;
+        document.getElementById('chatBox').innerHTML+=`<div style="display:flex;justify-content:${m.from=='user'?'flex-end':'flex-start'}"><div class="chat-bubble ${m.from=='user'?'me':'adm'}">${m.body}</div></div>`;
         setTimeout(()=>document.getElementById('chatBox').scrollTop=document.getElementById('chatBox').scrollHeight, 100);
     });
 }
@@ -111,7 +112,7 @@ function sendChat(){
 
 var carIcon=L.icon({iconUrl:'https://cdn-icons-png.flaticon.com/512/3202/3202926.png',iconSize:[40,40],iconAnchor:[20,20]});
 function track(cid){
-    document.getElementById('mapModal').style.display='flex';
+    document.getElementById('mapModal').style.display='block';
     if(!map){map=L.map('map').setView([41,69],13); L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);}
     setTimeout(()=>map.invalidateSize(),500);
     db.ref('couriers/'+cid+'/location').on('value',s=>{
@@ -133,18 +134,17 @@ function openPromoList(){
 function nav(p,el){document.querySelectorAll('.page-cont').forEach(x=>x.classList.remove('active'));document.getElementById('p-'+p).classList.add('active');document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));el.classList.add('active');if(p=='cart')renderCart();}
 function openModal(id){document.getElementById(id).style.display='flex'; if(id=='chatModal')document.getElementById('chatBadge').classList.remove('active');}
 function closeModal(id){document.getElementById(id).style.display='none';}
-function toggleDrawer(){const d=document.getElementById('drawerPanel'); const o=document.getElementById('drawerOverlay'); d.classList.toggle('active'); o.classList.toggle('active');}
+function toggleDrawer(){document.getElementById('drawerPanel').classList.toggle('active');document.getElementById('drawerOverlay').classList.toggle('active');}
 function toast(m){const d=document.createElement('div');d.className='toast';d.innerText=m;document.getElementById('toastBox').appendChild(d);setTimeout(()=>d.remove(),3000);}
 function openProd(id){const p=products.find(x=>x.id==id);tempPmId=id;tempPmQty=1;document.getElementById('pmImg').src=p.img;document.getElementById('pmName').innerText=p.name;document.getElementById('pmPrice').innerText=p.price.toLocaleString()+" so'm";document.getElementById('pmDesc').innerText=p.desc;document.getElementById('pmQty').innerText="1";openModal('prodModal');}
 function pmQ(n){tempPmQty+=n;if(tempPmQty<1)tempPmQty=1;document.getElementById('pmQty').innerText=tempPmQty;}
 function addFromModal(){updCart(tempPmId,tempPmQty);closeModal('prodModal');}
 function togFav(id){if(favs[id])delete favs[id];else favs[id]=true;db.ref('users/'+user.phone.replace('+','')+'/favorites').set(favs);renderGrid(document.querySelector('.cat-pill.active').innerText);}
 function openFavs(){const l=products.filter(p=>favs[p.id]);document.getElementById('favList').innerHTML=l.map(p=>`<div class="fav-item"><div class="fav-x" onclick="togFav(${p.id});openFavs()">✕</div><img src="${p.img}"><div style="font-size:11px;">${p.name}</div><button style="width:100%;margin-top:5px;background:var(--gold);border:none;border-radius:6px;" onclick="updCart(${p.id},1);closeModal('favModal')">+</button></div>`).join('')||"Bo'sh";openModal('favModal');}
-function checkPromo(){const c=document.getElementById('promoInp').value.toUpperCase();db.ref('promocodes/'+c).once('value',s=>{if(s.val()&&s.val().limit>0){activePromo=s.val().discount;document.getElementById('promoMsg').innerHTML=`<b style="color:var(--success)">✅ ${activePromo}% Chegirma!</b>`;renderCart();}else{document.getElementById('promoMsg').innerHTML=`<b style="color:var(--danger)">❌ Xato kod</b>`;}});}
-function loadHistory(){db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value',s=>{const d=s.val();if(!d)return;document.getElementById('histList').innerHTML=Object.values(d).reverse().map(o=>{let st=o.status,cls='h-new',txt='YANGI';if(st=='kuryerda'){cls='h-deliv';txt='KURYERDA';}if(st=='yetkazildi'){cls='h-done';txt='YETKAZILDI';}if(st=='tayyorlanmoqda'){cls='h-cook';txt='TAYYORLANMOQDA';}let trk=(st=='kuryerda'&&o.courier_id)?`<button class="track-btn" onclick="track('${o.courier_id}')">Kuryerni Kuzatish</button>`:'';return `<div class="hist-card ${cls}"><div class="hist-head"><span>${o.time}</span><span class="st-pill">${txt}</span></div><div style="font-size:14px;margin-bottom:10px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div><div style="font-size:18px;font-weight:800;">${parseInt(o.total).toLocaleString()} so'm</div>${trk}</div>`;}).join('');});}
+function checkPromo(){const c=document.getElementById('promoInp').value.toUpperCase();db.ref('promocodes/'+c).once('value',s=>{if(s.val()&&s.val().limit>0){activePromo=s.val().discount;document.getElementById('promoMsg').innerHTML=`<b style="color:var(--success)">✅ ${activePromo}% Chegirma!</b>`;renderCart();}else{document.getElementById('promoMsg').innerHTML=`<b style="color:var(--red)">❌ Xato kod</b>`;}});}
+function loadHistory(){db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value',s=>{const d=s.val();if(!d)return;document.getElementById('histList').innerHTML=Object.values(d).reverse().map(o=>{let st=o.status,cls='s-new',txt='YANGI';if(st=='kuryerda'){cls='s-deliv';txt='KURYERDA';}if(st=='yetkazildi'){cls='s-done';txt='YETKAZILDI';}if(st=='tayyorlanmoqda'){cls='s-cook';txt='TAYYORLANMOQDA';}let trk=(st=='kuryerda'&&o.courier_id)?`<button class="track-btn" onclick="track('${o.courier_id}')">Kuryerni Kuzatish</button>`:'';return `<div class="hist-card ${cls}"><div class="h-head"><span>${o.time}</span><span class="st-pill">${txt}</span></div><div style="font-size:14px;margin-bottom:10px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div><div style="font-size:18px;font-weight:800;">${parseInt(o.total).toLocaleString()} so'm</div>${trk}</div>`;}).join('');});}
 function getDist(lat1,lon1,lat2,lon2){var R=6371;var dLat=(lat2-lat1)*Math.PI/180;var dLon=(lon2-lon1)*Math.PI/180;var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);var c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));return R*c;}
 function logout(){localStorage.removeItem('cafe_uid');location.reload();}
 function copy(t){navigator.clipboard.writeText(t);toast("Nusxalandi");}
 function toggleTheme(){document.body.classList.toggle('light-mode');localStorage.setItem('theme',document.body.classList.contains('light-mode')?'light':'dark');}
 function openNews(){db.ref('news').limitToLast(10).once('value',s=>{document.getElementById('newsContent').innerHTML=Object.values(s.val()||{}).reverse().map(n=>`<div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:15px;margin-bottom:10px;"><div style="font-weight:700;margin-bottom:5px;">${n.text}</div><div style="font-size:11px;color:gray;">${n.date}</div></div>`).join('')||"Yo'q";openModal('newsModal');});}
-</script>
