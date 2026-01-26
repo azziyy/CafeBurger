@@ -8,6 +8,25 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <style>
+/* Mijoz yuborgan xabarlar - Matn mutloq qora va qalin bo'ladi */
+.msg-me {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #FFD700, #FFB800) !important;
+    color: #000000 !important; /* Matn qat'iy qora rangda */
+    font-weight: 700; /* Matn qalinroq bo'lishi uchun */
+    border-bottom-right-radius: 4px;
+    margin-left: auto;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+/* Xabar vaqti - Mijoz uchun */
+.msg-me .msg-time {
+    color: rgba(0, 0, 0, 0.6) !important;
+    font-weight: 500;
+}
+
+
+
 /* Chat pufakchalari uchun umumiy stil */
 .msg-bubble {
     padding: 12px 16px;
@@ -915,15 +934,26 @@
     });
 }
 
-// Chat modalini ochish tugmasiga ham scroll buyrug'ini qo'shamiz
+// Chatni ochish funksiyasi
 function openChatModal() {
-    openModal('chatModal');
+    // Chat modalini ko'rsatish
+    document.getElementById('chatModal').style.display = 'flex';
+    
+    // Chat kontenerini olish
     const chatBox = document.getElementById('chatBox');
-    // Modal ochilgandan biroz keyin pastga tushirish (elementlar render bo'lishi uchun)
+    
+    // Modal to'liq ochilishi va elementlar render bo'lishi uchun 100ms kutib, 
+    // keyin eng pastga (oxirgi xabarga) tushiradi
     setTimeout(() => {
         chatBox.scrollTop = chatBox.scrollHeight;
-    }, 100);
+    }, 150);
 }
+
+// Xabar kelganda ham avtomatik pastga tushirish (loadChat ichida bo'lishi shart)
+db.ref('messages/' + user.phone.replace('+', '')).on('child_added', s => {
+    // ... xabarni yaratish kodi ...
+    document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
+});
 
 
         function sendChat(){
