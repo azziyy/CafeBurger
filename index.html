@@ -1168,15 +1168,17 @@ function sendOrder() {
             alert("Xatolik: " + error.message); 
         } else {
             // --- YANGI QISM: PROMOKOD ISHLATILGANINI SAQLASH ---
+            // --- PROMOKODNI SAQLASH ---
             if (activePromoCode) {
                 const cleanPhone = user.phone.replace('+', '');
                 
-                // A) Foydalanuvchi bu kodni necha marta ishlatganini oshiramiz (+1)
+                // Faqat foydalanuvchining shaxsiy hisobini oshiramiz (+1)
                 db.ref(`users/${cleanPhone}/used_promos/${activePromoCode}`).transaction(val => (val || 0) + 1);
                 
-                // B) Promokodning umumiy limitini kamaytiramiz (-1)
-                db.ref(`promocodes/${activePromoCode}/limit`).transaction(val => (val || 0) - 1);
+                // DIQQAT: Umumiy limitni kamaytirmaymiz! 
+                // Chunki u raqam endi "qolgan soni" emas, balki "chegara qoidasi" bo'lib xizmat qiladi.
             }
+            // --------------------------
             // ----------------------------------------------------
 
             // 7. Tozalash va Xabar berish
