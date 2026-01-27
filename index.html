@@ -1040,19 +1040,30 @@
             return;
         }
 
-        // 2. Agar Kafe OCHIQ bo'lsa
-        btn.innerHTML = "BUYURTMA BERISH";
-        btn.style.background = "var(--gold)";
+            // 2. Agar Kafe OCHIQ bo'lsa
+    btn.innerHTML = "BUYURTMA BERISH";
+    
+    // Sizning :root qismingizdagi --primary o'zgaruvchisidan foydalanamiz
+    btn.style.background = "var(--primary)"; 
+    btn.style.color = "#000000"; // Yozuv qora bo'lishi uchun
+    
+    // Tugma atrofidagi oltin rangli nur (glow) effekti
+    btn.style.boxShadow = "0 4px 15px var(--primary-glow)"; 
 
-        if (t > 0 && loc) {
-            btn.style.opacity = '1';
-            btn.style.pointerEvents = 'all';
-        } else {
-            btn.style.opacity = '0.5';
-            btn.style.pointerEvents = 'none';
-            if(t > 0 && !loc) btn.innerHTML = "📍 MANZILNI ANIQLANG";
+    if (t > 0 && loc) {
+        btn.style.opacity = '1';
+        btn.style.pointerEvents = 'all';
+    } else {
+        btn.style.opacity = '0.5';
+        btn.style.pointerEvents = 'none';
+        
+        // Agar savatda narsa bo'lsa-yu, manzil aniqlanmagan bo'lsa
+        if(t > 0 && !loc) {
+            btn.innerHTML = "📍 MANZILNI ANIQLANG";
+            btn.style.boxShadow = "none"; // Xira holatda nur bo'lmasin
         }
     }
+
 
     function getGPS(){
         const b=document.getElementById('gpsBtn'); b.innerHTML="Aniqlanmoqda...";
