@@ -1108,10 +1108,24 @@ body.light-mode .nav-btn.active::after {
     });
 }
     function initApp() {
-        if (user.name) document.getElementById('uName').innerText = user.name;
-        if (user.phone) document.getElementById('uPhone').innerText = user.phone;
-        favs = user.favorites || {};
-        loadHistory(); 
+    // 1. Profil ma'lumotlarini ekranga chiqarish
+    if (user) {
+        // Ismni yozish
+        const nameEl = document.getElementById('uName');
+        if (nameEl) nameEl.innerText = user.name || "Mijoz";
+
+        // Telefonni yozish
+        const phoneEl = document.getElementById('uPhone');
+        if (phoneEl) phoneEl.innerText = user.phone || "+998...";
+        
+        // Agar login oynasi ochiq qolgan bo'lsa, yopamiz
+        const loginModal = document.getElementById('loginModal');
+        if (loginModal) loginModal.style.display = 'none';
+        
+        // Buyurtmalar tarixini yuklash (agar funksiyasi bo'lsa)
+        if (typeof loadHistory === 'function') loadHistory();
+    }
+}adHistory(); 
     }
 
     function loadData(){
@@ -1774,6 +1788,25 @@ if (savedUid) {
     document.getElementById('loginModal').style.display = 'flex';
 }
 
+
+
+        // --- DASTUR YUKLANGANDA XOTIRANI TEKSHIRISH ---
+window.onload = function() {
+    // 1. Mahsulotlarni yuklaymiz (Bu sizning kodingizda bor)
+    loadData();
+
+    // 2. Oldin kirgan odam borligini tekshiramiz
+    const savedUid = localStorage.getItem('cafe_uid');
+
+    if (savedUid) {
+        // Agar xotirada ID bo'lsa, o'sha foydalanuvchini bazadan chaqiramiz
+        console.log("Eski foydalanuvchi topildi: " + savedUid);
+        checkAuth(savedUid);
+    } else {
+        // Agar hech kim bo'lmasa, Login oynasi chiqadi
+        document.getElementById('loginModal').style.display = 'flex';
+    }
+};
         
 </script>
 
