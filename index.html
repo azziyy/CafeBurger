@@ -781,6 +781,30 @@ body.light-mode .nav-btn.active::after {
     z-index: 1;
 }
 
+    /* GPS Tugmasi Yangi Dizayni */
+.btn-gps {
+    position: relative;
+    overflow: hidden;
+    transition: 0.3s;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Qidirayotganda pirpirash effekti */
+.btn-gps.searching {
+    background: linear-gradient(45deg, #333, #444, #333);
+    background-size: 200% 200%;
+    animation: gpsAnim 1.5s ease infinite;
+    pointer-events: none; /* Bosib bo'lmaydigan qilish */
+}
+
+@keyframes gpsAnim {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.btn-gps i { margin-right: 8px; font-size: 18px; }
+
 </style>
 </head>
 <body>
