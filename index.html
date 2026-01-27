@@ -935,7 +935,7 @@ body.light-mode .nav-btn.active::after {
     const db = firebase.database();
     
     // 1. O'ZGARUVCHILAR (shopStatus qo'shilgan)
-    let products=[], cart={}, user=null, loc=null, favs={}, stories=[], stIdx=0, stTimer, shopLoc=null, activePromo=null, shopStatus='open', currentCat='Barchasi'; // <-- currentCat qo'shildi
+    let products=[], cart={}, user=null, loc=null, favs={}, stories=[], stIdx=0, stTimer, shopLoc=null, activePromo=null, shopStatus='open', currentCat='Barchasi', activePromoCode=null;
     let tempPmId=null, tempPmQty=1, map=null, carMarker=null;
 
     // 2. DASTUR YUKLANGANDA
