@@ -1390,48 +1390,49 @@ function toggleTheme() {
     // --- YANGILANGAN XARITA FUNKSIYASI (DARK MODE + ANIMATSIYA) ---
     
     // 1. Chiroyli 3D Sariq Mashina
+    // --- YANGILANGAN XARITA FUNKSIYASI (KULRANG/TINIQ + SKUTER) ---
+    
+    // 1. Tiniq Sariq Skuter (Motosikl) Ikonkasi
     var carIcon = L.icon({ 
-        iconUrl: 'https://cdn-icons-png.flaticon.com/512/5556/5556365.png', // Chiroyli 3D mashina rasm
-        iconSize: [55, 55],   // O'lchami kattaroq
-        iconAnchor: [27, 27]  // Markazi
+        iconUrl: 'https://cdn-icons-png.flaticon.com/512/2554/2554936.png', // Aniq skuter rasmi
+        iconSize: [48, 48],   // O'lchami
+        iconAnchor: [24, 24]  // Markazi
     });
 
     function track(cid) {
         const modal = document.getElementById('mapModal');
         if(modal) modal.style.display = 'block';
 
-        // Xaritani tozalash (eski xatolar qolmasligi uchun)
+        // Eski xaritani tozalash
         if (map) { 
             map.remove(); 
             map = null; 
-            carMarker = null; // Markerni ham tozalaymiz
+            carMarker = null; 
         }
 
-        // 2. QORA XARITA (DARK MODE) YUKLASH
+        // 2. XARITANI YARATISH
         map = L.map('map', {
-            zoomControl: false, // Tugmalarsiz (toza ko'rinish)
+            zoomControl: false, 
             attributionControl: false
         }).setView([41.31, 69.24], 15);
 
-        // "CartoDB Dark Matter" - Tunu-kun qora turadigan xarita
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        // 3. "Voyager" - Ko'zga yoqimli, tiniq va zamonaviy xarita foni
+        // (Qop-qora emas, och kulrang va rangli elementlar bilan)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
             maxZoom: 20
         }).addTo(map);
 
         setTimeout(() => { map.invalidateSize(); }, 500);
 
-        // 3. KUZATISH VA SILLIQ HARAKAT
+        // KUZATISH (Silliq harakat CSS da qolgan bo'lishi kerak)
         db.ref('couriers/' + cid + '/location').on('value', s => {
             const d = s.val(); if (!d) return;
 
             if (carMarker) {
-                // CSS dagi 'transition' hisobiga bu yerda koordinata o'zgarsa, mashina silliq yuradi
                 carMarker.setLatLng([d.lat, d.long]);
             } else {
                 carMarker = L.marker([d.lat, d.long], {icon: carIcon}).addTo(map);
             }
-            
-            // Xarita markazini mashina bilan birga yurgizish
             map.panTo([d.lat, d.long]); 
         });
     }
