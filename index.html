@@ -1049,64 +1049,87 @@ body.light-mode .nav-btn.active::after {
 }
 
     // --- SAVATNI CHIQARISH VA TUGMANI BOSHQARISH (MUHIM) ---
-    function renderCart() {
-        let t = 0, h = '';
-        for (let id in cart) {
-            const p = products.find(x => x.id == id);
-            if (p) {
-                t += p.price * cart[id];
-                h += `<div class="cart-item">
-                        <img src="${p.img}" class="cart-thumb">
-                        <div class="cart-info"><div class="cart-title">${p.name}</div><div class="cart-price">${p.price.toLocaleString()} so'm</div></div>
-                        <div class="cart-controls">
-                            <div onclick="updCart(${p.id},-1)" style="font-weight:bold;font-size:18px;cursor:pointer;">-</div>
-                            <b>${cart[id]}</b>
-                            <div onclick="updCart(${p.id},1)" style="font-weight:bold;font-size:18px;cursor:pointer;">+</div>
-                        </div>
-                      </div>`;
-            }
+    // --- SAVATNI CHIQARISH VA TUGMANI BOSHQARISH ---
+function renderCart() {
+    let t = 0, h = '';
+    
+    // 1. Savatdagi mahsulotlarni hisoblash
+    for (let id in cart) {
+        const p = products.find(x => x.id == id);
+        if (p) {
+            t += p.price * cart[id];
+            h += `<div class="cart-item">
+                    <img src="${p.img}" class="cart-thumb">
+                    <div class="cart-info">
+                        <div class="cart-title">${p.name}</div>
+                        <div class="cart-price">${p.price.toLocaleString()} so'm</div>
+                    </div>
+                    <div class="cart-controls">
+                        <div onclick="updCart(${p.id},-1)" style="font-weight:bold;font-size:18px;cursor:pointer;">-</div>
+                        <b>${cart[id]}</b>
+                        <div onclick="updCart(${p.id},1)" style="font-weight:bold;font-size:18px;cursor:pointer;">+</div>
+                    </div>
+                  </div>`;
         }
+    }
 
-        let disp = t.toLocaleString() + " so'm";
-        if (activePromo) disp = `<span class="strike">${t.toLocaleString()}</span> ${(t - (t * activePromo / 100)).toLocaleString()} so'm`;
+    // 2. NARXNI KO'RSATISH (Promokod bo'lsa chizilgan narx chiqadi)
+    let priceHtml = "";
 
-        document.getElementById('cartList').innerHTML = h || "<div style='text-align:center;padding:30px;color:#666'>Savat bo'sh</div>";
-        document.getElementById('cartTotal').innerHTML = disp;
+    if (activePromo) {
+        // Chegirmali narxni hisoblash
+        let discountedPrice = t - (t * activePromo / 100);
+        
+        // ESKI NARX: Kulrang va ustidan chizilgan
+        let oldPrice = `<span style="text-decoration: line-through; color: #999; margin-right: 10px; font-size: 0.9em;">${t.toLocaleString()}</span>`;
+        
+        // YANGI NARX: Asosiy rangda (Sariq) va qalin
+        let newPrice = `<span style="color: var(--primary); font-weight: bold; font-size: 1.2em;">${discountedPrice.toLocaleString()} so'm</span>`;
+        
+        priceHtml = oldPrice + newPrice;
+    } else {
+        // Promokod bo'lmasa, oddiy oq rangda chiqadi
+        priceHtml = `${t.toLocaleString()} so'm`;
+    }
 
-        const btn = document.getElementById('orderBtn');
+    // HTML ga joylash
+    document.getElementById('cartList').innerHTML = h || "<div style='text-align:center;padding:30px;color:#666'>Savat bo'sh</div>";
+    document.getElementById('cartTotal').innerHTML = priceHtml;
 
-        // 1. Agar Kafe YOPIQ bo'lsa
-        if (shopStatus === 'closed') {
-            btn.innerHTML = "⛔️ KAFE YOPILGAN";
-            btn.style.background = "#333";
-            btn.style.opacity = "1";
-            btn.style.pointerEvents = "none";
-            return;
-        }
+    const btn = document.getElementById('orderBtn');
 
-            // 2. Agar Kafe OCHIQ bo'lsa
+    // 3. Agar Kafe YOPIQ bo'lsa (Eng muhim tekshiruv)
+    if (shopStatus === 'closed') {
+        btn.innerHTML = "⛔️ KAFE YOPILGAN";
+        btn.style.background = "#333";
+        btn.style.boxShadow = "none"; // Nur (glow) o'chiriladi
+        btn.style.opacity = "1";
+        btn.style.pointerEvents = "none";
+        return; // Shu yerda to'xtaydi
+    }
+
+    // 4. Agar Kafe OCHIQ bo'lsa
     btn.innerHTML = "BUYURTMA BERISH";
-    
-    // Sizning :root qismingizdagi --primary o'zgaruvchisidan foydalanamiz
-    btn.style.background = "var(--primary)"; 
-    btn.style.color = "#000000"; // Yozuv qora bo'lishi uchun
-    
-    // Tugma atrofidagi oltin rangli nur (glow) effekti
-    btn.style.boxShadow = "0 4px 15px var(--primary-glow)"; 
+    btn.style.background = "var(--primary)"; // Sariq rang
+    btn.style.color = "#000000";             // Yozuv qora
+    btn.style.boxShadow = "0 4px 15px var(--primary-glow)"; // Sariq nur
 
+    // Savat va Manzil tekshiruvi
     if (t > 0 && loc) {
+        // Hammasi joyida -> Tugma yonadi
         btn.style.opacity = '1';
         btn.style.pointerEvents = 'all';
     } else {
+        // Biror narsa yetishmayapti -> Tugma xiralashadi
         btn.style.opacity = '0.5';
         btn.style.pointerEvents = 'none';
         
-                // Agar savatda narsa bo'lsa-yu, manzil aniqlanmagan bo'lsa
+        // Agar savat to'la lekin manzil yo'q bo'lsa
         if(t > 0 && !loc) {
             btn.innerHTML = "📍 MANZILNI ANIQLANG";
-            btn.style.boxShadow = "none"; // Xira holatda nur bo'lmasin
+            btn.style.boxShadow = "none";
         }
-    } // <-- MANA SHU QAVS TUSHIB QOLGAN EDI (else'ni yopadi)
+    }
 } // <-- BU QAVS FUNKSIYANI TO'LIQ YOPADI
 
 
