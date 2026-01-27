@@ -781,30 +781,6 @@ body.light-mode .nav-btn.active::after {
     z-index: 1;
 }
 
-    /* GPS Tugmasi Yangi Dizayni */
-.btn-gps {
-    position: relative;
-    overflow: hidden;
-    transition: 0.3s;
-    border: 1px solid rgba(255,255,255,0.1);
-}
-
-/* Qidirayotganda pirpirash effekti */
-.btn-gps.searching {
-    background: linear-gradient(45deg, #333, #444, #333);
-    background-size: 200% 200%;
-    animation: gpsAnim 1.5s ease infinite;
-    pointer-events: none; /* Bosib bo'lmaydigan qilish */
-}
-
-@keyframes gpsAnim {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-.btn-gps i { margin-right: 8px; font-size: 18px; }
-
 </style>
 </head>
 <body>
@@ -937,86 +913,39 @@ body.light-mode .nav-btn.active::after {
         </div>
     </div>
 
-
-
-    <div id="mapModal" class="modal-wrap" style="z-index:11000;">
-    <button onclick="closeModal('mapModal')" style="position:absolute; top:20px; left:20px; z-index:11001; padding:10px 20px; border-radius:15px; border:none; background:white; font-weight:bold; box-shadow:0 5px 20px rgba(0,0,0,0.2); color:black;">
-        ⬅️ Orqaga
-    </button>
-    <div id="map" style="width:100%; height:100%;"></div>
-</div>
-
     
 
 
-    <div id="alertModal" class="modal-wrap" style="align-items:center; z-index:10000;">
+    <div id="mapModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#fff; z-index:9000; display:none;">
+        <button onclick="document.getElementById('mapModal').style.display='none'" style="position:absolute; top:40px; left:20px; z-index:9001; padding:10px 20px; border-radius:20px; border:none; background:white; font-weight:bold; box-shadow:0 5px 20px rgba(0,0,0,0.2);">⬅️ Orqaga</button>
+        <div id="map" style="width:100%; height:100%;"></div>
+    </div>
+    
+    <div id="newsModal" class="modal-wrap" onclick="if(event.target==this)closeModal('newsModal')"><div class="sheet"><h3 style="color:var(--primary)">Yangiliklar</h3><div id="newsContent" style="margin-top:15px; max-height:400px; overflow-y:auto;"></div></div></div>
+    <div id="contactModal" class="modal-wrap" onclick="if(event.target==this)closeModal('contactModal')"><div class="sheet"><h3 style="color:var(--primary)">Aloqa</h3><div class="d-item" onclick="copy('+998939782926')">+998 93 978 29 26</div><button class="btn-main" onclick="window.location.href='https://t.me/Azikking'">Telegram Admin</button></div></div>
+    
+    
+    <div id="blockScreen">
+    <i class="fa fa-ban"></i>
+    <h2>Siz bloklandingiz</h2>
+    <p style="color:#aaa;">Ma'muriyat ushbu xizmatdan foydalanishni cheklagan.</p>
+    <button class="track-btn" style="background:#333; margin-top:20px; width:auto;" onclick="location.reload()">Qayta yuklash</button>
+</div>
+
+    <div id="alertModal" class="modal-wrap" style="align-items:center; z-index:9999;">
     <div style="background:var(--bg-card); width:85%; max-width:320px; padding:30px 25px; border-radius:25px; text-align:center; border:1px solid rgba(255,255,255,0.05); box-shadow:0 20px 50px rgba(0,0,0,0.5);">
+        
         <div style="width:70px; height:70px; background:rgba(255,68,68,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
             <i class="fa fa-exclamation-triangle" style="font-size:32px; color:var(--danger);"></i>
         </div>
-        <h2 style="margin:0 0 10px; font-size:22px; color:var(--text-main);">Diqqat!</h2>
-        <p id="alertMsg" style="color:var(--text-muted); font-size:15px; line-height:1.5; margin:0 0 25px;"></p>
-        <button class="tap" onclick="closeModal('alertModal')" style="width:100%; padding:15px; background:var(--primary); color:#000; border:none; border-radius:15px; font-weight:800;">Tushunarli</button>
-    </div>
-</div>
-
-
-
-    
-
-<div id="addressModal" class="modal-wrap" style="align-items:center; z-index:9999;">
-    <div style="background:var(--bg-card); width:95%; max-width:450px; padding:20px; border-radius:25px; border:1px solid rgba(255,255,255,0.05); text-align:center; position:relative;">
         
-        <h3 style="margin:0 0 10px; color:var(--primary);">Manzilni aniqlang</h3>
-        <p style="font-size:12px; color:#aaa; margin-bottom:10px;">Belgini darvozangiz ustiga to'g'irlang</p>
-
-        <div style="width:100%; height:450px; border-radius:15px; overflow:hidden; position:relative; margin-bottom:15px;">
-            <div id="confirmMap" style="width:100%; height:100%;"></div>
-            
-            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -100%); z-index:1000; pointer-events:none;">
-                <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" style="width:40px; filter:drop-shadow(0 5px 5px rgba(0,0,0,0.5));">
-            </div>
-
-            <button onclick="locateMeInMap()" style="position:absolute; bottom:15px; right:15px; width:45px; height:45px; background:white; border-radius:50%; border:none; z-index:1001; box-shadow:0 5px 15px rgba(0,0,0,0.3); color:black; font-size:20px; display:flex; align-items:center; justify-content:center;">
-                <i class="fa fa-crosshairs"></i>
-            </button>
-        </div>
-
-        <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:12px; margin-bottom:15px;">
-            <div style="font-size:11px; color:#aaa;">Tanlangan manzil:</div>
-            <b id="addrText" style="font-size:14px; color:white;">Yuklanmoqda...</b>
-        </div>
-
-        <div style="display:flex; gap:10px;">
-            <button class="tap" onclick="closeModal('addressModal')" style="flex:1; padding:12px; background:#333; border:none; border-radius:12px; color:white;">Bekor qilish</button>
-            <button class="tap" onclick="confirmGPS()" style="flex:1; padding:12px; background:var(--primary); border:none; border-radius:12px; font-weight:bold; color:black;">TASDIQLASH</button>
-        </div>
+        <h2 style="margin:0 0 10px; font-size:22px; color:var(--text-main);">Diqqat!</h2>
+        
+        <p id="alertMsg" style="color:var(--text-muted); font-size:15px; line-height:1.5; margin:0 0 25px;"></p>
+        
+        <button class="tap" onclick="closeModal('alertModal')" style="width:100%; padding:15px; background:var(--primary); color:#000; border:none; border-radius:15px; font-weight:800; font-size:16px; box-shadow:0 5px 15px var(--primary-glow);">Tushunarli</button>
     </div>
 </div>
-
-
-
-    <div id="newsModal" class="modal-wrap" onclick="if(event.target==this)closeModal('newsModal')">
-    <div class="sheet">
-        <h3 style="color:var(--primary); margin-bottom:15px;">Yangiliklar</h3>
-        <div id="newsContent" style="margin-top:15px; max-height:400px; overflow-y:auto; min-height:100px;">
-            <div style="text-align:center; color:#666;">Yuklanmoqda...</div>
-        </div>
-    </div>
-</div>
-
-<div id="contactModal" class="modal-wrap" onclick="if(event.target==this)closeModal('contactModal')">
-    <div class="sheet">
-        <h3 style="color:var(--primary); margin-bottom:15px;">Aloqa</h3>
-        <div class="d-item tap" onclick="copy('+998939782926')" style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; margin-bottom:10px;">
-            <i class="fa fa-phone" style="margin-right:10px;"></i> +998 93 978 29 26
-        </div>
-        <button class="btn-main tap" onclick="window.location.href='https://t.me/Azikking'">
-            <i class="fab fa-telegram"></i> Telegram Admin
-        </button>
-    </div>
-</div>
-
 
     
     <div id="toastBox"></div>
@@ -1068,64 +997,29 @@ body.light-mode .nav-btn.active::after {
     }
 
     // --- AUTH VA BLOKLASH TEKSHIRUVI ---
-   function checkAuth(uid) {
-    db.ref('users/' + uid).on('value', s => {
-        const d = s.val();
+    function checkAuth(uid) {
+        db.ref('users/' + uid).on('value', s => {
+            const d = s.val();
+            if (!d) { document.getElementById('loginModal').style.display = 'flex'; return; }
+            
+            if (d.blocked === true) {
+                document.getElementById('blockScreen').style.display = 'flex';
+                document.getElementById('loginModal').style.display = 'none';
+                return;
+            }
 
-        // 1. Agar foydalanuvchi bazada bo'lmasa -> Login oynasi
-        if (!d) { 
-            document.getElementById('loginModal').style.display = 'flex'; 
-            return; 
-        }
-        
-        // 2. Agar bloklangan bo'lsa -> Blok oynasi
-        if (d.blocked === true) {
-            document.getElementById('blockScreen').style.display = 'flex';
+            document.getElementById('blockScreen').style.display = 'none';
+            user = d;
             document.getElementById('loginModal').style.display = 'none';
-            return;
-        }
-
-        // 3. Hammasi joyida
-        document.getElementById('blockScreen').style.display = 'none';
-        document.getElementById('loginModal').style.display = 'none';
-        
-        user = d;
-
-        // --- MUHIM O'ZGARISH SHU YERDA ---
-        
-        // A) Bazadagi "sevimlilar"ni lokal o'zgaruvchiga yuklaymiz
-        favs = user.favorites || {}; 
-
-        // B) Ilova ma'lumotlarini (Ism, Telefon, Tarix) yuklaymiz
-        initApp();
-
-        // C) EKRANNI YANGILASH
-        // Agar mahsulotlar ro'yxati yuklanib bo'lgan bo'lsa,
-        // ularni qayta chizamiz (shunda yurakchalar qizaradi)
-        if (products.length > 0) {
-            renderGrid(currentCat);
-        }
-    });
-}
-    function initApp() {
-    // 1. Profil ma'lumotlarini ekranga chiqarish
-    if (user) {
-        // Ismni yozish
-        const nameEl = document.getElementById('uName');
-        if (nameEl) nameEl.innerText = user.name || "Mijoz";
-
-        // Telefonni yozish
-        const phoneEl = document.getElementById('uPhone');
-        if (phoneEl) phoneEl.innerText = user.phone || "+998...";
-        
-        // Agar login oynasi ochiq qolgan bo'lsa, yopamiz
-        const loginModal = document.getElementById('loginModal');
-        if (loginModal) loginModal.style.display = 'none';
-        
-        // Buyurtmalar tarixini yuklash (agar funksiyasi bo'lsa)
-        if (typeof loadHistory === 'function') loadHistory();
+            initApp();
+        });
     }
-}adHistory(); 
+
+    function initApp() {
+        if (user.name) document.getElementById('uName').innerText = user.name;
+        if (user.phone) document.getElementById('uPhone').innerText = user.phone;
+        favs = user.favorites || {};
+        loadHistory(); 
     }
 
     function loadData(){
@@ -1300,181 +1194,21 @@ function renderCart() {
 
 
 
-    // --- YANGILANGAN GPS TIZIMI (MANZIL NOMI BILAN) ---
-
-// --- MUKAMMAL GPS TIZIMI (TO'LIQ KOD) ---
-
-// --- PROFESSIONAL GPS TIZIMI (MANUAL TUZATISH BILAN) ---
-
-// --- YANGILANGAN GPS TIZIMI (FARG'ONA + GOOGLE SATELLITE + MENI TOP) ---
-
-// --- YANGILANGAN GPS TIZIMI (5 SEKUND KUTISH + QISQA MANZIL) ---
-
-let tempLoc = null;     
-let confirmMap = null;  
-let mapMoveTimer = null; 
-let searchTimer = null;
-let bestLat = null, bestLng = null, bestAcc = 10000; // Eng yaxshi natijani saqlash uchun
-
-// 1. GPS QIDIRISH (5 Soniyalik qidiruv)
-function getGPS() {
-    const btn = document.getElementById('gpsBtn');
-    
-    // Reset
-    bestAcc = 10000; bestLat = null; bestLng = null;
-    
-    btn.innerHTML = `<i class="fa fa-satellite-dish fa-spin"></i> Eng aniq joy qidirilmoqda (5s)...`;
-    btn.classList.add('searching');
-    btn.classList.remove('gps-success', 'gps-error');
-
-    if (window.Android && window.Android.checkGPS) window.Android.checkGPS();
-
-    // Kuzatishni boshlaymiz
-    const watchId = navigator.geolocation.watchPosition(
-        (p) => {
-            const acc = p.coords.accuracy;
-            // Har safar aniqroq signal kelsa, eslab qolamiz
-            if(acc < bestAcc) {
-                bestAcc = acc;
-                bestLat = p.coords.latitude;
-                bestLng = p.coords.longitude;
+    function getGPS(){
+        const b=document.getElementById('gpsBtn'); b.innerHTML="Aniqlanmoqda...";
+        if(window.Android && window.Android.checkGPS) window.Android.checkGPS();
+        navigator.geolocation.getCurrentPosition(p=>{
+            const lat=p.coords.latitude, lng=p.coords.longitude;
+            if(shopLoc && shopLoc.radius){
+                const d=getDist(lat,lng,shopLoc.lat,shopLoc.long);
+                if(d>shopLoc.radius){ b.innerHTML="❌ Uzoq masofa"; b.classList.add('gps-error'); loc=null; renderCart(); return; }
             }
-        },
-        (err) => { console.log("GPS signal past..."); },
-        { enableHighAccuracy: true, maximumAge: 0 }
-    );
-
-    // 5 SONIYA KUTAMIZ, KEYIN OCHAMIZ
-    setTimeout(() => {
-        navigator.geolocation.clearWatch(watchId); // Qidiruvni to'xtatamiz
-        
-        if(bestLat && bestLng) {
-            // Eng yaxshi topgan joyini ochamiz
-            finishGPS(bestLat, bestLng);
-        } else {
-            // Agar umuman topolmasa, Farg'ona markazini ochamiz
-            // Farg'ona, Kirgili markazi: 40.3864, 71.7864
-            finishGPS(40.3864, 71.7864); 
-            toast("GPS signali topilmadi, xaritadan belgilang");
-        }
-    }, 5000); // <-- 5000 millisekund = 5 soniya
-}
-
-// 2. MODALNI OCHISH VA ODDIY XARITA
-function finishGPS(lat, lng) {
-    const btn = document.getElementById('gpsBtn');
-    btn.innerHTML = `<i class="fa fa-map-pin"></i> Manzilni aniqlang...`;
-    
-    tempLoc = { lat, long: lng };
-    openModal('addressModal'); 
-
-    if (confirmMap) { confirmMap.remove(); confirmMap = null; }
-
-    setTimeout(() => {
-        confirmMap = L.map('confirmMap', {
-            zoomControl: false, attributionControl: false
-        }).setView([lat, lng], 18);
-
-        // --- ODDIY REJIM (CartoDB Voyager - Chiroyli va Toza) ---
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            maxZoom: 20
-        }).addTo(confirmMap);
-
-        // Surilganda ishlash
-        confirmMap.on('move', () => {
-            document.getElementById('addrText').innerText = "Joylashuv o'zgaryapti...";
-            document.getElementById('addrText').style.color = "orange";
-        });
-
-        confirmMap.on('moveend', () => {
-            const center = confirmMap.getCenter();
-            tempLoc = { lat: center.lat, long: center.lng };
-            getAddressName(center.lat, center.lng);
-        });
-
-        // Birinchi marta nomini olamiz
-        getAddressName(lat, lng);
-        
-        btn.classList.remove('searching');
-        btn.innerHTML = "Manzilni aniqlash"; 
-        confirmMap.invalidateSize();
-    }, 300);
-}
-
-// 3. "MENI TOP" TUGMASI
-function locateMeInMap() {
-    if(!confirmMap) return;
-    const icon = document.querySelector('.fa-crosshairs');
-    if(icon) icon.classList.add('fa-spin');
-
-    navigator.geolocation.getCurrentPosition((p) => {
-        confirmMap.flyTo([p.coords.latitude, p.coords.longitude], 18);
-        if(icon) icon.classList.remove('fa-spin');
-    }, () => {
-        if(icon) icon.classList.remove('fa-spin');
-    }, { enableHighAccuracy: true });
-}
-
-// 4. MANZIL NOMINI OLISH (MUKAMMAL QISQARTIRISH)
-function getAddressName(lat, lng) {
-    if(mapMoveTimer) clearTimeout(mapMoveTimer);
-    mapMoveTimer = setTimeout(() => {
-        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
-        .then(res => res.json())
-        .then(data => {
-            let addr = "Noma'lum hudud";
-            
-            if(data.address) {
-                // Bizga faqat shu qismlar kerak:
-                const road = data.address.road || ""; // Ko'cha
-                const house = data.address.house_number || ""; // Uy raqami
-                // Mahalla nomi (ko'pincha suburb, neighbourhood yoki residential da keladi)
-                const mahalla = data.address.suburb || data.address.neighbourhood || data.address.residential || "";
-                
-                // Indeks, Country, Region, City - KERAK EMAS
-                
-                let parts = [];
-                if(road) parts.push(road);
-                if(house) parts.push(house);
-                if(mahalla) parts.push(mahalla);
-                
-                if(parts.length > 0) addr = parts.join(', ');
-                else addr = data.display_name.split(',')[0]; // Agar hech narsa bo'lmasa, birinchisini olamiz
-            }
-            
-            document.getElementById('addrText').innerText = addr;
-            document.getElementById('addrText').style.color = "white";
-        })
-        .catch(() => {
-            document.getElementById('addrText').innerText = "Manzil nomi topilmadi";
-        });
-    }, 500);
-}
-
-// 5. TASDIQLASH (Minimal summa va Masofa tekshiruvi)
-function confirmGPS() {
-    if (tempLoc) {
-        if (shopLoc && shopLoc.radius) {
-            const d = getDist(tempLoc.lat, tempLoc.long, shopLoc.lat, shopLoc.long);
-            if (d > shopLoc.radius) {
-                document.getElementById('alertMsg').innerHTML = `Uzr, bu manzil juda uzoq.<br>Masofa: <b>${d.toFixed(1)} km</b>`;
-                openModal('alertModal');
-                return;
-            }
-        }
-        loc = tempLoc; 
-        const btn = document.getElementById('gpsBtn');
-        btn.innerHTML = `✅ Manzil aniqlandi`;
-        btn.classList.add('gps-success');
-        renderCart(); 
-        closeModal('addressModal');
-        toast("Manzil saqlandi!");
+            loc={lat,long:lng}; b.innerHTML="✅ Manzil aniqlandi"; b.classList.add('gps-success'); renderCart();
+        },()=>{b.innerHTML="❌ GPS Xatosi";},{enableHighAccuracy:true});
     }
-}
 
    // --- BUYURTMA YUBORISH ---
 // --- BUYURTMA YUBORISH (YANGILANGAN) ---
-// --- BUYURTMA YUBORISH (TO'LIQ VA TO'G'RI) ---
 function sendOrder() {
     // 1. Tizimga kirganlikni tekshirish
     if (!user || !user.phone) { 
@@ -1496,23 +1230,23 @@ function sendOrder() {
     // 3. Savat bo'shligini tekshirish
     if (items.length === 0) { toast("Savat bo'sh!"); return; }
 
-   // --- 4. MINIMAL BUYURTMA TEKSHIRUVI ---
+   // --- 4. MINIMAL BUYURTMA TEKSHIRUVI (YANGILANGAN) ---
     if (t < MIN_ORDER_PRICE) {
+        // Matnni tayyorlaymiz
         const msg = `Minimal buyurtma summasi: <b style="color:white">${MIN_ORDER_PRICE.toLocaleString()} so'm</b> bo'lishi kerak.<br><br>Hozir sizda: ${t.toLocaleString()} so'm`;
+        
+        // Yangi oynaga yozamiz va ochamiz
         document.getElementById('alertMsg').innerHTML = msg;
         openModal('alertModal');
-        return; 
+        
+        return; // To'xtatamiz
     }
-    // -------------------------------------
+    // -----------------------------------------------
 
-    // 5. HISOBLASH
+    // 5. Yakuniy narxni hisoblash (Dostavka bilan)
     let discountAmt = activePromo ? (t * activePromo / 100) : 0;
     
-    // --- MUHIM: ESKI NARXNI HISOBLASH (Chegirmasiz + Dostavka) ---
-    // Bu botda chizib ko'rsatish uchun kerak
-    let originalTotal = t + DELIVERY_PRICE; 
-
-    // YAKUNIY NARX (Chegirmali + Dostavka)
+    // Jami = (Mahsulot - Chegirma) + Dostavka
     let finalPrice = (t - discountAmt) + DELIVERY_PRICE; 
 
     // 6. Buyurtma ma'lumotlarini tayyorlash
@@ -1525,12 +1259,7 @@ function sendOrder() {
         products_total: t,            // Mahsulotlar o'zi
         delivery_fee: DELIVERY_PRICE, // Dostavka haqqi
         promo_discount: activePromo || 0,
-        
-        // --- MANA SHU QATOR QO'SHILDI ---
-        original_total: originalTotal, // Eski narx (Chiziladigan)
-        // --------------------------------
-        
-        total: finalPrice,            // To'lanadigan summa
+        total: finalPrice,            // Mijoz to'laydigan jami summa (Admin shuni ko'radi)
         
         status: 'yangi',
         location: loc || null,
@@ -1542,13 +1271,15 @@ function sendOrder() {
         if (error) { 
             alert("Xatolik: " + error.message); 
         } else {
-            // Promokod ishlatilganini saqlash
+            // --- PROMOKOD ISHLATILGANINI SAQLASH ---
             if (activePromoCode) {
                 const cleanPhone = user.phone.replace('+', '');
+                // Faqat foydalanuvchi tarixiga +1 qo'shamiz
                 db.ref(`users/${cleanPhone}/used_promos/${activePromoCode}`).transaction(val => (val || 0) + 1);
             }
+            // ----------------------------------------
 
-            // Tozalash va Xabar berish
+            // 8. Tozalash va Xabar berish
             cart = {}; 
             loc = null; 
             activePromo = null; 
@@ -1556,14 +1287,17 @@ function sendOrder() {
             
             toast("✅ Buyurtma yuborildi!");
             
+            // Tarix bo'limiga o'tish
             nav('history', document.querySelectorAll('.nav-btn')[2]);
             
+            // GPS tugmasini qayta sozlash
             const gpsBtn = document.getElementById('gpsBtn');
             if(gpsBtn) { 
                 gpsBtn.innerHTML = "Manzilni aniqlash"; 
                 gpsBtn.classList.remove('gps-success'); 
             }
             
+            // Savat ko'rinishini yangilash
             renderCart();
         }
     });
@@ -1661,23 +1395,16 @@ function sendOrder() {
     function openProd(id){const p=products.find(x=>x.id==id);tempPmId=id;tempPmQty=1;document.getElementById('pmImg').src=p.img;document.getElementById('pmName').innerText=p.name;document.getElementById('pmPrice').innerText=p.price.toLocaleString()+" so'm";document.getElementById('pmDesc').innerText=p.desc;document.getElementById('pmQty').innerText="1";openModal('prodModal');}
     function pmQ(n){tempPmQty+=n;if(tempPmQty<1)tempPmQty=1;document.getElementById('pmQty').innerText=tempPmQty;}
     function addFromModal(){updCart(tempPmId,tempPmQty);closeModal('prodModal');}
-    // --- SEVIMLILARNI BOSHQARISH (TUZATILDI) ---
-function togFav(id) {
-    // 1. Lokal o'zgaruvchini yangilash
-    if (favs[id]) {
-        delete favs[id]; // Bor bo'lsa o'chiramiz
-    } else {
-        favs[id] = true; // Yo'q bo'lsa qo'shamiz
+    function togFav(id){ 
+    if(favs[id])delete favs[id]; else favs[id]=true; 
+    
+    // Foydalanuvchi bazasiga saqlash
+    if(user && user.phone) {
+        db.ref('users/'+user.phone.replace('+','')+'/favorites').set(favs);
     }
-
-    // 2. Firebase bazasiga yozish (Eng muhim joyi)
-    if (user && user.phone) {
-        const cleanPhone = user.phone.replace('+', '');
-        db.ref(`users/${cleanPhone}/favorites`).set(favs);
-    }
-
-    // 3. Ekranni yangilash (Yurakcha qizarishi uchun)
-    renderGrid(currentCat);
+    
+    // Mana bu yerda ham xotiradagi kategoriya ishlatiladi
+    renderGrid(currentCat); 
 }
     
     function openFavs() {
@@ -1773,167 +1500,6 @@ function toggleTheme() {
             map.panTo([d.lat, d.long]); 
         });
     }
-// --- 1. LOGIN QILISH (TELEGRAM ORQALI) ---
-function doLogin() {
-    const t = 'req_' + Date.now();
-    // Telegramga yuboramiz
-    window.open(`https://t.me/${BOT_USER}?start=login_${t}`, '_blank');
-    
-    // Javobni kutamiz
-    db.ref('auth_tokens/' + t).on('value', s => {
-        if (s.val()) {
-            user = s.val();
-            const uid = user.phone.replace('+', '');
-            
-            // XOTIRAGA SAQLAYMIZ (Eng muhimi)
-            localStorage.setItem('cafe_uid', uid);
-            
-            // Tokenni o'chiramiz
-            db.ref('auth_tokens/' + t).remove();
-            
-            // Tizimga kiritamiz
-            checkAuth(uid);
-        }
-    });
-}
-
-// --- 2. FOYDALANUVCHINI TEKSHIRISH ---
-function checkAuth(uid) {
-    db.ref('users/' + uid).on('value', s => {
-        const d = s.val();
-
-        // Foydalanuvchi topilmasa -> Login oynasi
-        if (!d) {
-            document.getElementById('loginModal').style.display = 'flex';
-            return;
-        }
-
-        // Bloklangan bo'lsa
-        if (d.blocked === true) {
-            document.getElementById('blockScreen').style.display = 'flex';
-            document.getElementById('loginModal').style.display = 'none';
-            return;
-        }
-
-        // Tizimga muvaffaqiyatli kirdi
-        user = d;
-        document.getElementById('blockScreen').style.display = 'none';
-        document.getElementById('loginModal').style.display = 'none';
-
-        // SEVIMLILARNI YUKLASH
-        favs = user.favorites || {};
-
-        // PROFILNI YANGILASH
-        initApp();
-
-        // AGAR MAHSULOTLAR YUKLANIB BO'LGAN BO'LSA -> EKRANNI YANGILASH
-        // (Yurakchalar qizarishi uchun)
-        if (products.length > 0) {
-            renderGrid(currentCat);
-        }
-    });
-}
-
-// --- 3. DASTUR VA PROFILNI SOZLASH ---
-function initApp() {
-    if (user) {
-        // Ism va Telefonni ekranga chiqarish
-        const uName = document.getElementById('uName');
-        const uPhone = document.getElementById('uPhone');
-        
-        if(uName) uName.innerText = user.name || "Mijoz";
-        if(uPhone) uPhone.innerText = user.phone || "+998...";
-        
-        // Login oynasini yopish
-        document.getElementById('loginModal').style.display = 'none';
-        
-        // Tarixni yuklash (agar funksiya bo'lsa)
-        if (typeof loadHistory === 'function') loadHistory();
-    }
-}
-
-// --- 4. MA'LUMOTLARNI YUKLASH (Google Sheets) ---
-function loadData() {
-    fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`)
-        .then(r => r.text())
-        .then(t => {
-            const j = JSON.parse(t.substr(47).slice(0, -2));
-            products = j.table.rows.map(r => ({
-                id: r.c[0]?.v,
-                cat: r.c[1]?.v || "Boshqa",
-                name: r.c[2]?.v,
-                price: r.c[3]?.v || 0,
-                img: r.c[4]?.v,
-                desc: r.c[5]?.v || ""
-            }));
-            
-            // Kategoriyalar va Mahsulotlarni chizamiz
-            renderCats();
-            renderGrid('Barchasi');
-            
-            // Agar foydalanuvchi allaqachon kirgan bo'lsa, yurakchalarni tekshiramiz
-            if (user && user.favorites) {
-                renderGrid('Barchasi'); // Qayta chizamiz
-            }
-        })
-        .catch(err => {
-            console.error("Google Sheets Xatosi:", err);
-            alert("Internet bilan muammo bor yoki mahsulotlar yuklanmadi.");
-        });
-}
-
-// --- 5. ENG MUHIMI: DASTURNI ISHGA TUSHIRISH ---
-// Bu kod faylning eng oxirida turishi shart!
-window.addEventListener('DOMContentLoaded', () => {
-    // A) Avval mahsulotlarni yuklaymiz
-    loadData();
-
-    // B) Keyin xotirani tekshiramiz (Eski odam bormi?)
-    const savedUid = localStorage.getItem('cafe_uid');
-
-    if (savedUid) {
-        // Eski tanish bor -> Tizimga kiritamiz
-        console.log("Xotiradagi ID bilan kirilmoqda: " + savedUid);
-        checkAuth(savedUid);
-    } else {
-        // Hech kim yo'q -> Login so'raymiz
-        setTimeout(() => {
-            if(!user) document.getElementById('loginModal').style.display = 'flex';
-        }, 1000); // Biroz kutib chiqaramiz
-    }
-});
-        // --- 5. ENG MUHIMI: DASTURNI ISHGA TUSHIRISH ---
-// Bu kod faylning eng oxirida turishi shart!
-window.addEventListener('DOMContentLoaded', () => {
-    // 0. Mavzuni (Temani) yuklash
-    if(localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
-    updateThemeUI();
-
-    // A) Avval mahsulotlarni va Storisalarni yuklaymiz
-    loadData();
-    if(typeof loadStories === 'function') loadStories();
-
-    // B) Kafe statusini kuzatish
-    db.ref('info/cafe_status').on('value', s => {
-        shopStatus = s.val() || 'open'; 
-        renderCart(); 
-    });
-
-    // C) Keyin xotirani tekshiramiz (Eski odam bormi?)
-    const savedUid = localStorage.getItem('cafe_uid');
-
-    if (savedUid) {
-        // Eski tanish bor -> Tizimga kiritamiz
-        console.log("Xotiradagi ID bilan kirilmoqda: " + savedUid);
-        checkAuth(savedUid);
-    } else {
-        // Hech kim yo'q -> Login so'raymiz
-        setTimeout(() => {
-            if(!user) document.getElementById('loginModal').style.display = 'flex';
-        }, 1000); 
-    }
-});
-        
 </script>
 
 </body>
