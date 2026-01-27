@@ -1124,46 +1124,84 @@ body.light-mode .nav-btn.active::after {
         },()=>{b.innerHTML="❌ GPS Xatosi";},{enableHighAccuracy:true});
     }
 
-    // --- BUYURTMA YUBORISH ---
-    function sendOrder() {
-        if (!user || !user.phone) { alert("Xatolik: Tizimga kirilmagan."); return; }
-        
-        const items = [];
-        let t = 0;
-        for (let id in cart) {
-            const product = products.find(p => p.id == id);
-            if (product) {
-                items.push({ name: product.name, qty: cart[id], price: product.price });
-                t += product.price * cart[id];
-            }
-        }
-
-        if (items.length === 0) { toast("Savat bo'sh!"); return; }
-        let finalPrice = activePromo ? t - (t * activePromo / 100) : t;
-
-        const orderData = {
-            user_id: user.phone,
-            user_info: user.name || "Mijoz",
-            items: items,
-            total: finalPrice,
-            original_total: t,
-            promo_discount: activePromo || 0,
-            status: 'yangi',
-            location: loc || null,
-            time: new Date().toLocaleString('uz-UZ')
-        };
-
-        db.ref('orders').push(orderData, (error) => {
-            if (error) { alert("Xatolik: " + error.message); } 
-            else {
-                cart = {}; loc = null; activePromo = null; 
-                toast("✅ Buyurtma yuborildi!");
-                nav('history', document.querySelectorAll('.nav-btn')[2]);
-                const gpsBtn = document.getElementById('gpsBtn');
-                if(gpsBtn) { gpsBtn.innerHTML = "Manzilni aniqlash"; gpsBtn.classList.remove('gps-success'); }
-            }
-        });
+   // --- BUYURTMA YUBORISH ---
+function sendOrder() {
+    // 1. Tizimga kirganlikni tekshirish
+    if (!user || !user.phone) { 
+        alert("Xatolik: Tizimga kirilmagan."); 
+        return; 
     }
+    
+    // 2. Savatdagi mahsulotlarni yig'ish
+    const items = [];
+    let t = 0;
+    for (let id in cart) {
+        const product = products.find(p => p.id == id);
+        if (product) {
+            items.push({ name: product.name, qty: cart[id], price: product.price });
+            t += product.price * cart[id];
+        }
+    }
+
+    // 3. Savat bo'shligini tekshirish
+    if (items.length === 0) { toast("Savat bo'sh!"); return; }
+
+    // 4. Yakuniy narxni hisoblash (Promo bo'lsa)
+    let finalPrice = activePromo ? t - (t * activePromo / 100) : t;
+
+    // 5. Buyurtma ma'lumotlarini tayyorlash
+    const orderData = {
+        user_id: user.phone,
+        user_info: user.name || "Mijoz",
+        items: items,
+        total: finalPrice,
+        original_total: t,
+        promo_discount: activePromo || 0,
+        status: 'yangi',
+        location: loc || null,
+        time: new Date().toLocaleString('uz-UZ')
+    };
+
+    // 6. Firebasega yuborish
+    db.ref('orders').push(orderData, (error) => {
+        if (error) { 
+            alert("Xatolik: " + error.message); 
+        } else {
+            // --- YANGI QISM: PROMOKOD ISHLATILGANINI SAQLASH ---
+            if (activePromoCode) {
+                const cleanPhone = user.phone.replace('+', '');
+                
+                // A) Foydalanuvchi bu kodni necha marta ishlatganini oshiramiz (+1)
+                db.ref(`users/${cleanPhone}/used_promos/${activePromoCode}`).transaction(val => (val || 0) + 1);
+                
+                // B) Promokodning umumiy limitini kamaytiramiz (-1)
+                db.ref(`promocodes/${activePromoCode}/limit`).transaction(val => (val || 0) - 1);
+            }
+            // ----------------------------------------------------
+
+            // 7. Tozalash va Xabar berish
+            cart = {}; 
+            loc = null; 
+            activePromo = null; 
+            activePromoCode = null; // Kod nomini ham o'chiramiz
+            
+            toast("✅ Buyurtma yuborildi!");
+            
+            // Tarix bo'limiga o'tish
+            nav('history', document.querySelectorAll('.nav-btn')[2]);
+            
+            // GPS tugmasini qayta sozlash
+            const gpsBtn = document.getElementById('gpsBtn');
+            if(gpsBtn) { 
+                gpsBtn.innerHTML = "Manzilni aniqlash"; 
+                gpsBtn.classList.remove('gps-success'); 
+            }
+            
+            // Savat ko'rinishini yangilash
+            renderCart();
+        }
+    });
+}
 
     // --- TARIX VA STATUSLAR ---
     function loadHistory() {
@@ -1203,7 +1241,56 @@ body.light-mode .nav-btn.active::after {
             document.getElementById('promoListContent').innerHTML=h||"Aktiv kod yo'q";
         });
     }
-    function checkPromo(){const c=document.getElementById('promoInp').value.toUpperCase();db.ref('promocodes/'+c).once('value',s=>{if(s.val()&&s.val().limit>0){activePromo=s.val().discount;document.getElementById('promoMsg').innerHTML=`<b style="color:var(--success)">✅ ${activePromo}% Chegirma!</b>`;renderCart();}else{document.getElementById('promoMsg').innerHTML=`<b style="color:var(--red)">❌ Xato kod</b>`;}});}
+    function checkPromo() {
+    const code = document.getElementById('promoInp').value.toUpperCase().trim();
+    const msg = document.getElementById('promoMsg');
+    
+    // Tozalash
+    activePromo = null;
+    activePromoCode = null;
+    msg.innerHTML = "";
+
+    if (!code) return;
+
+    // 1. Bazadan kodni qidirish
+    db.ref('promocodes/' + code).once('value', s => {
+        const promo = s.val();
+
+        // A) Kod umuman yo'q bo'lsa
+        if (!promo) {
+            msg.innerHTML = `<b style="color:var(--red)">❌ Kod mavjud emas</b>`;
+            renderCart();
+            return;
+        }
+
+        // B) Umumiy limit tugagan bo'lsa (Admin belgilagan)
+        if (promo.limit <= 0) {
+            msg.innerHTML = `<b style="color:var(--red)">⚠️ Bu aksiya muddati tugagan</b>`;
+            renderCart();
+            return;
+        }
+
+        // C) FOYDALANUVCHI LIMITINI TEKSHIRISH (YANGI QISM)
+        // Har bir user o'z tarixida shu kodni necha marta ishlatganini tekshiramiz
+        const userPhone = user.phone.replace('+', '');
+        
+        db.ref(`users/${userPhone}/used_promos/${code}`).once('value', u => {
+            const usedCount = u.val() || 0; // Agar oldin ishlatmagan bo'lsa 0 bo'ladi
+
+            // SHART: Har bir odam maksimal 3 marta ishlata oladi
+            if (usedCount >= 3) {
+                msg.innerHTML = `<b style="color:var(--red)">🚫 Siz bu koddan 3 marta foydalangansiz</b>`;
+                renderCart();
+            } else {
+                // Hamma shartdan o'tdi -> Chegirma beramiz
+                activePromo = promo.discount;
+                activePromoCode = code; // Kod nomini eslab qolamiz
+                msg.innerHTML = `<b style="color:var(--success)">✅ ${activePromo}% Chegirma qabul qilindi!</b>`;
+                renderCart();
+            }
+        });
+    });
+}
 
     // --- YORDAMCHI FUNKSIYALAR ---
     function nav(p,el){document.querySelectorAll('.page-cont').forEach(x=>x.classList.remove('active'));document.getElementById('p-'+p).classList.add('active');document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));el.classList.add('active');if(p=='cart')renderCart();}
