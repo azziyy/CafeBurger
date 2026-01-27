@@ -759,7 +759,7 @@
             <p>Premium Service</p>
         </div>
         <div id="themeBtn" class="drawer-item tap" onclick="toggleTheme()">
-    <i class="fa fa-moon"></i> Tungi rejim
+    <i class="fa fa-moon fa-fw"></i> Tungi rejim
 </div>
         <div class="d-item tap" onclick="openModal('contactModal'); toggleDrawer()"><i class="fa fa-headset"></i> Bog'lanish</div>
         <div class="d-item tap" onclick="location.reload()"><i class="fa fa-sync"></i> Yangilash</div>
@@ -1223,11 +1223,12 @@ function updateThemeUI() {
     
     if (btn) {
         if (isLight) {
-            // Agar OQ rejim bo'lsa -> Tungi rejimga o'tishni taklif qilamiz
-            btn.innerHTML = '<i class="fa fa-moon"></i> Tungi rejim';
+            // Hozir OQ rejim -> Tungi rejimga o'tish (Oy ikonka)
+            btn.innerHTML = '<i class="fa fa-moon fa-fw"></i> Tungi rejim';
         } else {
-            // Agar QORA rejim bo'lsa -> Kunduzgi rejimga o'tishni taklif qilamiz
-            btn.innerHTML = '<i class="fa fa-sun" style="color:orange;"></i> Kunduzgi rejim';
+            // Hozir QORA rejim -> Kunduzgi rejimga o'tish (Quyosh ikonka)
+            // Rangni olib tashladim, menyu bilan bir xil oq tursin
+            btn.innerHTML = '<i class="fa fa-sun fa-fw"></i> Kunduzgi rejim';
         }
     }
 }
