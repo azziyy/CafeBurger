@@ -1068,24 +1068,45 @@ body.light-mode .nav-btn.active::after {
     }
 
     // --- AUTH VA BLOKLASH TEKSHIRUVI ---
-    function checkAuth(uid) {
-        db.ref('users/' + uid).on('value', s => {
-            const d = s.val();
-            if (!d) { document.getElementById('loginModal').style.display = 'flex'; return; }
-            
-            if (d.blocked === true) {
-                document.getElementById('blockScreen').style.display = 'flex';
-                document.getElementById('loginModal').style.display = 'none';
-                return;
-            }
+   function checkAuth(uid) {
+    db.ref('users/' + uid).on('value', s => {
+        const d = s.val();
 
-            document.getElementById('blockScreen').style.display = 'none';
-            user = d;
+        // 1. Agar foydalanuvchi bazada bo'lmasa -> Login oynasi
+        if (!d) { 
+            document.getElementById('loginModal').style.display = 'flex'; 
+            return; 
+        }
+        
+        // 2. Agar bloklangan bo'lsa -> Blok oynasi
+        if (d.blocked === true) {
+            document.getElementById('blockScreen').style.display = 'flex';
             document.getElementById('loginModal').style.display = 'none';
-            initApp();
-        });
-    }
+            return;
+        }
 
+        // 3. Hammasi joyida
+        document.getElementById('blockScreen').style.display = 'none';
+        document.getElementById('loginModal').style.display = 'none';
+        
+        user = d;
+
+        // --- MUHIM O'ZGARISH SHU YERDA ---
+        
+        // A) Bazadagi "sevimlilar"ni lokal o'zgaruvchiga yuklaymiz
+        favs = user.favorites || {}; 
+
+        // B) Ilova ma'lumotlarini (Ism, Telefon, Tarix) yuklaymiz
+        initApp();
+
+        // C) EKRANNI YANGILASH
+        // Agar mahsulotlar ro'yxati yuklanib bo'lgan bo'lsa,
+        // ularni qayta chizamiz (shunda yurakchalar qizaradi)
+        if (products.length > 0) {
+            renderGrid(currentCat);
+        }
+    });
+}
     function initApp() {
         if (user.name) document.getElementById('uName').innerText = user.name;
         if (user.phone) document.getElementById('uPhone').innerText = user.phone;
@@ -1626,16 +1647,23 @@ function sendOrder() {
     function openProd(id){const p=products.find(x=>x.id==id);tempPmId=id;tempPmQty=1;document.getElementById('pmImg').src=p.img;document.getElementById('pmName').innerText=p.name;document.getElementById('pmPrice').innerText=p.price.toLocaleString()+" so'm";document.getElementById('pmDesc').innerText=p.desc;document.getElementById('pmQty').innerText="1";openModal('prodModal');}
     function pmQ(n){tempPmQty+=n;if(tempPmQty<1)tempPmQty=1;document.getElementById('pmQty').innerText=tempPmQty;}
     function addFromModal(){updCart(tempPmId,tempPmQty);closeModal('prodModal');}
-    function togFav(id){ 
-    if(favs[id])delete favs[id]; else favs[id]=true; 
-    
-    // Foydalanuvchi bazasiga saqlash
-    if(user && user.phone) {
-        db.ref('users/'+user.phone.replace('+','')+'/favorites').set(favs);
+    // --- SEVIMLILARNI BOSHQARISH (TUZATILDI) ---
+function togFav(id) {
+    // 1. Lokal o'zgaruvchini yangilash
+    if (favs[id]) {
+        delete favs[id]; // Bor bo'lsa o'chiramiz
+    } else {
+        favs[id] = true; // Yo'q bo'lsa qo'shamiz
     }
-    
-    // Mana bu yerda ham xotiradagi kategoriya ishlatiladi
-    renderGrid(currentCat); 
+
+    // 2. Firebase bazasiga yozish (Eng muhim joyi)
+    if (user && user.phone) {
+        const cleanPhone = user.phone.replace('+', '');
+        db.ref(`users/${cleanPhone}/favorites`).set(favs);
+    }
+
+    // 3. Ekranni yangilash (Yurakcha qizarishi uchun)
+    renderGrid(currentCat);
 }
     
     function openFavs() {
