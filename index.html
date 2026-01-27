@@ -903,7 +903,7 @@
     const db = firebase.database();
     
     // 1. O'ZGARUVCHILAR (shopStatus qo'shilgan)
-    let products=[], cart={}, user=null, loc=null, favs={}, stories=[], stIdx=0, stTimer, shopLoc=null, activePromo=null, shopStatus='open';
+    let products=[], cart={}, user=null, loc=null, favs={}, stories=[], stIdx=0, stTimer, shopLoc=null, activePromo=null, shopStatus='open', currentCat='Barchasi'; // <-- currentCat qo'shildi
     let tempPmId=null, tempPmQty=1, map=null, carMarker=null;
 
     // 2. DASTUR YUKLANGANDA
@@ -988,7 +988,12 @@
 
     // --- MENU VA SAVAT ---
     function renderCats(){ const c=['Barchasi',...new Set(products.map(p=>p.cat))]; document.getElementById('catNav').innerHTML=c.map(k=>`<div class="cat-pill tap ${k=='Barchasi'?'active':''}" onclick="filt('${k}',this)">${k}</div>`).join(''); }
-    function filt(c,el){ document.querySelectorAll('.cat-pill').forEach(x=>x.classList.remove('active')); el.classList.add('active'); renderGrid(c); }
+    function filt(c,el){ 
+    currentCat = c; // <-- Kategoriya nomini eslab qolamiz
+    document.querySelectorAll('.cat-pill').forEach(x=>x.classList.remove('active')); 
+    el.classList.add('active'); 
+    renderGrid(c); 
+}
     
     function renderGrid(c){
         const l=c=='Barchasi'?products:products.filter(p=>p.cat==c);
@@ -1170,7 +1175,17 @@
     function openProd(id){const p=products.find(x=>x.id==id);tempPmId=id;tempPmQty=1;document.getElementById('pmImg').src=p.img;document.getElementById('pmName').innerText=p.name;document.getElementById('pmPrice').innerText=p.price.toLocaleString()+" so'm";document.getElementById('pmDesc').innerText=p.desc;document.getElementById('pmQty').innerText="1";openModal('prodModal');}
     function pmQ(n){tempPmQty+=n;if(tempPmQty<1)tempPmQty=1;document.getElementById('pmQty').innerText=tempPmQty;}
     function addFromModal(){updCart(tempPmId,tempPmQty);closeModal('prodModal');}
-    function togFav(id){if(favs[id])delete favs[id];else favs[id]=true;db.ref('users/'+user.phone.replace('+','')+'/favorites').set(favs);renderGrid(document.querySelector('.cat-pill.active').innerText);}
+    function togFav(id){ 
+    if(favs[id])delete favs[id]; else favs[id]=true; 
+    
+    // Foydalanuvchi bazasiga saqlash
+    if(user && user.phone) {
+        db.ref('users/'+user.phone.replace('+','')+'/favorites').set(favs);
+    }
+    
+    // Mana bu yerda ham xotiradagi kategoriya ishlatiladi
+    renderGrid(currentCat); 
+}
     
     function openFavs() {
         const l = products.filter(p => favs[p.id]); 
