@@ -1057,12 +1057,14 @@
         btn.style.opacity = '0.5';
         btn.style.pointerEvents = 'none';
         
-        // Agar savatda narsa bo'lsa-yu, manzil aniqlanmagan bo'lsa
+                // Agar savatda narsa bo'lsa-yu, manzil aniqlanmagan bo'lsa
         if(t > 0 && !loc) {
             btn.innerHTML = "📍 MANZILNI ANIQLANG";
             btn.style.boxShadow = "none"; // Xira holatda nur bo'lmasin
         }
-    }
+    } // <-- MANA SHU QAVS TUSHIB QOLGAN EDI (else'ni yopadi)
+} // <-- BU QAVS FUNKSIYANI TO'LIQ YOPADI
+
 
 
     function getGPS(){
