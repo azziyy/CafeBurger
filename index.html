@@ -1099,6 +1099,49 @@ function openChatModal() {
         function copy(t){navigator.clipboard.writeText(t);toast("Nusxalandi");}
         function toggleTheme(){document.body.classList.toggle('light-mode');localStorage.setItem('theme',document.body.classList.contains('light-mode')?'light':'dark');}
         function openNews(){db.ref('news').limitToLast(10).once('value',s=>{document.getElementById('newsContent').innerHTML=Object.values(s.val()||{}).reverse().map(n=>`<div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:15px;margin-bottom:10px;"><div style="font-weight:700;margin-bottom:5px;">${n.text}</div><div style="font-size:11px;color:gray;">${n.date}</div></div>`).join('')||"Yo'q";openModal('newsModal');});}
+        
+            // --- BU KOD YETISHMAYAPTI (ENG PASTGA QO'SHING) ---
+
+    // 1. Mashina ikonkasini sozlash
+    var carIcon = L.icon({
+        iconUrl: 'https://cdn-icons-png.flaticon.com/512/3202/3202926.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 20]
+    });
+
+    // 2. Kuryerni kuzatish funksiyasi
+    function track(cid) {
+        // Xarita oynasini (Modal) ochish
+        // DIQQAT: HTML da id="mapModal" borligiga ishonch hosil qiling
+        const modal = document.getElementById('mapModal');
+        if(modal) modal.style.display = 'block';
+
+        // Xaritani yaratish (Agar oldin yaratilmagan bo'lsa)
+        if (!map) {
+            map = L.map('map').setView([41.31, 69.24], 13);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
+        }
+
+        // Xarita to'liq yuklanishi uchun biroz kutish
+        setTimeout(() => { map.invalidateSize(); }, 500);
+
+        // Kuryer joylashuvini real vaqtda olish
+        db.ref('couriers/' + cid + '/location').on('value', s => {
+            const d = s.val();
+            if (!d) return;
+
+            // Markerni yangilash
+            if (carMarker) {
+                carMarker.setLatLng([d.lat, d.long]);
+            } else {
+                carMarker = L.marker([d.lat, d.long], {icon: carIcon}).addTo(map);
+            }
+
+            // Xarita markazini mashinaga to'g'irlash
+            map.panTo([d.lat, d.long]);
+        });
+    }
+    
     </script>
 </body>
 </html>
