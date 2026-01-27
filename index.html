@@ -726,6 +726,36 @@
     justify-content: center;
     transition: 0.2s;
 }
+    /* --- KUNDUZGI REJIM (LIGHT MODE) UCHUN BOTTOM MENU --- */
+
+/* 1. Menyuning orqa foni (OQ) */
+body.light-mode .navbar {
+    background-color: #ffffff !important;   /* Oq fon */
+    border-top: 1px solid #e4e4e7;          /* Tepa qismida ingichka chiziq */
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.05); /* Yengil soya */
+}
+
+/* 2. Bosilmagan (nofaol) tugmalar rangi */
+body.light-mode .nav-btn {
+    color: #a1a1aa !important; /* Och kulrang */
+}
+
+/* 3. AKTIV (Bosilgan) tugma rangi */
+/* Siz so'ragandek: Ikonka QORA, Yozuv SARIQ */
+body.light-mode .nav-btn.active i {
+    color: #000000 !important; /* Ikonka Qora */
+    transform: scale(1.1);      /* Sal kattalashadi */
+}
+
+body.light-mode .nav-btn.active span {
+    color: #FFD700 !important; /* Yozuv Oltin Sariq */
+    font-weight: 800;          /* Qalin shrift */
+}
+
+/* Qo'shimcha: Aktiv tugma tepasidagi chiziqcha (agar bor bo'lsa) */
+body.light-mode .nav-btn.active::after {
+    background-color: #FFD700 !important; /* Sariq chiziq */
+}
 
     
     /* Toast */
