@@ -1902,26 +1902,37 @@ window.addEventListener('DOMContentLoaded', () => {
         }, 1000); // Biroz kutib chiqaramiz
     }
 });
-        // --- 3. DASTUR ISHGA TUSHGANDA (ENG OXIRGI QATOR) ---
+        // --- 5. ENG MUHIMI: DASTURNI ISHGA TUSHIRISH ---
+// Bu kod faylning eng oxirida turishi shart!
+window.addEventListener('DOMContentLoaded', () => {
+    // 0. Mavzuni (Temani) yuklash
+    if(localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+    updateThemeUI();
 
-
-        // --- DASTUR YUKLANGANDA XOTIRANI TEKSHIRISH ---
-window.onload = function() {
-    // 1. Mahsulotlarni yuklaymiz (Bu sizning kodingizda bor)
+    // A) Avval mahsulotlarni va Storisalarni yuklaymiz
     loadData();
+    if(typeof loadStories === 'function') loadStories();
 
-    // 2. Oldin kirgan odam borligini tekshiramiz
+    // B) Kafe statusini kuzatish
+    db.ref('info/cafe_status').on('value', s => {
+        shopStatus = s.val() || 'open'; 
+        renderCart(); 
+    });
+
+    // C) Keyin xotirani tekshiramiz (Eski odam bormi?)
     const savedUid = localStorage.getItem('cafe_uid');
 
     if (savedUid) {
-        // Agar xotirada ID bo'lsa, o'sha foydalanuvchini bazadan chaqiramiz
-        console.log("Eski foydalanuvchi topildi: " + savedUid);
+        // Eski tanish bor -> Tizimga kiritamiz
+        console.log("Xotiradagi ID bilan kirilmoqda: " + savedUid);
         checkAuth(savedUid);
     } else {
-        // Agar hech kim bo'lmasa, Login oynasi chiqadi
-        document.getElementById('loginModal').style.display = 'flex';
+        // Hech kim yo'q -> Login so'raymiz
+        setTimeout(() => {
+            if(!user) document.getElementById('loginModal').style.display = 'flex';
+        }, 1000); 
     }
-};
+});
         
 </script>
 
