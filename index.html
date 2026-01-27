@@ -897,37 +897,46 @@
                 if(s.val()){ user=s.val(); localStorage.setItem('cafe_uid',user.phone.replace('+','')); db.ref('auth_tokens/'+t).remove(); document.getElementById('loginModal').style.display='none'; initApp(); }
             });
         }
-        function checkAuth(uid) {
-    // Foydalanuvchini real vaqtda kuzatish
+        // --- 1. AUTH TEKSHIRUVCHI (TUZATILGAN) ---
+function checkAuth(uid) {
     db.ref('users/' + uid).on('value', s => {
         const d = s.val();
 
-        // 1. Agar foydalanuvchi umuman topilmasa -> Login oynasi
+        // Agar foydalanuvchi yo'q bo'lsa -> Login
         if (!d) {
             document.getElementById('loginModal').style.display = 'flex';
             return;
         }
 
-        // 2. AGAR BLOKLANGAN BO'LSA -> QORA EKRAN (MUHIM QISM)
+        // Agar BLOKLANGAN bo'lsa
         if (d.blocked === true) {
             document.getElementById('blockScreen').style.display = 'flex';
             document.getElementById('loginModal').style.display = 'none';
-            return; // Dastur shu joyda to'xtaydi
+            return;
         }
 
-        // 3. Agar hammasi joyida bo'lsa -> Ilovaga kirish
+        // Agar hammasi joyida bo'lsa
         document.getElementById('blockScreen').style.display = 'none';
         
-        // Agar birinchi marta yuklanayotgan bo'lsa
-        if (!user) {
-            user = d;
-            document.getElementById('loginModal').style.display = 'none';
-            initApp();
-        } else {
-            // Agar ilova ichida bo'lsa-yu, ma'lumot o'zgarsa (bloklanmasa)
-            user = d;
-        }
+        user = d; // MUHIM: User ma'lumotlarini saqlab olamiz
+        document.getElementById('loginModal').style.display = 'none';
+        
+        // Ilovani ishga tushiramiz (Ism, Telefon va Tarixni yuklaydi)
+        initApp(); 
     });
+}
+
+// --- 2. ILOVANI YUKLASH (ISMNI CHIQARISH VA TARIX) ---
+function initApp() {
+    // Ism va Telefonni yozish
+    if (user.name) document.getElementById('uName').innerText = user.name;
+    if (user.phone) document.getElementById('uPhone').innerText = user.phone;
+    
+    // Sevimlilarni olish
+    favs = user.favorites || {};
+    
+    // Tarixni yuklash funksiyasini chaqirish
+    loadHistory(); 
 }
 
 
