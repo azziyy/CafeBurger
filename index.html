@@ -1033,14 +1033,12 @@
 
         // 1. Agar Kafe YOPIQ bo'lsa
         if (shopStatus === 'closed') {
-    btn.innerHTML = "⛔️ KAFE YOPILGAN";
-    btn.style.background = "#333";
-    btn.style.boxShadow = "none"; // Soyani o'chiradi, shunda effekt orqaga o'tib ketmaydi
-    btn.style.opacity = "1";
-    btn.style.pointerEvents = "none";
-    return;
-}
-
+            btn.innerHTML = "⛔️ KAFE YOPILGAN";
+            btn.style.background = "#333";
+            btn.style.opacity = "1";
+            btn.style.pointerEvents = "none";
+            return;
+        }
 
         // 2. Agar Kafe OCHIQ bo'lsa
         btn.innerHTML = "BUYURTMA BERISH";
