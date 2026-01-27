@@ -758,8 +758,8 @@
             <h2>CAFE 888</h2>
             <p>Premium Service</p>
         </div>
-        <div id="themeBtn" class="drawer-item tap" onclick="toggleTheme()">
-    <i class="fa fa-moon fa-fw"></i> Tungi rejim
+        <div id="themeBtn" class="drawer-item tap" style="background: var(--bg-card); border-radius: 12px; margin-bottom: 8px;" onclick="toggleTheme()">
+    <i class="fa fa-moon"></i> Tungi rejim
 </div>
         <div class="d-item tap" onclick="openModal('contactModal'); toggleDrawer()"><i class="fa fa-headset"></i> Bog'lanish</div>
         <div class="d-item tap" onclick="location.reload()"><i class="fa fa-sync"></i> Yangilash</div>
@@ -1223,16 +1223,12 @@ function updateThemeUI() {
     
     if (btn) {
         if (isLight) {
-            // Hozir OQ rejim -> Tungi rejimga o'tish (Oy ikonka)
-            btn.innerHTML = '<i class="fa fa-moon fa-fw"></i> Tungi rejim';
+            btn.innerHTML = '<i class="fa fa-moon"></i> Tungi rejim';
         } else {
-            // Hozir QORA rejim -> Kunduzgi rejimga o'tish (Quyosh ikonka)
-            // Rangni olib tashladim, menyu bilan bir xil oq tursin
-            btn.innerHTML = '<i class="fa fa-sun fa-fw"></i> Kunduzgi rejim';
+            btn.innerHTML = '<i class="fa fa-sun"></i> Kunduzgi rejim';
         }
     }
 }
-
 // 2. Toggle funksiyasini yangilaymiz
 function toggleTheme() {
     document.body.classList.toggle('light-mode');
