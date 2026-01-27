@@ -951,12 +951,17 @@ body.light-mode .nav-btn.active::after {
     </div>
 </div>
 
+
+
+    
+
 <div id="addressModal" class="modal-wrap" style="align-items:center; z-index:9999;">
-    <div style="background:var(--bg-card); width:95%; max-width:400px; padding:20px; border-radius:25px; border:1px solid rgba(255,255,255,0.05); text-align:center; position:relative;">
+    <div style="background:var(--bg-card); width:95%; max-width:450px; padding:20px; border-radius:25px; border:1px solid rgba(255,255,255,0.05); text-align:center; position:relative;">
+        
         <h3 style="margin:0 0 10px; color:var(--primary);">Manzilni aniqlang</h3>
         <p style="font-size:12px; color:#aaa; margin-bottom:10px;">Belgini darvozangiz ustiga to'g'irlang</p>
 
-        <div style="width:100%; height:300px; border-radius:15px; overflow:hidden; position:relative; margin-bottom:15px;">
+        <div style="width:100%; height:450px; border-radius:15px; overflow:hidden; position:relative; margin-bottom:15px;">
             <div id="confirmMap" style="width:100%; height:100%;"></div>
             
             <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -100%); z-index:1000; pointer-events:none;">
@@ -1234,58 +1239,75 @@ function renderCart() {
 
 // --- YANGILANGAN GPS TIZIMI (FARG'ONA + GOOGLE SATELLITE + MENI TOP) ---
 
+// --- YANGILANGAN GPS TIZIMI (5 SEKUND KUTISH + QISQA MANZIL) ---
+
 let tempLoc = null;     
 let confirmMap = null;  
 let mapMoveTimer = null; 
+let searchTimer = null;
+let bestLat = null, bestLng = null, bestAcc = 10000; // Eng yaxshi natijani saqlash uchun
 
-// 1. GPS QIDIRISH (Sodda va Tez)
+// 1. GPS QIDIRISH (5 Soniyalik qidiruv)
 function getGPS() {
     const btn = document.getElementById('gpsBtn');
     
-    // Tugmani animatsiya qilamiz
-    btn.innerHTML = `<i class="fa fa-satellite-dish fa-spin"></i> Xarita ochilmoqda...`;
+    // Reset
+    bestAcc = 10000; bestLat = null; bestLng = null;
+    
+    btn.innerHTML = `<i class="fa fa-satellite-dish fa-spin"></i> Eng aniq joy qidirilmoqda (5s)...`;
     btn.classList.add('searching');
     btn.classList.remove('gps-success', 'gps-error');
 
     if (window.Android && window.Android.checkGPS) window.Android.checkGPS();
 
-    // 2 soniya ichida GPS qidiramiz. Topilsa o'sha joydan, topilmasa Farg'onadan ochiladi.
-    const options = { enableHighAccuracy: true, timeout: 2000, maximumAge: 0 };
-
-    navigator.geolocation.getCurrentPosition(
+    // Kuzatishni boshlaymiz
+    const watchId = navigator.geolocation.watchPosition(
         (p) => {
-            // GPS topildi
-            finishGPS(p.coords.latitude, p.coords.longitude);
+            const acc = p.coords.accuracy;
+            // Har safar aniqroq signal kelsa, eslab qolamiz
+            if(acc < bestAcc) {
+                bestAcc = acc;
+                bestLat = p.coords.latitude;
+                bestLng = p.coords.longitude;
+            }
         },
-        (err) => {
-            // GPS topilmadi yoki ruxsat yo'q -> FARG'ONA MARKAZI (Taxminiy)
-            // Koordinata: 40.3864 (Farg'ona), 71.7864
-            finishGPS(40.3864, 71.7864); 
-        },
-        options
+        (err) => { console.log("GPS signal past..."); },
+        { enableHighAccuracy: true, maximumAge: 0 }
     );
+
+    // 5 SONIYA KUTAMIZ, KEYIN OCHAMIZ
+    setTimeout(() => {
+        navigator.geolocation.clearWatch(watchId); // Qidiruvni to'xtatamiz
+        
+        if(bestLat && bestLng) {
+            // Eng yaxshi topgan joyini ochamiz
+            finishGPS(bestLat, bestLng);
+        } else {
+            // Agar umuman topolmasa, Farg'ona markazini ochamiz
+            // Farg'ona, Kirgili markazi: 40.3864, 71.7864
+            finishGPS(40.3864, 71.7864); 
+            toast("GPS signali topilmadi, xaritadan belgilang");
+        }
+    }, 5000); // <-- 5000 millisekund = 5 soniya
 }
 
-// 2. MODALNI OCHISH VA XARITANI YARATISH
+// 2. MODALNI OCHISH VA ODDIY XARITA
 function finishGPS(lat, lng) {
     const btn = document.getElementById('gpsBtn');
     btn.innerHTML = `<i class="fa fa-map-pin"></i> Manzilni aniqlang...`;
     
     tempLoc = { lat, long: lng };
-    openModal('addressModal'); // Modallarni ochish
+    openModal('addressModal'); 
 
-    // Eski xarita bo'lsa o'chiramiz
     if (confirmMap) { confirmMap.remove(); confirmMap = null; }
 
     setTimeout(() => {
-        // Xaritani yaratish
         confirmMap = L.map('confirmMap', {
-            zoomControl: false,
-            attributionControl: false
+            zoomControl: false, attributionControl: false
         }).setView([lat, lng], 18);
 
-        // --- GOOGLE SATELLITE (Sputnik) KO'RINISHI ---
-        L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+        // --- ODDIY REJIM (CartoDB Voyager - Chiroyli va Toza) ---
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
             maxZoom: 20
         }).addTo(confirmMap);
 
@@ -1301,46 +1323,57 @@ function finishGPS(lat, lng) {
             getAddressName(center.lat, center.lng);
         });
 
+        // Birinchi marta nomini olamiz
         getAddressName(lat, lng);
+        
         btn.classList.remove('searching');
         btn.innerHTML = "Manzilni aniqlash"; 
         confirmMap.invalidateSize();
     }, 300);
 }
 
-// 3. "MENI TOP" TUGMASI BOSILGANDA
+// 3. "MENI TOP" TUGMASI
 function locateMeInMap() {
     if(!confirmMap) return;
-    
-    // Tugmani aylantirib turamiz
     const icon = document.querySelector('.fa-crosshairs');
     if(icon) icon.classList.add('fa-spin');
 
     navigator.geolocation.getCurrentPosition((p) => {
-        // Xaritani o'sha joyga uchiramiz
         confirmMap.flyTo([p.coords.latitude, p.coords.longitude], 18);
         if(icon) icon.classList.remove('fa-spin');
-    }, (err) => {
-        alert("GPS signali past. Iltimos, ochiq joyga chiqing.");
+    }, () => {
         if(icon) icon.classList.remove('fa-spin');
     }, { enableHighAccuracy: true });
 }
 
-// 4. MANZIL NOMINI OLISH
+// 4. MANZIL NOMINI OLISH (MUKAMMAL QISQARTIRISH)
 function getAddressName(lat, lng) {
     if(mapMoveTimer) clearTimeout(mapMoveTimer);
     mapMoveTimer = setTimeout(() => {
         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
         .then(res => res.json())
         .then(data => {
-            let addr = data.display_name;
+            let addr = "Noma'lum hudud";
+            
             if(data.address) {
-                const road = data.address.road || "";
-                const house = data.address.house_number || "";
-                const suburb = data.address.suburb || data.address.neighbourhood || ""; 
-                if(road) addr = `${road} ${house}, ${suburb}`;
+                // Bizga faqat shu qismlar kerak:
+                const road = data.address.road || ""; // Ko'cha
+                const house = data.address.house_number || ""; // Uy raqami
+                // Mahalla nomi (ko'pincha suburb, neighbourhood yoki residential da keladi)
+                const mahalla = data.address.suburb || data.address.neighbourhood || data.address.residential || "";
+                
+                // Indeks, Country, Region, City - KERAK EMAS
+                
+                let parts = [];
+                if(road) parts.push(road);
+                if(house) parts.push(house);
+                if(mahalla) parts.push(mahalla);
+                
+                if(parts.length > 0) addr = parts.join(', ');
+                else addr = data.display_name.split(',')[0]; // Agar hech narsa bo'lmasa, birinchisini olamiz
             }
-            document.getElementById('addrText').innerText = addr || "Noma'lum hudud";
+            
+            document.getElementById('addrText').innerText = addr;
             document.getElementById('addrText').style.color = "white";
         })
         .catch(() => {
@@ -1349,13 +1382,12 @@ function getAddressName(lat, lng) {
     }, 500);
 }
 
-// 5. TASDIQLASH (Minimal summa va Lokatsiya tekshiruvi shu yerda emas, bu faqat manzilni oladi)
+// 5. TASDIQLASH (Minimal summa va Masofa tekshiruvi)
 function confirmGPS() {
     if (tempLoc) {
         if (shopLoc && shopLoc.radius) {
             const d = getDist(tempLoc.lat, tempLoc.long, shopLoc.lat, shopLoc.long);
             if (d > shopLoc.radius) {
-                // MINIMAL SUMMA EMAS, MASOFA ALERTINI CHIQARAMIZ
                 document.getElementById('alertMsg').innerHTML = `Uzr, bu manzil juda uzoq.<br>Masofa: <b>${d.toFixed(1)} km</b>`;
                 openModal('alertModal');
                 return;
