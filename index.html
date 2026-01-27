@@ -710,6 +710,15 @@
     /* Toast */
     #toastBox { position: fixed; top: 20px; left: 20px; right: 20px; z-index: 10000; pointer-events: none; display: flex; flex-direction: column; gap: 10px; }
     .toast { background: rgba(30,30,30,0.95); color: white; padding: 15px; border-radius: 12px; border-left: 4px solid var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: fadeIn 0.3s; font-weight: 600; }
+    
+    #blockScreen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #000; z-index: 10000; display: none;
+    flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; color: white; padding: 20px;
+}
+#blockScreen i { font-size: 50px; color: #ef4444; margin-bottom: 20px; }
+
 </style>
 </head>
 <body>
@@ -847,9 +856,18 @@
         <button onclick="document.getElementById('mapModal').style.display='none'" style="position:absolute; top:40px; left:20px; z-index:9001; padding:10px 20px; border-radius:20px; border:none; background:white; font-weight:bold; box-shadow:0 5px 20px rgba(0,0,0,0.2);">⬅️ Orqaga</button>
         <div id="map" style="width:100%; height:100%;"></div>
     </div>
-
+    
     <div id="newsModal" class="modal-wrap" onclick="if(event.target==this)closeModal('newsModal')"><div class="sheet"><h3 style="color:var(--primary)">Yangiliklar</h3><div id="newsContent" style="margin-top:15px; max-height:400px; overflow-y:auto;"></div></div></div>
     <div id="contactModal" class="modal-wrap" onclick="if(event.target==this)closeModal('contactModal')"><div class="sheet"><h3 style="color:var(--primary)">Aloqa</h3><div class="d-item" onclick="copy('+998939782926')">+998 93 978 29 26</div><button class="btn-main" onclick="window.location.href='https://t.me/Azikking'">Telegram Admin</button></div></div>
+    
+    
+    <div id="blockScreen">
+    <i class="fa fa-ban"></i>
+    <h2>Siz bloklandingiz</h2>
+    <p style="color:#aaa;">Ma'muriyat ushbu xizmatdan foydalanishni cheklagan.</p>
+    <button class="track-btn" style="background:#333; margin-top:20px; width:auto;" onclick="location.reload()">Qayta yuklash</button>
+</div>
+
     
     <div id="toastBox"></div>
 
@@ -879,8 +897,39 @@
                 if(s.val()){ user=s.val(); localStorage.setItem('cafe_uid',user.phone.replace('+','')); db.ref('auth_tokens/'+t).remove(); document.getElementById('loginModal').style.display='none'; initApp(); }
             });
         }
-        function checkAuth(uid){ db.ref('users/'+uid).on('value',s=>{ if(s.val()){ user=s.val(); document.getElementById('loginModal').style.display='none'; initApp(); } else document.getElementById('loginModal').style.display='flex'; }); }
-        function initApp(){ document.getElementById('uName').innerText=user.name; document.getElementById('uPhone').innerText=user.phone; favs=user.favorites||{}; loadHistory();  }
+        function checkAuth(uid) {
+    // Foydalanuvchini real vaqtda kuzatish
+    db.ref('users/' + uid).on('value', s => {
+        const d = s.val();
+
+        // 1. Agar foydalanuvchi umuman topilmasa -> Login oynasi
+        if (!d) {
+            document.getElementById('loginModal').style.display = 'flex';
+            return;
+        }
+
+        // 2. AGAR BLOKLANGAN BO'LSA -> QORA EKRAN (MUHIM QISM)
+        if (d.blocked === true) {
+            document.getElementById('blockScreen').style.display = 'flex';
+            document.getElementById('loginModal').style.display = 'none';
+            return; // Dastur shu joyda to'xtaydi
+        }
+
+        // 3. Agar hammasi joyida bo'lsa -> Ilovaga kirish
+        document.getElementById('blockScreen').style.display = 'none';
+        
+        // Agar birinchi marta yuklanayotgan bo'lsa
+        if (!user) {
+            user = d;
+            document.getElementById('loginModal').style.display = 'none';
+            initApp();
+        } else {
+            // Agar ilova ichida bo'lsa-yu, ma'lumot o'zgarsa (bloklanmasa)
+            user = d;
+        }
+    });
+}
+
 
         function loadData(){
             fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`).then(r=>r.text()).then(t=>{
