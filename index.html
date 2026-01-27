@@ -993,6 +993,31 @@ body.light-mode .nav-btn.active::after {
         </div>
     </div>
 </div>
+
+
+
+    <div id="newsModal" class="modal-wrap" onclick="if(event.target==this)closeModal('newsModal')">
+    <div class="sheet">
+        <h3 style="color:var(--primary); margin-bottom:15px;">Yangiliklar</h3>
+        <div id="newsContent" style="margin-top:15px; max-height:400px; overflow-y:auto; min-height:100px;">
+            <div style="text-align:center; color:#666;">Yuklanmoqda...</div>
+        </div>
+    </div>
+</div>
+
+<div id="contactModal" class="modal-wrap" onclick="if(event.target==this)closeModal('contactModal')">
+    <div class="sheet">
+        <h3 style="color:var(--primary); margin-bottom:15px;">Aloqa</h3>
+        <div class="d-item tap" onclick="copy('+998939782926')" style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; margin-bottom:10px;">
+            <i class="fa fa-phone" style="margin-right:10px;"></i> +998 93 978 29 26
+        </div>
+        <button class="btn-main tap" onclick="window.location.href='https://t.me/Azikking'">
+            <i class="fab fa-telegram"></i> Telegram Admin
+        </button>
+    </div>
+</div>
+
+
     
     <div id="toastBox"></div>
 
