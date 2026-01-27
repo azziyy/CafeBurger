@@ -944,6 +944,9 @@ body.light-mode .nav-btn.active::after {
     firebase.initializeApp({apiKey:"AIzaSyCVSfWRZ77PFFxip93NcD5QZ9Fc0gMUyW8",authDomain:"cafe888-c2d7d.firebaseapp.com",databaseURL:"https://cafe888-c2d7d-default-rtdb.firebaseio.com",projectId:"cafe888-c2d7d",storageBucket:"cafe888-c2d7d.firebasestorage.app",messagingSenderId:"286769489924",appId:"1:286769489924:web:f778a8d15d46abaf1b2d51"});
     
     const db = firebase.database();
+        // --- YANGI SOZLAMALAR (Narxlarni shu yerdan o'zgartirasiz) ---
+    const DELIVERY_PRICE = 5000;  // Dostavka narxi (so'mda)
+    const MIN_ORDER_PRICE = 40000; // Minimal buyurtma (so'mda)
     
     // 1. O'ZGARUVCHILAR (shopStatus qo'shilgan)
     let products=[], cart={}, user=null, loc=null, favs={}, stories=[], stIdx=0, stTimer, shopLoc=null, activePromo=null, shopStatus='open', currentCat='Barchasi', activePromoCode=null;
