@@ -940,63 +940,31 @@ body.light-mode .nav-btn.active::after {
     
 
 
-    <div id="mapModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#fff; z-index:9000; display:none;">
-        <button onclick="document.getElementById('mapModal').style.display='none'" style="position:absolute; top:40px; left:20px; z-index:9001; padding:10px 20px; border-radius:20px; border:none; background:white; font-weight:bold; box-shadow:0 5px 20px rgba(0,0,0,0.2);">⬅️ Orqaga</button>
-        <div id="map" style="width:100%; height:100%;"></div>
-    </div>
-    
-    <div id="newsModal" class="modal-wrap" onclick="if(event.target==this)closeModal('newsModal')"><div class="sheet"><h3 style="color:var(--primary)">Yangiliklar</h3><div id="newsContent" style="margin-top:15px; max-height:400px; overflow-y:auto;"></div></div></div>
-    <div id="contactModal" class="modal-wrap" onclick="if(event.target==this)closeModal('contactModal')"><div class="sheet"><h3 style="color:var(--primary)">Aloqa</h3><div class="d-item" onclick="copy('+998939782926')">+998 93 978 29 26</div><button class="btn-main" onclick="window.location.href='https://t.me/Azikking'">Telegram Admin</button></div></div>
-    
-    
-    <div id="blockScreen">
-    <i class="fa fa-ban"></i>
-    <h2>Siz bloklandingiz</h2>
-    <p style="color:#aaa;">Ma'muriyat ushbu xizmatdan foydalanishni cheklagan.</p>
-    <button class="track-btn" style="background:#333; margin-top:20px; width:auto;" onclick="location.reload()">Qayta yuklash</button>
-</div>
-
-    <div id="alertModal" class="modal-wrap" style="align-items:center; z-index:9999;">
-    <div style="background:var(--bg-card); width:85%; max-width:320px; padding:30px 25px; border-radius:25px; text-align:center; border:1px solid rgba(255,255,255,0.05); box-shadow:0 20px 50px rgba(0,0,0,0.5);">
-        
-        <div style="width:70px; height:70px; background:rgba(255,68,68,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
-            <i class="fa fa-exclamation-triangle" style="font-size:32px; color:var(--danger);"></i>
-        </div>
-        
-        <h2 style="margin:0 0 10px; font-size:22px; color:var(--text-main);">Diqqat!</h2>
-        
-        <p id="alertMsg" style="color:var(--text-muted); font-size:15px; line-height:1.5; margin:0 0 25px;"></p>
-        
-        <button class="tap" onclick="closeModal('alertModal')" style="width:100%; padding:15px; background:var(--primary); color:#000; border:none; border-radius:15px; font-weight:800; font-size:16px; box-shadow:0 5px 15px var(--primary-glow);">Tushunarli</button>
-    </div>
-</div>
-
     <div id="addressModal" class="modal-wrap" style="align-items:center; z-index:9999;">
-    <div style="background:var(--bg-card); width:90%; max-width:350px; padding:25px; border-radius:25px; border:1px solid rgba(255,255,255,0.05); text-align:center;">
+    <div style="background:var(--bg-card); width:95%; max-width:400px; padding:20px; border-radius:25px; border:1px solid rgba(255,255,255,0.05); text-align:center; position:relative;">
         
-        <h3 style="margin:0 0 15px; color:var(--primary);">Manzilingiz shu mi?</h3>
-        
-        <div id="addrMap" style="width:100%; height:150px; background:#333; border-radius:15px; margin-bottom:15px; overflow:hidden; position:relative;">
-            <img src="https://cdn-icons-png.flaticon.com/512/854/854878.png" style="width:100%; height:100%; object-fit:cover; opacity:0.5;">
-            <i class="fa fa-map-marker-alt" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -100%); font-size:40px; color:var(--danger); text-shadow:0 5px 10px rgba(0,0,0,0.5);"></i>
+        <h3 style="margin:0 0 10px; color:var(--primary);">Manzilni aniqlang</h3>
+        <p style="font-size:12px; color:#aaa; margin-bottom:10px;">Xaritani surib, belgini darvozangiz ustiga qo'ying</p>
+
+        <div style="width:100%; height:250px; border-radius:15px; overflow:hidden; position:relative; margin-bottom:15px;">
+            <div id="confirmMap" style="width:100%; height:100%;"></div>
+            
+            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -100%); z-index:1000; pointer-events:none;">
+                <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" style="width:40px; filter:drop-shadow(0 5px 5px rgba(0,0,0,0.5));">
+            </div>
         </div>
 
-        <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-bottom:10px;">
-            <div style="font-size:12px; color:#aaa; margin-bottom:5px;">Aniqlangan manzil:</div>
-            <b id="addrText" style="font-size:16px; color:white;">Yuklanmoqda...</b>
-        </div>
-
-        <div style="font-size:12px; color:var(--success); margin-bottom:20px;">
-            <i class="fa fa-satellite-dish"></i> Aniqlik: <span id="addrAcc">...</span> metr
+        <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:12px; margin-bottom:15px;">
+            <div style="font-size:11px; color:#aaa;">Tanlangan manzil:</div>
+            <b id="addrText" style="font-size:14px; color:white;">Yuklanmoqda...</b>
         </div>
 
         <div style="display:flex; gap:10px;">
-            <button class="tap" onclick="closeModal('addressModal')" style="flex:1; padding:12px; background:#333; border:none; border-radius:12px; color:white;">Qayta</button>
-            <button class="tap" onclick="confirmGPS()" style="flex:1; padding:12px; background:var(--primary); border:none; border-radius:12px; font-weight:bold; color:black;">HA, TASDIQLASH</button>
+            <button class="tap" onclick="closeModal('addressModal')" style="flex:1; padding:12px; background:#333; border:none; border-radius:12px; color:white;">Bekor qilish</button>
+            <button class="tap" onclick="confirmGPS()" style="flex:1; padding:12px; background:var(--primary); border:none; border-radius:12px; font-weight:bold; color:black;">TASDIQLASH</button>
         </div>
     </div>
 </div>
-
     
     <div id="toastBox"></div>
 
@@ -1248,86 +1216,113 @@ function renderCart() {
 
 // --- MUKAMMAL GPS TIZIMI (TO'LIQ KOD) ---
 
-let tempLoc = null;     // Vaqtincha manzil
-let watchId = null;     // Kuzatuv IDsi
-let bestAccuracy = 10000; // Boshlang'ich xatolik (juda katta)
+// --- PROFESSIONAL GPS TIZIMI (MANUAL TUZATISH BILAN) ---
 
-// 1. GPS QIDIRISHNI BOSHLASH
+let tempLoc = null;     
+let watchId = null;     
+let confirmMap = null;  // Modal ichidagi xarita
+let mapMoveTimer = null; // Xarita qimirlaganda kutish uchun
+
+// 1. GPS QIDIRISH
 function getGPS() {
     const btn = document.getElementById('gpsBtn');
     
     // Reset
-    bestAccuracy = 10000;
-    tempLoc = null;
     if (watchId) navigator.geolocation.clearWatch(watchId);
-
-    // Tugma dizayni
-    btn.innerHTML = `<i class="fa fa-satellite-dish fa-spin"></i> Signal kuchaytirilyapti...`;
+    
+    btn.innerHTML = `<i class="fa fa-satellite-dish fa-spin"></i> Taxminiy joylashuv...`;
     btn.classList.add('searching');
     btn.classList.remove('gps-success', 'gps-error');
 
     if (window.Android && window.Android.checkGPS) window.Android.checkGPS();
 
-    // Kuzatishni boshlaymiz
-    const options = {
-        enableHighAccuracy: true,
-        timeout: 15000, 
-        maximumAge: 0
-    };
+    // 5 soniya ichida borini olamiz (Baribir qo'lda to'g'irlashadi)
+    const options = { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 };
 
     watchId = navigator.geolocation.watchPosition(
         (p) => {
-            const acc = Math.round(p.coords.accuracy);
-            const lat = p.coords.latitude;
-            const lng = p.coords.longitude;
-
-            // Jarayonni ko'rsatamiz
-            btn.innerHTML = `<i class="fa fa-satellite-dish fa-spin"></i> Aniqlanmoqda... (${acc}m)`;
-
-            // Agar signal yaxshilansa, eslab qolamiz
-            if (acc < bestAccuracy) {
-                bestAccuracy = acc;
-                tempLoc = { lat, long: lng };
-            }
-
-            // AGAR 30 METRDAN ANIQ TOPILSA -> TO'XTATAMIZ
-            if (acc <= 30) {
-                finishGPS(lat, lng, acc);
-            }
-        },
-        (err) => { console.log("GPS kutilyapti..."); },
-        options
-    );
-
-    // 10 soniyadan keyin majburiy to'xtatish (Vaqt tugadi)
-    setTimeout(() => {
-        if (watchId) {
-            navigator.geolocation.clearWatch(watchId);
+            // Birinchi signal kelishi bilan darhol modalni ochamiz
+            // Chunki kutishdan foyda yo'q, baribir xarita ochiladi
+            if (watchId) navigator.geolocation.clearWatch(watchId);
             watchId = null;
             
-            if (tempLoc) {
-                // Borini olamiz
-                finishGPS(tempLoc.lat, tempLoc.long, bestAccuracy);
-            } else {
-                // Hech narsa topilmadi
-                btn.classList.remove('searching');
-                btn.innerHTML = "❌ Signal past. Ochiq joyga chiqing";
-                btn.classList.add('gps-error');
-            }
-        }
-    }, 10000);
+            const lat = p.coords.latitude;
+            const lng = p.coords.longitude;
+            
+            finishGPS(lat, lng);
+        },
+        (err) => {
+            // Xatolik bo'lsa ham, Toshkent markazini yoki oxirgi joyni ochib beramiz
+            // Shunda mijoz o'zi surib oladi
+            if (watchId) navigator.geolocation.clearWatch(watchId);
+            finishGPS(41.311081, 69.240562); // Default: Toshkent
+        },
+        options
+    );
 }
 
-// 2. QIDIRUVNI TUGATISH VA MODALNI OCHISH
-function finishGPS(lat, lng, acc) {
-    if (watchId) navigator.geolocation.clearWatch(watchId);
-    watchId = null;
-
+// 2. MODALNI OCHISH VA XARITANI YARATISH
+function finishGPS(lat, lng) {
     const btn = document.getElementById('gpsBtn');
-    btn.innerHTML = `<i class="fa fa-map-pin"></i> Manzil yuklanmoqda...`;
+    btn.innerHTML = `<i class="fa fa-map-pin"></i> Manzilni aniqlang...`;
+    
+    // Vaqtincha saqlab turamiz
+    tempLoc = { lat, long: lng };
+    
+    openModal('addressModal');
 
-    // Manzil nomini olish (Nominatim)
-    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+    // Agar oldin xarita ochilgan bo'lsa, o'chiramiz (xatolik bermasligi uchun)
+    if (confirmMap) {
+        confirmMap.remove();
+        confirmMap = null;
+    }
+
+    // Modal ichida kichkina xarita ochamiz
+    // Biroz kutib turamiz (modal ochilib bo'lishi uchun)
+    setTimeout(() => {
+        confirmMap = L.map('confirmMap', {
+            zoomControl: false,
+            attributionControl: false
+        }).setView([lat, lng], 18); // 18 - juda yaqin zoom
+
+        // Chiroyli xarita qavati
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            maxZoom: 20
+        }).addTo(confirmMap);
+
+        // XARITA SURILGANDA ISHLAYDIGAN EVENT
+        confirmMap.on('move', () => {
+            document.getElementById('addrText').innerText = "Joylashuv o'zgaryapti...";
+            document.getElementById('addrText').style.color = "orange";
+        });
+
+        confirmMap.on('moveend', () => {
+            // Xarita to'xtaganda markazni olamiz
+            const center = confirmMap.getCenter();
+            tempLoc = { lat: center.lat, long: center.lng };
+            
+            // Yangi manzil nomini topamiz
+            getAddressName(center.lat, center.lng);
+        });
+
+        // Birinchi marta nomini olamiz
+        getAddressName(lat, lng);
+        
+        btn.classList.remove('searching');
+        btn.innerHTML = "Manzilni aniqlash"; 
+        
+        // Leaflet xaritasi to'g'ri ko'rinishi uchun
+        confirmMap.invalidateSize();
+    }, 300);
+}
+
+// 3. MANZIL NOMINI OLISH (Reverse Geocoding)
+function getAddressName(lat, lng) {
+    // Ko'p so'rov yubormaslik uchun oldingisini bekor qilamiz
+    if(mapMoveTimer) clearTimeout(mapMoveTimer);
+
+    mapMoveTimer = setTimeout(() => {
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
         .then(res => res.json())
         .then(data => {
             let addr = data.display_name;
@@ -1335,76 +1330,49 @@ function finishGPS(lat, lng, acc) {
                 const road = data.address.road || "";
                 const house = data.address.house_number || "";
                 const suburb = data.address.suburb || data.address.neighbourhood || ""; 
-                const city = data.address.city || data.address.town || "";
                 
-                // Qisqa manzil yasash
-                let shortAddr = [];
-                if(road) shortAddr.push(road);
-                if(house) shortAddr.push(house);
-                if(suburb) shortAddr.push(suburb);
-                else if(city) shortAddr.push(city);
-                
-                if(shortAddr.length > 0) addr = shortAddr.join(', ');
+                // Qisqa manzil
+                if(road) addr = `${road} ${house}, ${suburb}`;
             }
-
-            // Modalga yozish
             document.getElementById('addrText').innerText = addr || "Noma'lum hudud";
-            document.getElementById('addrAcc').innerText = acc;
-            
-            const accElem = document.getElementById('addrAcc');
-            if(acc < 40) { 
-                accElem.style.color = "var(--success)"; 
-                accElem.innerText = acc + " metr (A'lo)";
-            } else { 
-                accElem.style.color = "orange"; 
-                accElem.innerText = acc + " metr (O'rtacha)";
-            }
-
-            openModal('addressModal');
-            btn.classList.remove('searching');
-            btn.innerHTML = "Manzilni aniqlash"; 
+            document.getElementById('addrText').style.color = "white";
         })
         .catch(() => {
-            document.getElementById('addrText').innerText = "Manzil nomi yuklanmadi (Xarita to'g'ri)";
-            document.getElementById('addrAcc').innerText = acc;
-            openModal('addressModal');
-            btn.classList.remove('searching');
-            btn.innerHTML = "Manzilni aniqlash"; 
+            document.getElementById('addrText').innerText = "Manzil nomi topilmadi (Lekin joylashuv to'g'ri)";
+            document.getElementById('addrText').style.color = "white";
         });
+    }, 500); // 0.5 soniya kutib keyin so'raydi
 }
 
-// 3. TASDIQLASH (Siz so'ragan funksiya)
+// 4. TASDIQLASH VA SAQLASH
 function confirmGPS() {
     if (tempLoc) {
-        // Kafe lokatsiyasi bilan masofani tekshirish (Agar kafe lokatsiyasi bor bo'lsa)
+        // Masofani tekshirish
         if (shopLoc && shopLoc.radius) {
             const d = getDist(tempLoc.lat, tempLoc.long, shopLoc.lat, shopLoc.long);
             
             if (d > shopLoc.radius) {
-                // XUNUK ALERT O'RNIGA CHIROYLI OYNA
                 document.getElementById('alertMsg').innerHTML = `
-                    Uzr, biz bu manzilga yetkazib berolmaymiz.<br><br>
+                    Uzr, bu manzil juda uzoq.<br><br>
                     Bizdan masofa: <b>${d.toFixed(1)} km</b><br>
                     (Maksimal: ${shopLoc.radius} km)
                 `;
                 openModal('alertModal');
-                
-                closeModal('addressModal');
-                tempLoc = null; // Saqlamaymiz
+                // Modalni yopmaymiz, mijoz xaritani yana surib ko'rsin
                 return;
             }
         }
 
-        // Hammasi joyida -> Saqlaymiz
+        // Hammasi joyida
         loc = tempLoc; 
         
         const btn = document.getElementById('gpsBtn');
         btn.innerHTML = `✅ Manzil aniqlandi`;
         btn.classList.add('gps-success');
         
-        renderCart(); // Savat tugmasini yoqish
+        renderCart(); 
         closeModal('addressModal');
-        toast("Manzil muvaffaqiyatli saqlandi!");
+        toast("Manzil saqlandi!");
     }
 }
 
