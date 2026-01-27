@@ -1007,7 +1007,14 @@
         }).join('');
     }
 
-    function updCart(id,n){ cart[id]=(cart[id]||0)+n; if(cart[id]<=0)delete cart[id]; renderGrid(document.querySelector('.cat-pill.active').innerText); renderCart(); }
+    function updCart(id,n){ 
+    cart[id]=(cart[id]||0)+n; 
+    if(cart[id]<=0)delete cart[id]; 
+    
+    // Mana bu yerda xotiradagi kategoriya ishlatiladi
+    renderGrid(currentCat); 
+    renderCart(); 
+}
 
     // --- SAVATNI CHIQARISH VA TUGMANI BOSHQARISH (MUHIM) ---
     function renderCart() {
