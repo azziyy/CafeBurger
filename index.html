@@ -903,13 +903,34 @@
         let products=[], cart={}, user=null, loc=null, favs={}, stories=[], stIdx=0, stTimer, shopLoc=null, activePromo=null;
         let tempPmId=null, tempPmQty=1, map=null, carMarker=null;
 
-        window.onload=()=>{
-            if(localStorage.getItem('theme')==='light')document.body.classList.add('light-mode');
-            const uid=localStorage.getItem('cafe_uid');
-            if(uid)checkAuth(uid); else document.getElementById('loginModal').style.display='flex';
-            loadData(); loadStories();
-            db.ref('info/location').on('value',s=>shopLoc=s.val());
-        };
+        // 1. O'ZGARUVCHILAR QATORINI HAM YANGILAB QO'YING (shopStatus qo'shildi)
+let products=[], cart={}, user=null, loc=null, favs={}, shopStatus='open'; 
+
+// 2. WINDOW.ONLOAD NI SHUNGA ALMASHTIRING:
+window.onload = () => {
+    // Tema sozlamalari
+    if(localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+    
+    // Kirish tekshiruvi
+    const uid = localStorage.getItem('cafe_uid');
+    if(uid) checkAuth(uid); 
+    else document.getElementById('loginModal').style.display = 'flex';
+    
+    // Ma'lumotlarni yuklash
+    loadData(); 
+    loadStories();
+
+    // --- MANA BU YANGI QISM (KAFE STATUSINI KUZATISH) ---
+    db.ref('info/cafe_status').on('value', s => {
+        shopStatus = s.val() || 'open'; // Bazadan statusni olamiz
+        renderCart(); // Status o'zgarganda Savat tugmasini yangilaymiz
+    });
+    // ----------------------------------------------------
+
+    // Lokatsiyani kuzatish
+    db.ref('info/location').on('value', s => shopLoc = s.val());
+};
+
 
         function doLogin(){
             const t='req_'+Date.now();
@@ -1000,18 +1021,68 @@ function initApp() {
         }
 
         function updCart(id,n){ cart[id]=(cart[id]||0)+n; if(cart[id]<=0)delete cart[id]; renderGrid(document.querySelector('.cat-pill.active').innerText); renderCart(); }
-        function renderCart(){
-            let t=0, h='';
-            for(let id in cart){
-                const p=products.find(x=>x.id==id); t+=p.price*cart[id];
-                h+=`<div class="cart-item"><img src="${p.img}" class="cart-thumb"><div class="cart-info"><div class="cart-title">${p.name}</div><div class="cart-price">${p.price.toLocaleString()} so'm</div></div><div class="cart-controls"><div onclick="updCart(${p.id},-1)" style="font-weight:bold;font-size:18px;cursor:pointer;">-</div><b>${cart[id]}</b><div onclick="updCart(${p.id},1)" style="font-weight:bold;font-size:18px;cursor:pointer;">+</div></div></div>`;
-            }
-            let disp = t.toLocaleString()+" so'm";
-            if(activePromo) disp = `<span class="strike">${t.toLocaleString()}</span> ${(t-(t*activePromo/100)).toLocaleString()} so'm`;
-            document.getElementById('cartList').innerHTML=h||"<div style='text-align:center;padding:30px;color:#666'>Savat bo'sh</div>";
-            document.getElementById('cartTotal').innerHTML=disp;
-            const b=document.getElementById('orderBtn'); if(t>0&&loc){b.style.opacity='1';b.style.pointerEvents='all';}else{b.style.opacity='0.5';b.style.pointerEvents='none';}
+        
+        
+        function renderCart() {
+    let t = 0, h = '';
+    
+    // Savatdagi mahsulotlarni aylanish
+    for (let id in cart) {
+        const p = products.find(x => x.id == id);
+        if (p) {
+            t += p.price * cart[id];
+            h += `<div class="cart-item">
+                    <img src="${p.img}" class="cart-thumb">
+                    <div class="cart-info">
+                        <div class="cart-title">${p.name}</div>
+                        <div class="cart-price">${p.price.toLocaleString()} so'm</div>
+                    </div>
+                    <div class="cart-controls">
+                        <div onclick="updCart(${p.id},-1)" style="font-weight:bold;font-size:18px;cursor:pointer;">-</div>
+                        <b>${cart[id]}</b>
+                        <div onclick="updCart(${p.id},1)" style="font-weight:bold;font-size:18px;cursor:pointer;">+</div>
+                    </div>
+                  </div>`;
         }
+    }
+
+    // Narxni hisoblash
+    let disp = t.toLocaleString() + " so'm";
+    if (activePromo) disp = `<span class="strike">${t.toLocaleString()}</span> ${(t - (t * activePromo / 100)).toLocaleString()} so'm`;
+
+    // Ekranga chiqarish
+    document.getElementById('cartList').innerHTML = h || "<div style='text-align:center;padding:30px;color:#666'>Savat bo'sh</div>";
+    document.getElementById('cartTotal').innerHTML = disp;
+
+    // --- TUGMA MANTIQI (YANGILANGAN) ---
+    const btn = document.getElementById('orderBtn');
+    
+    // 1-HOLAT: Agar Kafe YOPIQ bo'lsa
+    if (shopStatus === 'closed') {
+        btn.innerHTML = "⛔️ KAFE YOPILGAN";
+        btn.style.background = "#333"; // To'q kulrang
+        btn.style.opacity = "1";       // Xira bo'lmasin, lekin qora bo'lsin
+        btn.style.pointerEvents = "none"; // Bosilmaydi
+        return; // Shu joyda to'xtaydi
+    }
+
+    // 2-HOLAT: Agar Kafe OCHIQ bo'lsa -> Oddiy holatga qaytarish
+    btn.innerHTML = "BUYURTMA BERISH";
+    btn.style.background = "var(--gold)"; // Asl rangi (Sariq)
+
+    // Endi savat va lokatsiyani tekshiramiz
+    if (t > 0 && loc) {
+        btn.style.opacity = '1';
+        btn.style.pointerEvents = 'all';
+    } else {
+        btn.style.opacity = '0.5';
+        btn.style.pointerEvents = 'none';
+        
+        // Agar lokatsiya yo'qligi uchun o'chgan bo'lsa
+        if(t > 0 && !loc) btn.innerHTML = "📍 MANZILNI ANIQLANG";
+    }
+}
+
 
         function getGPS(){
             const b=document.getElementById('gpsBtn'); b.innerHTML="Aniqlanmoqda...";
