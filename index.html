@@ -8,6 +8,27 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <style>
+
+/* Premium Kuzatish Tugmasi */
+.track-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #FFD700, #FFB800);
+    color: #000;
+    border: none;
+    border-radius: 12px;
+    font-weight: 800; /* Qalin yozuv */
+    font-size: 14px;
+    margin-top: 15px;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+.track-btn:active {
+    transform: scale(0.98);
+}
+
+
 /* --- CHAT MODAL STRUKTURASI (FLEXBOX) --- */
 /* Modal oynasi butun ekran bo'yicha to'g'ri joylashishi uchun */
 #chatModal .sheet {
@@ -1095,69 +1116,75 @@ function openChatModal() {
         function loadHistory() {
     db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value', s => {
         const d = s.val();
+        
+        // Agar buyurtma bo'lmasa
         if (!d) {
-            document.getElementById('histList').innerHTML = "<div style='text-align:center; padding:20px; color:gray;'>Buyurtmalar yo'q</div>";
+            document.getElementById('histList').innerHTML = "<div style='text-align:center; padding:40px; color:gray;'>Buyurtmalar tarixi bo'sh</div>";
             return;
         }
 
         document.getElementById('histList').innerHTML = Object.values(d).reverse().map(o => {
-            let st = o.status; // Bazadagi status (masalan: 'accepted', 'new', 'kuryerda')
+            let st = o.status; // Bazadan kelgan aniq so'z ('qabul_qilindi', 'kuryerda' va hk)
             
             // Standart qiymatlar
             let cls = 'status-new'; 
             let txt = 'YANGI';
 
-            // 1. TAYYORLANMOQDA (Admin qabul qilganda)
-            // Bot bazaga 'accepted', 'tayyorlanmoqda', 'cooking' yoki 'qabul_qilindi' deb yozsa ham ishlaydi
-            if (st == 'tayyorlanmoqda' || st == 'accepted' || st == 'qabul_qilindi' || st == 'cooking') {
-                cls = 'status-cook';
-                txt = 'TAYYORLANMOQDA';
+            // 1. QABUL QILINGANDA yoki PISHIRILAYOTGANDA
+            // Bot kodingizda: 'qabul_qilindi' yoki 'tayyorlanmoqda'
+            if (st == 'qabul_qilindi' || st == 'tayyorlanmoqda') {
+                cls = 'status-cook';     
+                txt = 'QABUL QILINDI';   // <-- Siz so'ragan yozuv
             }
 
-            // 2. KURYERDA (Kuryer olib ketganda)
-            // Bot bazaga 'kuryerda', 'delivering', 'olib_ketildi' yoki 'on_way' deb yozsa ham ishlaydi
-            if (st == 'kuryerda' || st == 'delivering' || st == 'olib_ketildi' || st == 'on_way') {
-                cls = 'status-deliv';
-                txt = 'KURYERDA';
+            // 2. KURYERDA
+            // Bot kodingizda: 'kuryerda'
+            if (st == 'kuryerda') {
+                cls = 'status-deliv';    
+                txt = 'KURYERDA';       
             }
 
             // 3. YETKAZILDI
-            if (st == 'yetkazildi' || st == 'delivered' || st == 'completed' || st == 'bajarildi') {
-                cls = 'status-done';
+            // Bot kodingizda: 'yetkazildi'
+            if (st == 'yetkazildi') {
+                cls = 'status-done';     
                 txt = 'YETKAZILDI';
             }
             
-            // 4. BEKOR QILINDI
-            if (st == 'canceled' || st == 'bekor_qilindi' || st == 'rejected') {
-                cls = 'status-new'; // Yoki qizil rang uchun boshqa klass
+            // 4. BEKOR QILINGAN
+            if (st == 'bekor_qilindi') {
+                cls = 'status-new'; // Qizil qilish mumkin
                 txt = 'BEKOR QILINDI';
             }
 
-            // Kuryerni kuzatish tugmasi
-            // Faqat status 'KURYERDA' guruhiga kirsa va kuryer ID si bor bo'lsa chiqadi
+            // --- TUGMA MANTIQI ---
+            // Faqat status 'kuryerda' bo'lsa chiqadi
             let trk = '';
-            if ((cls == 'status-deliv') && o.courier_id) {
-                // DIQQAT: Sizning CSS da klass nomi 'track-btn' edi, eski kodingizda 'btn-track' yozilib qolibdi. To'g'riladim.
-                trk = `<button class="track-btn" onclick="track('${o.courier_id}')" style="margin-top:10px; width:100%;">Kuryerni Kuzatish</button>`;
+            if (st == 'kuryerda' && o.courier_id) {
+                trk = `<button class="track-btn" onclick="track('${o.courier_id}')">📍 Kuryerni Kuzatish</button>`;
             }
 
             return `
             <div class="hist-card ${cls}">
                 <div class="h-header">
-                    <span style="font-size:12px;color:gray;">${o.time}</span>
+                    <span style="font-size:12px; color:gray;">${o.time}</span>
                     <span class="h-badge">${txt}</span>
                 </div>
-                <div style="font-size:14px;margin-bottom:10px;">
-                    ${o.items.map(i => `${i.name} x${i.qty}`).join(', ')}
+                
+                <div style="font-size:14px; margin: 10px 0; line-height:1.5;">
+                    ${o.items.map(i => `${i.name} <b>x${i.qty}</b>`).join(', ')}
                 </div>
-                <div style="font-size:18px;font-weight:800;">
+                
+                <div style="font-size:18px; font-weight:800; color:var(--gold);">
                     ${parseInt(o.total).toLocaleString()} so'm
                 </div>
+                
                 ${trk}
             </div>`;
         }).join('');
     });
 }
+
 
         
         function getDist(lat1,lon1,lat2,lon2){var R=6371;var dLat=(lat2-lat1)*Math.PI/180;var dLon=(lon2-lon1)*Math.PI/180;var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);var c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));return R*c;}
