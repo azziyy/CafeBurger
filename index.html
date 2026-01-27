@@ -1414,6 +1414,7 @@ function confirmGPS() {
 
    // --- BUYURTMA YUBORISH ---
 // --- BUYURTMA YUBORISH (YANGILANGAN) ---
+// --- BUYURTMA YUBORISH (TO'LIQ VA TO'G'RI) ---
 function sendOrder() {
     // 1. Tizimga kirganlikni tekshirish
     if (!user || !user.phone) { 
@@ -1435,23 +1436,23 @@ function sendOrder() {
     // 3. Savat bo'shligini tekshirish
     if (items.length === 0) { toast("Savat bo'sh!"); return; }
 
-   // --- 4. MINIMAL BUYURTMA TEKSHIRUVI (YANGILANGAN) ---
+   // --- 4. MINIMAL BUYURTMA TEKSHIRUVI ---
     if (t < MIN_ORDER_PRICE) {
-        // Matnni tayyorlaymiz
         const msg = `Minimal buyurtma summasi: <b style="color:white">${MIN_ORDER_PRICE.toLocaleString()} so'm</b> bo'lishi kerak.<br><br>Hozir sizda: ${t.toLocaleString()} so'm`;
-        
-        // Yangi oynaga yozamiz va ochamiz
         document.getElementById('alertMsg').innerHTML = msg;
         openModal('alertModal');
-        
-        return; // To'xtatamiz
+        return; 
     }
-    // -----------------------------------------------
+    // -------------------------------------
 
-    // 5. Yakuniy narxni hisoblash (Dostavka bilan)
+    // 5. HISOBLASH
     let discountAmt = activePromo ? (t * activePromo / 100) : 0;
     
-    // Jami = (Mahsulot - Chegirma) + Dostavka
+    // --- MUHIM: ESKI NARXNI HISOBLASH (Chegirmasiz + Dostavka) ---
+    // Bu botda chizib ko'rsatish uchun kerak
+    let originalTotal = t + DELIVERY_PRICE; 
+
+    // YAKUNIY NARX (Chegirmali + Dostavka)
     let finalPrice = (t - discountAmt) + DELIVERY_PRICE; 
 
     // 6. Buyurtma ma'lumotlarini tayyorlash
@@ -1464,7 +1465,12 @@ function sendOrder() {
         products_total: t,            // Mahsulotlar o'zi
         delivery_fee: DELIVERY_PRICE, // Dostavka haqqi
         promo_discount: activePromo || 0,
-        total: finalPrice,            // Mijoz to'laydigan jami summa (Admin shuni ko'radi)
+        
+        // --- MANA SHU QATOR QO'SHILDI ---
+        original_total: originalTotal, // Eski narx (Chiziladigan)
+        // --------------------------------
+        
+        total: finalPrice,            // To'lanadigan summa
         
         status: 'yangi',
         location: loc || null,
@@ -1476,15 +1482,13 @@ function sendOrder() {
         if (error) { 
             alert("Xatolik: " + error.message); 
         } else {
-            // --- PROMOKOD ISHLATILGANINI SAQLASH ---
+            // Promokod ishlatilganini saqlash
             if (activePromoCode) {
                 const cleanPhone = user.phone.replace('+', '');
-                // Faqat foydalanuvchi tarixiga +1 qo'shamiz
                 db.ref(`users/${cleanPhone}/used_promos/${activePromoCode}`).transaction(val => (val || 0) + 1);
             }
-            // ----------------------------------------
 
-            // 8. Tozalash va Xabar berish
+            // Tozalash va Xabar berish
             cart = {}; 
             loc = null; 
             activePromo = null; 
@@ -1492,17 +1496,14 @@ function sendOrder() {
             
             toast("✅ Buyurtma yuborildi!");
             
-            // Tarix bo'limiga o'tish
             nav('history', document.querySelectorAll('.nav-btn')[2]);
             
-            // GPS tugmasini qayta sozlash
             const gpsBtn = document.getElementById('gpsBtn');
             if(gpsBtn) { 
                 gpsBtn.innerHTML = "Manzilni aniqlash"; 
                 gpsBtn.classList.remove('gps-success'); 
             }
             
-            // Savat ko'rinishini yangilash
             renderCart();
         }
     });
