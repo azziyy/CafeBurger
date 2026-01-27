@@ -8,272 +8,6 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <style>
-
-/* Premium Kuzatish Tugmasi */
-.track-btn {
-    width: 100%;
-    padding: 12px;
-    background: linear-gradient(135deg, #FFD700, #FFB800);
-    color: #000;
-    border: none;
-    border-radius: 12px;
-    font-weight: 800; /* Qalin yozuv */
-    font-size: 14px;
-    margin-top: 15px;
-    cursor: pointer;
-    text-transform: uppercase;
-    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
-}
-.track-btn:active {
-    transform: scale(0.98);
-}
-
-
-/* --- CHAT MODAL STRUKTURASI (FLEXBOX) --- */
-/* Modal oynasi butun ekran bo'yicha to'g'ri joylashishi uchun */
-#chatModal .sheet {
-    height: 90vh; /* Ekran balandligining 90% ini egallaydi */
-    display: flex;
-    flex-direction: column; /* Elementlar ustma-ust joylashadi */
-    padding: 0; /* Ichki hoshiyani olib tashlaymiz */
-    overflow: hidden; /* Tashqariga chiqib ketishni oldini olish */
-    position: relative;
-}
-
-/* Chat Header (Tepa qism) */
-.chat-header {
-    padding: 15px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #1c1c1e;
-    flex-shrink: 0; /* Qisqarmaydi */
-}
-
-/* Chat Box (Xabarlar yuradigan joy) */
-#chatBox {
-    flex: 1; /* Bo'sh qolgan hamma joyni egallaydi */
-    overflow-y: auto; /* Faqat shu qism scroll bo'ladi */
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    background: #000; /* Qora fon */
-    scroll-behavior: smooth;
-}
-
-/* Chat Input (Yozish joyi - Pastda qotib turadi) */
-.chat-inp-wrap {
-    padding: 15px;
-    background: #1c1c1e;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    display: flex;
-    gap: 10px;
-    flex-shrink: 0; /* Qisqarmaydi */
-}
-
-.chat-inp-wrap input {
-    flex: 1;
-    background: rgba(255,255,255,0.1);
-    border: none;
-    border-radius: 12px;
-    padding: 12px;
-    color: white;
-    outline: none;
-}
-
-.chat-inp-wrap button {
-    width: 45px;
-    height: 45px;
-    background: var(--gold);
-    border: none;
-    border-radius: 12px;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* --- XABARLAR DIZAYNI --- */
-.msg-bubble {
-    max-width: 80%;
-    padding: 10px 14px;
-    border-radius: 14px;
-    font-size: 14px;
-    line-height: 1.4;
-    word-wrap: break-word;
-    position: relative;
-}
-
-/* Mijoz (O'ngda) */
-.msg-me {
-    align-self: flex-end;
-    background: var(--gold);
-    color: #000;
-    border-bottom-right-radius: 2px;
-}
-
-/* Admin (Chapda) */
-.msg-adm {
-    align-self: flex-start;
-    background: #333;
-    color: #fff;
-    border-bottom-left-radius: 2px;
-}
-
-/* Vaqt */
-.msg-time {
-    font-size: 10px;
-    display: block;
-    text-align: right;
-    margin-top: 4px;
-    opacity: 0.7;
-}
-
-/* --- PASTGA TUSHIRISH TUGMASI (Scroll Button) --- */
-#scrollBtn {
-    position: absolute;
-    bottom: 80px; /* Inputdan teparoqda */
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(5px);
-    border-radius: 50%;
-    display: none; /* Boshida yashirin */
-    align-items: center;
-    justify-content: center;
-    color: white;
-    cursor: pointer;
-    border: 1px solid rgba(255,255,255,0.1);
-    z-index: 100;
-    transition: 0.3s;
-}
-#scrollBtn:active { background: var(--gold); color: black; }
-
-
-/* ============================================================
-   SEVIMLILAR (FAVORITES) PREMIUM GRID STILI
-   ============================================================ */
-
-/* 1. Sevimlilar konteyneri - 2 ustunli tartibli grid */
-.fav-grid-premium {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Qat'iy 2 ustun */
-    gap: 15px;
-    padding: 15px 0;
-    width: 100%;
-}
-
-/* 2. Mahsulot kartasi */
-.fav-card-premium {
-    background: var(--bg-card) !important; /* Fon rangi orqada qolib ketmasligi uchun */
-    border-radius: var(--radius-pro);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    transition: 0.3s ease;
-}
-
-/* 3. Rasm bo'limi */
-.fav-img-wrap {
-    width: 100%;
-    height: 120px;
-    position: relative;
-    background: #000; /* Rasm yuklanguncha qora fon */
-}
-
-.fav-img-wrap img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Rasm cho'zilib ketmaydi */
-}
-
-/* 4. O'chirish tugmasi (X) - Eng yuqori qatlamda */
-.fav-del-btn {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 28px;
-    height: 28px;
-    background: var(--danger) !important;
-    color: #fff !important;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    z-index: 20; /* Rasm va boshqa bloklardan ustun */
-    border: 2px solid var(--bg-card);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-    cursor: pointer;
-}
-
-/* 5. Ma'lumotlar bo'limi (Nomi va Narxi) */
-.fav-info-premium {
-    padding: 12px; 
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    background: var(--bg-card); /* Matn foni aniq chiqishi uchun */
-}
-
-.fav-title-premium {
-    font-weight: 700;
-    font-size: 14px;
-    color: var(--text-main);
-    height: 34px;
-    overflow: hidden;
-    line-height: 1.2;
-    margin-bottom: 8px;
-}
-
-.fav-price-premium {
-    color: var(--primary); /* Oltin rang */
-    font-weight: 800;
-    font-size: 15px;
-    margin-bottom: 10px;
-}
-
-/* 6. SAVATGA QO'SHISH TUGMASI - MAXSUS STIL */
-.fav-add-btn {
-    width: 100%;
-    padding: 12px;
-    background: var(--primary) !important; /* To'liq sariq/oltin fon */
-    color: #000 !important; /* Matn qora (kontrast uchun) */
-    border: none !important;
-    border-radius: 12px;
-    font-weight: 800;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    cursor: pointer;
-    
-    /* Qatlam va ko'rinish muammosi yechimi */
-    position: relative;
-    z-index: 999 !important; 
-    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
-    transition: 0.2s ease;
-}
-
-.fav-add-btn:active {
-    transform: scale(0.95); /* Bosish effekti */
-    filter: brightness(0.9);
-}
-
-/* Modal ichidagi grid bo'lsa, pointer eventlarini to'g'irlash */
-#favModal, .sheet {
-    pointer-events: auto !important;
-}
-
-
-
     /* ==========================================================================
        1. GLOBAL SOZLAMALAR (PREMIUM DARK)
        ========================================================================== */
@@ -634,112 +368,17 @@
     .nav-btn i { font-size: 24px; margin-bottom: 5px; }
     .nav-btn.active { color: var(--primary); transform: translateY(-5px); }
 
-    /* ADMIN CHAT ASOSIY KONTEYNERI */
-#chatBox {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 12px; /* Xabarlar orasi ochiq bo'ladi */
-    overflow-y: auto;
-    background: rgba(0, 0, 0, 0.2); /* Biroz shaffof fon */
-    border-radius: 20px;
-    padding: 20px;
-    margin: 15px 0;
-    min-height: 350px;
-    scroll-behavior: smooth;
-}
+    /* Chat */
+    .chat-msg { padding: 12px 16px; border-radius: 18px; max-width: 80%; margin-bottom: 10px; font-size: 14px; }
+    .me { background: var(--primary); color: #000; align-self: flex-end; border-bottom-right-radius: 4px; }
+    .adm { background: #333; color: #fff; align-self: flex-start; border-bottom-left-radius: 4px; }
 
-/* UMUMIY XABAR PUFAKCHASI */
-.msg-bubble {
-    max-width: 85%; /* Xabar ekran bo'yicha juda yoyilib ketmaydi */
-    padding: 12px 16px;
-    border-radius: 18px;
-    font-size: 14px;
-    line-height: 1.4;
-    position: relative;
-    animation: messageSlide 0.3s ease-out; /* Yangi xabar chiqish effekti */
-}
-
-/* FOYDALANUVCHI XABARI (O'NGDA) */
-.msg-me {
-    align-self: flex-end;
-    background: linear-gradient(135deg, var(--gold), #FFB800); /* Gradient oltin rang */
-    color: #000;
-    font-weight: 500;
-    border-bottom-right-radius: 4px; /* Burchak effekti */
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
-}
-
-/* ADMIN XABARI (CHAPDA) */
-.msg-adm {
-    align-self: flex-start;
-    background: #2c2c2e; /* To'q kulrang fon */
-    color: #fff;
-    border-bottom-left-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* XABAR VAQTI (Ixtiyoriy matn uchun) */
-.msg-time {
-    font-size: 10px;
-    opacity: 0.5;
-    margin-top: 4px;
-    display: block;
-    text-align: right;
-}
-
-/* YANGI XABAR CHIQISH ANIMATSIYASI */
-@keyframes messageSlide {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* CHAT INPUT QISMI */
-.chat-input-wrap {
-    display: flex;
-    gap: 10px;
-    background: #1c1c1e;
-    padding: 10px;
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.chat-input-wrap input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: white;
-    padding: 10px;
-    font-size: 15px;
-}
-
-.chat-input-wrap button {
-    width: 45px;
-    height: 45px;
-    background: var(--gold);
-    border: none;
-    border-radius: 12px;
-    color: black;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.2s;
-}
-
+    .hidden { display: none !important; }
+    .strike { text-decoration: line-through; color: #666; font-size: 13px; margin-right: 5px; }
     
     /* Toast */
     #toastBox { position: fixed; top: 20px; left: 20px; right: 20px; z-index: 10000; pointer-events: none; display: flex; flex-direction: column; gap: 10px; }
     .toast { background: rgba(30,30,30,0.95); color: white; padding: 15px; border-radius: 12px; border-left: 4px solid var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: fadeIn 0.3s; font-weight: 600; }
-    
-    #blockScreen {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #000; z-index: 10000; display: none;
-    flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; color: white; padding: 20px;
-}
-#blockScreen i { font-size: 50px; color: #ef4444; margin-bottom: 20px; }
-
 </style>
 </head>
 <body>
@@ -767,7 +406,10 @@
     <header class="header">
         <div class="tap" onclick="toggleDrawer()"><i class="fa fa-bars" style="font-size:24px; color:var(--text-main)"></i></div>
         <div class="logo">CAFE <span>888</span></div>
-        
+        <div class="chat-icon-wrap tap" onclick="openModal('chatModal')">
+            <i class="fa fa-comment-dots" style="font-size:24px; color:var(--text-main)"></i>
+            <div id="chatBadge" class="msg-badge"></div>
+        </div>
     </header>
 
     <div id="p-menu" class="page-cont active" style="padding-top:60px;">
@@ -811,7 +453,9 @@
             <div class="prof-btn tap" onclick="openFavs()">
                 <span><i class="fa fa-heart" style="color:var(--danger); margin-right:10px;"></i> Sevimlilar</span> <i class="fa fa-chevron-right"></i>
             </div>
-            
+            <div class="prof-btn tap" onclick="openModal('chatModal')">
+                <span><i class="fa fa-envelope" style="color:var(--blue); margin-right:10px;"></i> Admin Chat</span> <i class="fa fa-chevron-right"></i>
+            </div>
             <div class="prof-btn tap" onclick="openPromoList()">
                 <span><i class="fa fa-tags" style="color:var(--success); margin-right:10px;"></i> Promokodlar</span> <i class="fa fa-chevron-right"></i>
             </div>
@@ -870,25 +514,24 @@
         </div>
     </div>
 
-    
-
+    <div id="chatModal" class="modal-wrap" onclick="if(event.target==this)closeModal('chatModal')">
+        <div class="sheet" style="height:80vh;">
+            <h3 style="margin-bottom:15px;">Admin Chat</h3>
+            <div id="chatBox" style="flex:1; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:15px; padding:15px; margin-bottom:15px; min-height:300px;"></div>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="chatInp" placeholder="Xabar..." style="flex:1; background:rgba(255,255,255,0.1); border:none; padding:15px; border-radius:15px; color:white;">
+                <button onclick="sendChat()" class="tap" style="background:var(--primary); border:none; width:50px; border-radius:15px;"><i class="fa fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
 
     <div id="mapModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#fff; z-index:9000; display:none;">
         <button onclick="document.getElementById('mapModal').style.display='none'" style="position:absolute; top:40px; left:20px; z-index:9001; padding:10px 20px; border-radius:20px; border:none; background:white; font-weight:bold; box-shadow:0 5px 20px rgba(0,0,0,0.2);">⬅️ Orqaga</button>
         <div id="map" style="width:100%; height:100%;"></div>
     </div>
-    
+
     <div id="newsModal" class="modal-wrap" onclick="if(event.target==this)closeModal('newsModal')"><div class="sheet"><h3 style="color:var(--primary)">Yangiliklar</h3><div id="newsContent" style="margin-top:15px; max-height:400px; overflow-y:auto;"></div></div></div>
     <div id="contactModal" class="modal-wrap" onclick="if(event.target==this)closeModal('contactModal')"><div class="sheet"><h3 style="color:var(--primary)">Aloqa</h3><div class="d-item" onclick="copy('+998939782926')">+998 93 978 29 26</div><button class="btn-main" onclick="window.location.href='https://t.me/Azikking'">Telegram Admin</button></div></div>
-    
-    
-    <div id="blockScreen">
-    <i class="fa fa-ban"></i>
-    <h2>Siz bloklandingiz</h2>
-    <p style="color:#aaa;">Ma'muriyat ushbu xizmatdan foydalanishni cheklagan.</p>
-    <button class="track-btn" style="background:#333; margin-top:20px; width:auto;" onclick="location.reload()">Qayta yuklash</button>
-</div>
-
     
     <div id="toastBox"></div>
 
@@ -918,48 +561,8 @@
                 if(s.val()){ user=s.val(); localStorage.setItem('cafe_uid',user.phone.replace('+','')); db.ref('auth_tokens/'+t).remove(); document.getElementById('loginModal').style.display='none'; initApp(); }
             });
         }
-        // --- 1. AUTH TEKSHIRUVCHI (TUZATILGAN) ---
-function checkAuth(uid) {
-    db.ref('users/' + uid).on('value', s => {
-        const d = s.val();
-
-        // Agar foydalanuvchi yo'q bo'lsa -> Login
-        if (!d) {
-            document.getElementById('loginModal').style.display = 'flex';
-            return;
-        }
-
-        // Agar BLOKLANGAN bo'lsa
-        if (d.blocked === true) {
-            document.getElementById('blockScreen').style.display = 'flex';
-            document.getElementById('loginModal').style.display = 'none';
-            return;
-        }
-
-        // Agar hammasi joyida bo'lsa
-        document.getElementById('blockScreen').style.display = 'none';
-        
-        user = d; // MUHIM: User ma'lumotlarini saqlab olamiz
-        document.getElementById('loginModal').style.display = 'none';
-        
-        // Ilovani ishga tushiramiz (Ism, Telefon va Tarixni yuklaydi)
-        initApp(); 
-    });
-}
-
-// --- 2. ILOVANI YUKLASH (ISMNI CHIQARISH VA TARIX) ---
-function initApp() {
-    // Ism va Telefonni yozish
-    if (user.name) document.getElementById('uName').innerText = user.name;
-    if (user.phone) document.getElementById('uPhone').innerText = user.phone;
-    
-    // Sevimlilarni olish
-    favs = user.favorites || {};
-    
-    // Tarixni yuklash funksiyasini chaqirish
-    loadHistory(); 
-}
-
+        function checkAuth(uid){ db.ref('users/'+uid).on('value',s=>{ if(s.val()){ user=s.val(); document.getElementById('loginModal').style.display='none'; initApp(); } else document.getElementById('loginModal').style.display='flex'; }); }
+        function initApp(){ document.getElementById('uName').innerText=user.name; document.getElementById('uPhone').innerText=user.phone; favs=user.favorites||{}; loadHistory(); loadChat(); }
 
         function loadData(){
             fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`).then(r=>r.text()).then(t=>{
@@ -1034,27 +637,31 @@ function initApp() {
             document.getElementById('gpsBtn').innerHTML="Manzilni aniqlash"; document.getElementById('gpsBtn').classList.remove('gps-success');
         }
 
+        function loadChat(){
+            db.ref('messages/'+user.phone.replace('+','')).limitToLast(50).on('child_added', s=>{
+                const m=s.val();
+                if(m.from==='admin' && document.getElementById('chatModal').style.display==='none') document.getElementById('chatBadge').classList.add('active');
+                document.getElementById('chatBox').innerHTML+=`<div style="display:flex;justify-content:${m.from=='user'?'flex-end':'flex-start'}"><div class="chat-bubble ${m.from=='user'?'msg-me':'msg-adm'}">${m.body}</div></div>`;
+                setTimeout(()=>document.getElementById('chatBox').scrollTop=document.getElementById('chatBox').scrollHeight, 100);
+            });
+        }
+        function sendChat(){
+            const t=document.getElementById('chatInp').value; if(!t)return;
+            db.ref('messages/'+user.phone.replace('+','')).push({from:'user', body:t, time:Date.now()});
+            document.getElementById('chatInp').value="";
+        }
 
-// PASTGA TUSHIRISH FUNKSIYASI
-function scrollToBottom() {
-    const chatBox = document.getElementById('chatBox');
-    setTimeout(() => {
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }, 50); // Biroz kutib tushiradi
-}
-// MODAL OCHILGANDA
-function openChatModal() {
-    document.getElementById('chatModal').style.display = 'flex';
-    // Chat badge ni o'chirish
-    if(document.getElementById('chatBadge')) {
-        document.getElementById('chatBadge').classList.remove('active');
-    }
-    // Ochilganda pastga tushirish
-    scrollToBottom();
-}
-
-
-
+        var carIcon=L.icon({iconUrl:'https://cdn-icons-png.flaticon.com/512/3202/3202926.png',iconSize:[40,40],iconAnchor:[20,20]});
+        function track(cid){
+            document.getElementById('mapModal').style.display='block';
+            if(!map){map=L.map('map').setView([41,69],13); L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);}
+            setTimeout(()=>map.invalidateSize(),500);
+            db.ref('couriers/'+cid+'/location').on('value',s=>{
+                const d=s.val(); if(!d)return;
+                if(carMarker) carMarker.setLatLng([d.lat,d.long]); else carMarker=L.marker([d.lat,d.long],{icon:carIcon}).addTo(map);
+                map.panTo([d.lat,d.long]);
+            });
+        }
 
         function openPromoList(){
             openModal('promoListModal');
@@ -1063,7 +670,7 @@ function openChatModal() {
                 let h=""; for(let k in d){if(d[k].limit>0) h+=`<div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:12px;margin-bottom:10px;display:flex;justify-content:space-between;"><b>${k}</b><span style="color:var(--green)">${d[k].discount}% Chegirma</span></div>`;}
                 document.getElementById('promoListContent').innerHTML=h||"Aktiv kod yo'q";
             });
-}
+        }
 
         function nav(p,el){document.querySelectorAll('.page-cont').forEach(x=>x.classList.remove('active'));document.getElementById('p-'+p).classList.add('active');document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));el.classList.add('active');if(p=='cart')renderCart();}
         function openModal(id){document.getElementById(id).style.display='flex'; if(id=='chatModal')document.getElementById('chatBadge').classList.remove('active');}
@@ -1074,174 +681,14 @@ function openChatModal() {
         function pmQ(n){tempPmQty+=n;if(tempPmQty<1)tempPmQty=1;document.getElementById('pmQty').innerText=tempPmQty;}
         function addFromModal(){updCart(tempPmId,tempPmQty);closeModal('prodModal');}
         function togFav(id){if(favs[id])delete favs[id];else favs[id]=true;db.ref('users/'+user.phone.replace('+','')+'/favorites').set(favs);renderGrid(document.querySelector('.cat-pill.active').innerText);}
-        
-        
-        
-        function openFavs() {
-    // Sevimli mahsulotlarni filtrlash
-    const l = products.filter(p => favs[p.id]); 
-    const favContainer = document.getElementById('favList');
-
-    // Grid konteyneriga yangi premium klassni beramiz
-    favContainer.className = "fav-grid-premium";
-
-    favContainer.innerHTML = l.map(p => `
-        <div class="fav-card-premium grid-anim">
-            <div class="fav-del-btn tap" onclick="event.stopPropagation(); togFav(${p.id}); openFavs();">
-                <i class="fa fa-times"></i>
-            </div>
-            
-            <div class="fav-img-wrap" onclick="openProd(${p.id})">
-                <img src="${p.img}" alt="${p.name}">
-            </div>
-            
-            <div class="fav-info-premium">
-                <div class="fav-title-premium">${p.name}</div>
-                <div class="fav-price-premium">${p.price.toLocaleString()} so'm</div>
-                
-                <button class="fav-add-btn tap" 
-                        onclick="event.stopPropagation(); updCart(${p.id}, 1); closeModal('favModal'); toast('Savatga qo\\'shildi');">
-                    <i class="fa fa-shopping-basket"></i> Savatga
-                </button>
-            </div>
-        </div>
-    `).join('') || "<div style='grid-column:span 2; text-align:center; padding:40px; color:var(--sub);'>Sevimlilar ro'yxati bo'sh</div>";
-    
-    openModal('favModal');
-}
-
-
-
+        function openFavs(){const l=products.filter(p=>favs[p.id]);document.getElementById('favList').innerHTML=l.map(p=>`<div class="fav-item"><div class="fav-del" onclick="togFav(${p.id});openFavs()">✕</div><img src="${p.img}"><div style="font-size:11px;">${p.name}</div><button style="width:100%;margin-top:5px;background:var(--primary);border:none;border-radius:6px;" onclick="updCart(${p.id},1);closeModal('favModal')">+</button></div>`).join('')||"Bo'sh";openModal('favModal');}
         function checkPromo(){const c=document.getElementById('promoInp').value.toUpperCase();db.ref('promocodes/'+c).once('value',s=>{if(s.val()&&s.val().limit>0){activePromo=s.val().discount;document.getElementById('promoMsg').innerHTML=`<b style="color:var(--success)">✅ ${activePromo}% Chegirma!</b>`;renderCart();}else{document.getElementById('promoMsg').innerHTML=`<b style="color:var(--red)">❌ Xato kod</b>`;}});}
-        
-        function loadHistory() {
-    db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value', s => {
-        const d = s.val();
-        
-        // Agar buyurtma bo'lmasa
-        if (!d) {
-            document.getElementById('histList').innerHTML = "<div style='text-align:center; padding:40px; color:gray;'>Buyurtmalar tarixi bo'sh</div>";
-            return;
-        }
-
-        document.getElementById('histList').innerHTML = Object.values(d).reverse().map(o => {
-            let st = o.status; 
-            
-            // Standart qiymatlar
-            let cls = 'status-new'; 
-            let txt = 'YANGI';
-
-            // --- 1. QABUL QILINDI (Faqat qabul qilinganda) ---
-            if (st == 'qabul_qilindi' || st == 'accepted') {
-                cls = 'status-cook';     
-                txt = 'QABUL QILINDI';   
-            }
-
-            // --- 2. TAYYORLANMOQDA (Pishirish boshlanganda) ---
-            // BU YERNI ALOHIDA QILDIK 👇
-            if (st == 'tayyorlanmoqda' || st == 'cooking') {
-                cls = 'status-cook';     
-                txt = 'TAYYORLANMOQDA';   // <-- Endi bu alohida chiqadi
-            }
-
-            // --- 3. KURYERDA / YO'LDA ---
-            if (st == 'kuryerda' || st == 'yetkazilmoqda' || st == 'delivering' || st == 'olib_ketildi') {
-                cls = 'status-deliv';    
-                txt = 'KURYERDA';        
-            }
-
-            // --- 4. YETKAZILDI ---
-            if (st == 'yetkazildi' || st == 'delivered' || st == 'completed') {
-                cls = 'status-done';     
-                txt = 'YETKAZILDI';
-            }
-            
-            // --- 5. BEKOR QILINDI ---
-            if (st == 'bekor_qilindi' || st == 'canceled') {
-                cls = 'status-new'; 
-                txt = 'BEKOR QILINDI';
-            }
-
-            // --- TUGMA MANTIQI ---
-            let trk = '';
-            // Faqat 'KURYERDA' bo'lsa tugma chiqadi
-            if (cls == 'status-deliv' && o.courier_id) {
-                trk = `<button class="track-btn" onclick="track('${o.courier_id}')">📍 Kuryerni Kuzatish</button>`;
-            }
-
-            return `
-            <div class="hist-card ${cls}">
-                <div class="h-header">
-                    <span style="font-size:12px; color:gray;">${o.time}</span>
-                    <span class="h-badge">${txt}</span>
-                </div>
-                
-                <div style="font-size:14px; margin: 10px 0; line-height:1.5;">
-                    ${o.items.map(i => `${i.name} <b>x${i.qty}</b>`).join(', ')}
-                </div>
-                
-                <div style="font-size:18px; font-weight:800; color:var(--gold);">
-                    ${parseInt(o.total).toLocaleString()} so'm
-                </div>
-                
-                ${trk}
-            </div>`;
-        }).join('');
-    });
-}
-
-
-
-
-        
+        function loadHistory(){db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value',s=>{const d=s.val();if(!d)return;document.getElementById('histList').innerHTML=Object.values(d).reverse().map(o=>{let st=o.status,cls='status-new',txt='YANGI';if(st=='kuryerda'){cls='status-deliv';txt='KURYERDA';}if(st=='yetkazildi'){cls='status-done';txt='YETKAZILDI';}if(st=='tayyorlanmoqda'){cls='status-cook';txt='TAYYORLANMOQDA';}let trk=(st=='kuryerda'&&o.courier_id)?`<button class="btn-track" onclick="track('${o.courier_id}')">Kuryerni Kuzatish</button>`:'';return `<div class="hist-card ${cls}"><div class="h-header"><span style="font-size:12px;color:gray;">${o.time}</span><span class="h-badge">${txt}</span></div><div style="font-size:14px;margin-bottom:10px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div><div style="font-size:18px;font-weight:800;">${parseInt(o.total).toLocaleString()} so'm</div>${trk}</div>`;}).join('');});}
         function getDist(lat1,lon1,lat2,lon2){var R=6371;var dLat=(lat2-lat1)*Math.PI/180;var dLon=(lon2-lon1)*Math.PI/180;var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);var c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));return R*c;}
         function logout(){localStorage.removeItem('cafe_uid');location.reload();}
         function copy(t){navigator.clipboard.writeText(t);toast("Nusxalandi");}
         function toggleTheme(){document.body.classList.toggle('light-mode');localStorage.setItem('theme',document.body.classList.contains('light-mode')?'light':'dark');}
         function openNews(){db.ref('news').limitToLast(10).once('value',s=>{document.getElementById('newsContent').innerHTML=Object.values(s.val()||{}).reverse().map(n=>`<div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:15px;margin-bottom:10px;"><div style="font-weight:700;margin-bottom:5px;">${n.text}</div><div style="font-size:11px;color:gray;">${n.date}</div></div>`).join('')||"Yo'q";openModal('newsModal');});}
-        
-            // --- BU KOD YETISHMAYAPTI (ENG PASTGA QO'SHING) ---
-
-    // 1. Mashina ikonkasini sozlash
-    var carIcon = L.icon({
-        iconUrl: 'https://cdn-icons-png.flaticon.com/512/3202/3202926.png',
-        iconSize: [40, 40],
-        iconAnchor: [20, 20]
-    });
-
-    // 2. Kuryerni kuzatish funksiyasi
-    function track(cid) {
-        // Xarita oynasini (Modal) ochish
-        // DIQQAT: HTML da id="mapModal" borligiga ishonch hosil qiling
-        const modal = document.getElementById('mapModal');
-        if(modal) modal.style.display = 'block';
-
-        // Xaritani yaratish (Agar oldin yaratilmagan bo'lsa)
-        if (!map) {
-            map = L.map('map').setView([41.31, 69.24], 13);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
-        }
-
-        // Xarita to'liq yuklanishi uchun biroz kutish
-        setTimeout(() => { map.invalidateSize(); }, 500);
-
-        // Kuryer joylashuvini real vaqtda olish
-        db.ref('couriers/' + cid + '/location').on('value', s => {
-            const d = s.val();
-            if (!d) return;
-
-            // Markerni yangilash
-            if (carMarker) {
-                carMarker.setLatLng([d.lat, d.long]);
-            } else {
-                carMarker = L.marker([d.lat, d.long], {icon: carIcon}).addTo(map);
-            }
-
-            // Xarita markazini mashinaga to'g'irlash
-            map.panTo([d.lat, d.long]);
-        });
-    }
-    
     </script>
 </body>
 </html>
