@@ -1093,54 +1093,7 @@ function openChatModal() {
 
         function checkPromo(){const c=document.getElementById('promoInp').value.toUpperCase();db.ref('promocodes/'+c).once('value',s=>{if(s.val()&&s.val().limit>0){activePromo=s.val().discount;document.getElementById('promoMsg').innerHTML=`<b style="color:var(--success)">✅ ${activePromo}% Chegirma!</b>`;renderCart();}else{document.getElementById('promoMsg').innerHTML=`<b style="color:var(--red)">❌ Xato kod</b>`;}});}
         function loadHistory(){db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value',s=>{const d=s.val();if(!d)return;document.getElementById('histList').innerHTML=Object.values(d).reverse().map(o=>{let st=o.status,cls='status-new',txt='YANGI';if(st=='kuryerda'){cls='status-deliv';txt='KURYERDA';}if(st=='yetkazildi'){cls='status-done';txt='YETKAZILDI';}if(st=='tayyorlanmoqda'){cls='status-cook';txt='TAYYORLANMOQDA';}let trk=(st=='kuryerda'&&o.courier_id)?`<button class="btn-track" onclick="track('${o.courier_id}')">Kuryerni Kuzatish</button>`:'';return `<div class="hist-card ${cls}"><div class="h-header"><span style="font-size:12px;color:gray;">${o.time}</span><span class="h-badge">${txt}</span></div><div style="font-size:14px;margin-bottom:10px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div><div style="font-size:18px;font-weight:800;">${parseInt(o.total).toLocaleString()} so'm</div>${trk}</div>`;}).join('');});}
-        // --- XARITA VA KURYERNI KUZATISH ---
-
-// 1. Mashina ikonkasini sozlash
-var carIcon = L.icon({
-    iconUrl: 'https://cdn-icons-png.flaticon.com/512/3202/3202926.png',
-    iconSize: [40, 40],
-    iconAnchor: [20, 20]
-});
-
-// 2. Global o'zgaruvchilar
-let map = null;
-let carMarker = null;
-
-// 3. Kuzatish funksiyasi
-function track(cid) {
-    // Modalni ochish
-    document.getElementById('mapModal').style.display = 'block';
-
-    // Agar xarita hali yuklanmagan bo'lsa, uni yaratamiz
-    if (!map) {
-        map = L.map('map').setView([41.31, 69.24], 13); // Toshkent markazi (yoki o'z shahringiz)
         
-        // Xarita ko'rinishi (CartoDB)
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap'
-        }).addTo(map);
-    }
-
-    // Xarita to'liq ochilishi uchun biroz kutib, o'lchamni yangilaymiz (GLITCHNI YO'QOTISH)
-    setTimeout(() => { map.invalidateSize(); }, 500);
-
-    // Kuryer harakatini Firebase'dan o'qiymiz
-    db.ref('couriers/' + cid + '/location').on('value', s => {
-        const d = s.val();
-        if (!d) return;
-
-        // Agar marker bor bo'lsa joyini o'zgartiramiz, yo'q bo'lsa yangi qo'yamiz
-        if (carMarker) {
-            carMarker.setLatLng([d.lat, d.long]);
-        } else {
-            carMarker = L.marker([d.lat, d.long], {icon: carIcon}).addTo(map);
-        }
-
-        // Xaritani mashina yurgan joyga olib boramiz
-        map.panTo([d.lat, d.long]);
-    });
-}
-
         function getDist(lat1,lon1,lat2,lon2){var R=6371;var dLat=(lat2-lat1)*Math.PI/180;var dLon=(lon2-lon1)*Math.PI/180;var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);var c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));return R*c;}
         function logout(){localStorage.removeItem('cafe_uid');location.reload();}
         function copy(t){navigator.clipboard.writeText(t);toast("Nusxalandi");}
