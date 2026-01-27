@@ -1131,38 +1131,40 @@ function openChatModal() {
             let cls = 'status-new'; 
             let txt = 'YANGI';
 
-            // --- 1. QABUL QILINDI / TAYYORLANMOQDA ---
-            // Admin bot: 'qabul_qilindi', 'tayyorlanmoqda'
-            if (st == 'qabul_qilindi' || st == 'tayyorlanmoqda' || st == 'accepted' || st == 'cooking') {
+            // --- 1. QABUL QILINDI (Faqat qabul qilinganda) ---
+            if (st == 'qabul_qilindi' || st == 'accepted') {
                 cls = 'status-cook';     
                 txt = 'QABUL QILINDI';   
             }
 
-            // --- 2. KURYERDA / YO'LDA ---
-            // Admin bot: 'kuryerda'
-            // Kuryer bot: 'yetkazilmoqda' (Mana shu so'z yetishmayotgan edi)
+            // --- 2. TAYYORLANMOQDA (Pishirish boshlanganda) ---
+            // BU YERNI ALOHIDA QILDIK 👇
+            if (st == 'tayyorlanmoqda' || st == 'cooking') {
+                cls = 'status-cook';     
+                txt = 'TAYYORLANMOQDA';   // <-- Endi bu alohida chiqadi
+            }
+
+            // --- 3. KURYERDA / YO'LDA ---
             if (st == 'kuryerda' || st == 'yetkazilmoqda' || st == 'delivering' || st == 'olib_ketildi') {
                 cls = 'status-deliv';    
                 txt = 'KURYERDA';        
             }
 
-            // --- 3. YETKAZILDI ---
-            // Kuryer bot: 'yetkazildi'
+            // --- 4. YETKAZILDI ---
             if (st == 'yetkazildi' || st == 'delivered' || st == 'completed') {
                 cls = 'status-done';     
                 txt = 'YETKAZILDI';
             }
             
-            // --- 4. BEKOR QILINDI ---
+            // --- 5. BEKOR QILINDI ---
             if (st == 'bekor_qilindi' || st == 'canceled') {
                 cls = 'status-new'; 
                 txt = 'BEKOR QILINDI';
             }
 
             // --- TUGMA MANTIQI ---
-            // Agar status 'KURYERDA' guruhiga tushsa, tugma chiqadi
             let trk = '';
-            // Diqqat: 'status-deliv' klassi bo'lsa tugma chiqadi
+            // Faqat 'KURYERDA' bo'lsa tugma chiqadi
             if (cls == 'status-deliv' && o.courier_id) {
                 trk = `<button class="track-btn" onclick="track('${o.courier_id}')">📍 Kuryerni Kuzatish</button>`;
             }
@@ -1187,6 +1189,7 @@ function openChatModal() {
         }).join('');
     });
 }
+
 
 
 
