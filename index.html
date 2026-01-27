@@ -781,9 +781,7 @@
             <div class="prof-btn tap" onclick="openFavs()">
                 <span><i class="fa fa-heart" style="color:var(--danger); margin-right:10px;"></i> Sevimlilar</span> <i class="fa fa-chevron-right"></i>
             </div>
-            <div class="prof-btn tap" onclick="openModal('chatModal')">
-                <span><i class="fa fa-envelope" style="color:var(--blue); margin-right:10px;"></i> Admin Chat</span> <i class="fa fa-chevron-right"></i>
-            </div>
+            
             <div class="prof-btn tap" onclick="openPromoList()">
                 <span><i class="fa fa-tags" style="color:var(--success); margin-right:10px;"></i> Promokodlar</span> <i class="fa fa-chevron-right"></i>
             </div>
@@ -977,20 +975,7 @@ function openChatModal() {
 }
 
 
-        // XABAR YUBORISH
-function sendChat() {
-    const inp = document.getElementById('chatInp');
-    if(!inp.value.trim()) return;
-    
-    db.ref('messages/' + user.phone.replace('+', '')).push({
-        from: 'user',
-        body: inp.value,
-        time: Date.now()
-    });
-    inp.value = "";
-    // Yuborgandan keyin ham pastga tushsin
-    scrollToBottom();
-}
+
 
         function openPromoList(){
             openModal('promoListModal');
