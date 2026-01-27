@@ -1246,107 +1246,158 @@ function renderCart() {
 
     // --- YANGILANGAN GPS TIZIMI (MANZIL NOMI BILAN) ---
 
-let tempLoc = null; // Vaqtincha saqlash uchun
+// --- MUKAMMAL GPS TIZIMI (TO'LIQ KOD) ---
 
+let tempLoc = null;     // Vaqtincha manzil
+let watchId = null;     // Kuzatuv IDsi
+let bestAccuracy = 10000; // Boshlang'ich xatolik (juda katta)
+
+// 1. GPS QIDIRISHNI BOSHLASH
 function getGPS() {
     const btn = document.getElementById('gpsBtn');
     
-    // 1. Tugmani "Qidirish" rejimiga o'tkazish
-    btn.innerHTML = `<i class="fa fa-satellite-dish fa-spin"></i> Signal izlanmoqda...`;
+    // Reset
+    bestAccuracy = 10000;
+    tempLoc = null;
+    if (watchId) navigator.geolocation.clearWatch(watchId);
+
+    // Tugma dizayni
+    btn.innerHTML = `<i class="fa fa-satellite-dish fa-spin"></i> Signal kuchaytirilyapti...`;
     btn.classList.add('searching');
     btn.classList.remove('gps-success', 'gps-error');
 
     if (window.Android && window.Android.checkGPS) window.Android.checkGPS();
 
-    // 2. GPS SO'ROV (Yuqori aniqlik rejimi)
+    // Kuzatishni boshlaymiz
     const options = {
-        enableHighAccuracy: true, // Eng muhim joyi: Batareyani yeb bo'lsa ham aniq topadi
-        timeout: 10000,           // 10 soniya kutish
-        maximumAge: 0             // Eski keshdagi joyni olmaslik
+        enableHighAccuracy: true,
+        timeout: 15000, 
+        maximumAge: 0
     };
 
-    navigator.geolocation.getCurrentPosition(
+    watchId = navigator.geolocation.watchPosition(
         (p) => {
-            // Muvaffaqiyatli topildi!
+            const acc = Math.round(p.coords.accuracy);
             const lat = p.coords.latitude;
             const lng = p.coords.longitude;
-            const acc = Math.round(p.coords.accuracy); // Metrdagi aniqlik
 
-            tempLoc = { lat, long: lng }; // Vaqtinchalik saqlab turamiz
+            // Jarayonni ko'rsatamiz
+            btn.innerHTML = `<i class="fa fa-satellite-dish fa-spin"></i> Aniqlanmoqda... (${acc}m)`;
 
-            // Tugma matnini o'zgartirish
-            btn.innerHTML = `<i class="fa fa-map-pin"></i> Manzil topildi! Yuklanmoqda...`;
+            // Agar signal yaxshilansa, eslab qolamiz
+            if (acc < bestAccuracy) {
+                bestAccuracy = acc;
+                tempLoc = { lat, long: lng };
+            }
 
-            // 3. KOORDINATADAN KO'CHA NOMINI OLISH (Reverse Geocoding)
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
-                .then(res => res.json())
-                .then(data => {
-                    // Manzil nomini chiroyli qilish
-                    let addr = data.display_name;
-                    
-                    // Agar qisqaroq nom bo'lsa, o'shani olamiz (Masalan: Ko'cha va Uy raqami)
-                    if(data.address) {
-                        const road = data.address.road || "";
-                        const house = data.address.house_number || "";
-                        const suburb = data.address.suburb || ""; // Mahalla
-                        if(road) addr = `${road} ${house}, ${suburb}`;
-                    }
-
-                    // 4. MODALNI OCHISH VA MA'LUMOTLARNI KO'RSATISH
-                    document.getElementById('addrText').innerText = addr || "Noma'lum hudud";
-                    document.getElementById('addrAcc').innerText = acc;
-                    
-                    // Aniqlik rangini belgilash (Yaxshi yoki Yomon)
-                    const accElem = document.getElementById('addrAcc');
-                    if(acc < 30) { accElem.style.color = "var(--success)"; } // 30 metrdan kam - Zo'r
-                    else { accElem.style.color = "orange"; } // Uzoqroq - O'rtacha
-
-                    // Xarita rasmini yangilash (Static Map) - Bu oddiy rasm, Google Map emas
-                    // Bu yerda shunchaki vizual chiroyli turishi uchun
-                    
-                    openModal('addressModal');
-                    
-                    // Tugmani asl holiga qaytarish (Lekin hali yashil bo'lmaydi)
-                    btn.classList.remove('searching');
-                    btn.innerHTML = "Manzilni aniqlash"; 
-
-                })
-                .catch(() => {
-                    // Agar internet sekin bo'lsa va nomini ololmasa ham, koordinata bor-ku
-                    document.getElementById('addrText').innerText = "Manzil nomini yuklab bo'lmadi (Lekin joylashuv aniq)";
-                    document.getElementById('addrAcc').innerText = acc;
-                    openModal('addressModal');
-                    btn.classList.remove('searching');
-                });
+            // AGAR 30 METRDAN ANIQ TOPILSA -> TO'XTATAMIZ
+            if (acc <= 30) {
+                finishGPS(lat, lng, acc);
+            }
         },
-        (err) => {
-            // Xatolik bo'lsa
-            btn.classList.remove('searching');
-            btn.innerHTML = "❌ GPS Xatosi. Qayta urinib ko'ring";
-            btn.classList.add('gps-error');
-            setTimeout(() => { btn.innerHTML = "Manzilni aniqlash"; btn.classList.remove('gps-error'); }, 3000);
-        },
+        (err) => { console.log("GPS kutilyapti..."); },
         options
     );
+
+    // 10 soniyadan keyin majburiy to'xtatish (Vaqt tugadi)
+    setTimeout(() => {
+        if (watchId) {
+            navigator.geolocation.clearWatch(watchId);
+            watchId = null;
+            
+            if (tempLoc) {
+                // Borini olamiz
+                finishGPS(tempLoc.lat, tempLoc.long, bestAccuracy);
+            } else {
+                // Hech narsa topilmadi
+                btn.classList.remove('searching');
+                btn.innerHTML = "❌ Signal past. Ochiq joyga chiqing";
+                btn.classList.add('gps-error');
+            }
+        }
+    }, 10000);
 }
 
-// 5. FOYDALANUVCHI "TASDIQLASH" TUGMASINI BOSGANDA
+// 2. QIDIRUVNI TUGATISH VA MODALNI OCHISH
+function finishGPS(lat, lng, acc) {
+    if (watchId) navigator.geolocation.clearWatch(watchId);
+    watchId = null;
+
+    const btn = document.getElementById('gpsBtn');
+    btn.innerHTML = `<i class="fa fa-map-pin"></i> Manzil yuklanmoqda...`;
+
+    // Manzil nomini olish (Nominatim)
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+        .then(res => res.json())
+        .then(data => {
+            let addr = data.display_name;
+            if(data.address) {
+                const road = data.address.road || "";
+                const house = data.address.house_number || "";
+                const suburb = data.address.suburb || data.address.neighbourhood || ""; 
+                const city = data.address.city || data.address.town || "";
+                
+                // Qisqa manzil yasash
+                let shortAddr = [];
+                if(road) shortAddr.push(road);
+                if(house) shortAddr.push(house);
+                if(suburb) shortAddr.push(suburb);
+                else if(city) shortAddr.push(city);
+                
+                if(shortAddr.length > 0) addr = shortAddr.join(', ');
+            }
+
+            // Modalga yozish
+            document.getElementById('addrText').innerText = addr || "Noma'lum hudud";
+            document.getElementById('addrAcc').innerText = acc;
+            
+            const accElem = document.getElementById('addrAcc');
+            if(acc < 40) { 
+                accElem.style.color = "var(--success)"; 
+                accElem.innerText = acc + " metr (A'lo)";
+            } else { 
+                accElem.style.color = "orange"; 
+                accElem.innerText = acc + " metr (O'rtacha)";
+            }
+
+            openModal('addressModal');
+            btn.classList.remove('searching');
+            btn.innerHTML = "Manzilni aniqlash"; 
+        })
+        .catch(() => {
+            document.getElementById('addrText').innerText = "Manzil nomi yuklanmadi (Xarita to'g'ri)";
+            document.getElementById('addrAcc').innerText = acc;
+            openModal('addressModal');
+            btn.classList.remove('searching');
+            btn.innerHTML = "Manzilni aniqlash"; 
+        });
+}
+
+// 3. TASDIQLASH (Siz so'ragan funksiya)
 function confirmGPS() {
     if (tempLoc) {
-        loc = tempLoc; // Asosiy loc o'zgaruvchisiga yozamiz
-        
-        // Kafe lokatsiyasi bilan masofani tekshirish
+        // Kafe lokatsiyasi bilan masofani tekshirish (Agar kafe lokatsiyasi bor bo'lsa)
         if (shopLoc && shopLoc.radius) {
-            const d = getDist(loc.lat, loc.long, shopLoc.lat, shopLoc.long);
+            const d = getDist(tempLoc.lat, tempLoc.long, shopLoc.lat, shopLoc.long);
+            
             if (d > shopLoc.radius) {
-                alert(`Uzr, biz bu manzilga yetkazib berolmaymiz.\nBizdan masofa: ${d.toFixed(1)} km\n(Limit: ${shopLoc.radius} km)`);
+                // XUNUK ALERT O'RNIGA CHIROYLI OYNA
+                document.getElementById('alertMsg').innerHTML = `
+                    Uzr, biz bu manzilga yetkazib berolmaymiz.<br><br>
+                    Bizdan masofa: <b>${d.toFixed(1)} km</b><br>
+                    (Maksimal: ${shopLoc.radius} km)
+                `;
+                openModal('alertModal');
+                
                 closeModal('addressModal');
-                loc = null;
+                tempLoc = null; // Saqlamaymiz
                 return;
             }
         }
 
-        // Tugmani "Yashil" qilish
+        // Hammasi joyida -> Saqlaymiz
+        loc = tempLoc; 
+        
         const btn = document.getElementById('gpsBtn');
         btn.innerHTML = `✅ Manzil aniqlandi`;
         btn.classList.add('gps-success');
