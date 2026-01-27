@@ -1113,6 +1113,7 @@ function openChatModal() {
 
 
         function checkPromo(){const c=document.getElementById('promoInp').value.toUpperCase();db.ref('promocodes/'+c).once('value',s=>{if(s.val()&&s.val().limit>0){activePromo=s.val().discount;document.getElementById('promoMsg').innerHTML=`<b style="color:var(--success)">✅ ${activePromo}% Chegirma!</b>`;renderCart();}else{document.getElementById('promoMsg').innerHTML=`<b style="color:var(--red)">❌ Xato kod</b>`;}});}
+        
         function loadHistory() {
     db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value', s => {
         const d = s.val();
@@ -1124,43 +1125,45 @@ function openChatModal() {
         }
 
         document.getElementById('histList').innerHTML = Object.values(d).reverse().map(o => {
-            let st = o.status; // Bazadan kelgan aniq so'z ('qabul_qilindi', 'kuryerda' va hk)
+            let st = o.status; 
             
             // Standart qiymatlar
             let cls = 'status-new'; 
             let txt = 'YANGI';
 
-            // 1. QABUL QILINGANDA yoki PISHIRILAYOTGANDA
-            // Bot kodingizda: 'qabul_qilindi' yoki 'tayyorlanmoqda'
-            if (st == 'qabul_qilindi' || st == 'tayyorlanmoqda') {
+            // --- 1. QABUL QILINDI / TAYYORLANMOQDA ---
+            // Admin bot: 'qabul_qilindi', 'tayyorlanmoqda'
+            if (st == 'qabul_qilindi' || st == 'tayyorlanmoqda' || st == 'accepted' || st == 'cooking') {
                 cls = 'status-cook';     
-                txt = 'QABUL QILINDI';   // <-- Siz so'ragan yozuv
+                txt = 'QABUL QILINDI';   
             }
 
-            // 2. KURYERDA
-            // Bot kodingizda: 'kuryerda'
-            if (st == 'kuryerda') {
+            // --- 2. KURYERDA / YO'LDA ---
+            // Admin bot: 'kuryerda'
+            // Kuryer bot: 'yetkazilmoqda' (Mana shu so'z yetishmayotgan edi)
+            if (st == 'kuryerda' || st == 'yetkazilmoqda' || st == 'delivering' || st == 'olib_ketildi') {
                 cls = 'status-deliv';    
-                txt = 'KURYERDA';       
+                txt = 'KURYERDA';        
             }
 
-            // 3. YETKAZILDI
-            // Bot kodingizda: 'yetkazildi'
-            if (st == 'yetkazildi') {
+            // --- 3. YETKAZILDI ---
+            // Kuryer bot: 'yetkazildi'
+            if (st == 'yetkazildi' || st == 'delivered' || st == 'completed') {
                 cls = 'status-done';     
                 txt = 'YETKAZILDI';
             }
             
-            // 4. BEKOR QILINGAN
-            if (st == 'bekor_qilindi') {
-                cls = 'status-new'; // Qizil qilish mumkin
+            // --- 4. BEKOR QILINDI ---
+            if (st == 'bekor_qilindi' || st == 'canceled') {
+                cls = 'status-new'; 
                 txt = 'BEKOR QILINDI';
             }
 
             // --- TUGMA MANTIQI ---
-            // Faqat status 'kuryerda' bo'lsa chiqadi
+            // Agar status 'KURYERDA' guruhiga tushsa, tugma chiqadi
             let trk = '';
-            if (st == 'kuryerda' && o.courier_id) {
+            // Diqqat: 'status-deliv' klassi bo'lsa tugma chiqadi
+            if (cls == 'status-deliv' && o.courier_id) {
                 trk = `<button class="track-btn" onclick="track('${o.courier_id}')">📍 Kuryerni Kuzatish</button>`;
             }
 
@@ -1184,6 +1187,7 @@ function openChatModal() {
         }).join('');
     });
 }
+
 
 
         
