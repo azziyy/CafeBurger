@@ -947,6 +947,32 @@ body.light-mode .nav-btn.active::after {
     </div>
 </div>
 
+    <div id="addressModal" class="modal-wrap" style="align-items:center; z-index:9999;">
+    <div style="background:var(--bg-card); width:90%; max-width:350px; padding:25px; border-radius:25px; border:1px solid rgba(255,255,255,0.05); text-align:center;">
+        
+        <h3 style="margin:0 0 15px; color:var(--primary);">Manzilingiz shu mi?</h3>
+        
+        <div id="addrMap" style="width:100%; height:150px; background:#333; border-radius:15px; margin-bottom:15px; overflow:hidden; position:relative;">
+            <img src="https://cdn-icons-png.flaticon.com/512/854/854878.png" style="width:100%; height:100%; object-fit:cover; opacity:0.5;">
+            <i class="fa fa-map-marker-alt" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -100%); font-size:40px; color:var(--danger); text-shadow:0 5px 10px rgba(0,0,0,0.5);"></i>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-bottom:10px;">
+            <div style="font-size:12px; color:#aaa; margin-bottom:5px;">Aniqlangan manzil:</div>
+            <b id="addrText" style="font-size:16px; color:white;">Yuklanmoqda...</b>
+        </div>
+
+        <div style="font-size:12px; color:var(--success); margin-bottom:20px;">
+            <i class="fa fa-satellite-dish"></i> Aniqlik: <span id="addrAcc">...</span> metr
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button class="tap" onclick="closeModal('addressModal')" style="flex:1; padding:12px; background:#333; border:none; border-radius:12px; color:white;">Qayta</button>
+            <button class="tap" onclick="confirmGPS()" style="flex:1; padding:12px; background:var(--primary); border:none; border-radius:12px; font-weight:bold; color:black;">HA, TASDIQLASH</button>
+        </div>
+    </div>
+</div>
+
     
     <div id="toastBox"></div>
 
