@@ -1773,7 +1773,135 @@ function toggleTheme() {
             map.panTo([d.lat, d.long]); 
         });
     }
+// --- 1. LOGIN QILISH (TELEGRAM ORQALI) ---
+function doLogin() {
+    const t = 'req_' + Date.now();
+    // Telegramga yuboramiz
+    window.open(`https://t.me/${BOT_USER}?start=login_${t}`, '_blank');
+    
+    // Javobni kutamiz
+    db.ref('auth_tokens/' + t).on('value', s => {
+        if (s.val()) {
+            user = s.val();
+            const uid = user.phone.replace('+', '');
+            
+            // XOTIRAGA SAQLAYMIZ (Eng muhimi)
+            localStorage.setItem('cafe_uid', uid);
+            
+            // Tokenni o'chiramiz
+            db.ref('auth_tokens/' + t).remove();
+            
+            // Tizimga kiritamiz
+            checkAuth(uid);
+        }
+    });
+}
 
+// --- 2. FOYDALANUVCHINI TEKSHIRISH ---
+function checkAuth(uid) {
+    db.ref('users/' + uid).on('value', s => {
+        const d = s.val();
+
+        // Foydalanuvchi topilmasa -> Login oynasi
+        if (!d) {
+            document.getElementById('loginModal').style.display = 'flex';
+            return;
+        }
+
+        // Bloklangan bo'lsa
+        if (d.blocked === true) {
+            document.getElementById('blockScreen').style.display = 'flex';
+            document.getElementById('loginModal').style.display = 'none';
+            return;
+        }
+
+        // Tizimga muvaffaqiyatli kirdi
+        user = d;
+        document.getElementById('blockScreen').style.display = 'none';
+        document.getElementById('loginModal').style.display = 'none';
+
+        // SEVIMLILARNI YUKLASH
+        favs = user.favorites || {};
+
+        // PROFILNI YANGILASH
+        initApp();
+
+        // AGAR MAHSULOTLAR YUKLANIB BO'LGAN BO'LSA -> EKRANNI YANGILASH
+        // (Yurakchalar qizarishi uchun)
+        if (products.length > 0) {
+            renderGrid(currentCat);
+        }
+    });
+}
+
+// --- 3. DASTUR VA PROFILNI SOZLASH ---
+function initApp() {
+    if (user) {
+        // Ism va Telefonni ekranga chiqarish
+        const uName = document.getElementById('uName');
+        const uPhone = document.getElementById('uPhone');
+        
+        if(uName) uName.innerText = user.name || "Mijoz";
+        if(uPhone) uPhone.innerText = user.phone || "+998...";
+        
+        // Login oynasini yopish
+        document.getElementById('loginModal').style.display = 'none';
+        
+        // Tarixni yuklash (agar funksiya bo'lsa)
+        if (typeof loadHistory === 'function') loadHistory();
+    }
+}
+
+// --- 4. MA'LUMOTLARNI YUKLASH (Google Sheets) ---
+function loadData() {
+    fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`)
+        .then(r => r.text())
+        .then(t => {
+            const j = JSON.parse(t.substr(47).slice(0, -2));
+            products = j.table.rows.map(r => ({
+                id: r.c[0]?.v,
+                cat: r.c[1]?.v || "Boshqa",
+                name: r.c[2]?.v,
+                price: r.c[3]?.v || 0,
+                img: r.c[4]?.v,
+                desc: r.c[5]?.v || ""
+            }));
+            
+            // Kategoriyalar va Mahsulotlarni chizamiz
+            renderCats();
+            renderGrid('Barchasi');
+            
+            // Agar foydalanuvchi allaqachon kirgan bo'lsa, yurakchalarni tekshiramiz
+            if (user && user.favorites) {
+                renderGrid('Barchasi'); // Qayta chizamiz
+            }
+        })
+        .catch(err => {
+            console.error("Google Sheets Xatosi:", err);
+            alert("Internet bilan muammo bor yoki mahsulotlar yuklanmadi.");
+        });
+}
+
+// --- 5. ENG MUHIMI: DASTURNI ISHGA TUSHIRISH ---
+// Bu kod faylning eng oxirida turishi shart!
+window.addEventListener('DOMContentLoaded', () => {
+    // A) Avval mahsulotlarni yuklaymiz
+    loadData();
+
+    // B) Keyin xotirani tekshiramiz (Eski odam bormi?)
+    const savedUid = localStorage.getItem('cafe_uid');
+
+    if (savedUid) {
+        // Eski tanish bor -> Tizimga kiritamiz
+        console.log("Xotiradagi ID bilan kirilmoqda: " + savedUid);
+        checkAuth(savedUid);
+    } else {
+        // Hech kim yo'q -> Login so'raymiz
+        setTimeout(() => {
+            if(!user) document.getElementById('loginModal').style.display = 'flex';
+        }, 1000); // Biroz kutib chiqaramiz
+    }
+});
         // --- 3. DASTUR ISHGA TUSHGANDA (ENG OXIRGI QATOR) ---
 
 
