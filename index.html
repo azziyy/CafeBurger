@@ -1065,6 +1065,7 @@ body.light-mode .nav-btn.active::after {
     // --- SAVATNI CHIQARISH VA TUGMANI BOSHQARISH (MUHIM) ---
     // --- SAVATNI CHIQARISH VA TUGMANI BOSHQARISH ---
 // --- SAVATNI CHIQARISH (DOSTAVKA BILAN) ---
+// --- SAVATNI CHIQARISH (XATOSIZ VERSIYA) ---
 function renderCart() {
     let t = 0, h = '';
     
@@ -1088,22 +1089,15 @@ function renderCart() {
         }
     }
 
-    // 2. YANGI HISOB-KITOB
-    let subTotal = t; // Mahsulotlar narxi
-    let discount = activePromo ? (subTotal * activePromo / 100) : 0; // Chegirma
-    
-    // Dostavka narxi (Faqat savatda narsa bo'lsa qo'shiladi)
-    // DELIVERY_PRICE o'zgaruvchisi tepadagi sozlamalardan olinadi
+    // 2. NARXLARNI HISOBLASH
+    let subTotal = t; 
+    let discount = activePromo ? (subTotal * activePromo / 100) : 0; 
     let delivery = (t > 0) ? DELIVERY_PRICE : 0; 
-    
-    // Yakuniy summa
     let grandTotal = (subTotal - discount) + delivery;
 
-    // 3. EKRANGA CHIQARISH (Chek ko'rinishida)
+    // 3. HTML TAYYORLASH
     let priceHtml = "";
-
     if (t > 0) {
-        // Agar savat to'la bo'lsa -> Batafsil hisobot
         priceHtml = `
             <div style="width:100%; font-size:14px; color:#aaa; display:flex; flex-direction:column; gap:8px;">
                 <div style="display:flex; justify-content:space-between;">
@@ -1123,7 +1117,6 @@ function renderCart() {
             </div>
         `;
     } else {
-        // Savat bo'sh bo'lsa
         priceHtml = `
             <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:900;">
                 <span>Jami:</span> <span id="cartTotal" style="color:var(--primary);">0 so'm</span>
@@ -1131,19 +1124,32 @@ function renderCart() {
         `;
     }
 
-    // HTML ga joylash
+    // 4. HTMLGA JOYLASH
     document.getElementById('cartList').innerHTML = h || "<div style='text-align:center;padding:30px;color:#666'>Savat bo'sh</div>";
 
-    // Jami narx blokini yangilash
-    const totalEl = document.getElementById('cartTotal');
-    if(totalEl && totalEl.parentElement) {
-        totalEl.parentElement.style.display = 'block'; 
-        totalEl.parentElement.innerHTML = priceHtml;
+    // --- XATONI TUZATISH QISMI ---
+    // Biz narx chiqadigan joyni topib, unga nom (ID) berib olamiz
+    let box = document.getElementById('total-box-fixed');
+    
+    if (!box) {
+        // Agar hali nomlamagan bo'lsak, eski 'cartTotal' orqali ota-divni topamiz
+        const oldSpan = document.getElementById('cartTotal');
+        if (oldSpan && oldSpan.parentElement) {
+            box = oldSpan.parentElement;
+            box.id = 'total-box-fixed'; // Endi bu qutining aniq nomi bor
+            box.style.display = 'block'; // Flexni olib tashlaymiz
+        }
     }
 
+    // Endi har doim o'sha aniq qutini ichini yangilaymiz (ichma-ich ketmaydi)
+    if (box) {
+        box.innerHTML = priceHtml;
+    }
+    // -----------------------------
+
+    // Tugmalar va Statuslar
     const btn = document.getElementById('orderBtn');
 
-    // KAFE HOLATI TEKSHIRUVI
     if (shopStatus === 'closed') {
         btn.innerHTML = "⛔️ KAFE YOPILGAN";
         btn.style.background = "#333";
@@ -1153,20 +1159,17 @@ function renderCart() {
         return;
     }
 
-    // OCHIQ HOLATI
     btn.innerHTML = "BUYURTMA BERISH";
     btn.style.background = "var(--primary)";
     btn.style.color = "#000000";
     btn.style.boxShadow = "0 4px 15px var(--primary-glow)";
 
-    // Tugma aktivligi
     if (t > 0 && loc) {
         btn.style.opacity = '1';
         btn.style.pointerEvents = 'all';
     } else {
         btn.style.opacity = '0.5';
         btn.style.pointerEvents = 'none';
-        
         if(t > 0 && !loc) {
             btn.innerHTML = "📍 MANZILNI ANIQLANG";
             btn.style.boxShadow = "none";
