@@ -1776,19 +1776,6 @@ function toggleTheme() {
 
         // --- 3. DASTUR ISHGA TUSHGANDA (ENG OXIRGI QATOR) ---
 
-// Xotirani tekshiramiz: Oldin kirgan odam bormi?
-const savedUid = localStorage.getItem('cafe_uid');
-
-if (savedUid) {
-    // Agar bor bo'lsa, darhol uni tizimga qaytaramiz
-    console.log("Qayta kirish: " + savedUid);
-    checkAuth(savedUid);
-} else {
-    // Agar yo'q bo'lsa, Login oynasini ko'rsatamiz
-    document.getElementById('loginModal').style.display = 'flex';
-}
-
-
 
         // --- DASTUR YUKLANGANDA XOTIRANI TEKSHIRISH ---
 window.onload = function() {
