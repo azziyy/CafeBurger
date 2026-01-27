@@ -1245,47 +1245,41 @@ function sendOrder() {
     const code = document.getElementById('promoInp').value.toUpperCase().trim();
     const msg = document.getElementById('promoMsg');
     
-    // Tozalash
     activePromo = null;
     activePromoCode = null;
     msg.innerHTML = "";
 
     if (!code) return;
 
-    // 1. Bazadan kodni qidirish
+    // 1. Promokodni bazadan o'qish
     db.ref('promocodes/' + code).once('value', s => {
         const promo = s.val();
 
-        // A) Kod umuman yo'q bo'lsa
+        // Agar kod umuman yo'q bo'lsa
         if (!promo) {
             msg.innerHTML = `<b style="color:var(--red)">❌ Kod mavjud emas</b>`;
             renderCart();
             return;
         }
 
-        // B) Umumiy limit tugagan bo'lsa (Admin belgilagan)
-        if (promo.limit <= 0) {
-            msg.innerHTML = `<b style="color:var(--red)">⚠️ Bu aksiya muddati tugagan</b>`;
-            renderCart();
-            return;
-        }
-
-        // C) FOYDALANUVCHI LIMITINI TEKSHIRISH (YANGI QISM)
-        // Har bir user o'z tarixida shu kodni necha marta ishlatganini tekshiramiz
+        // 2. USER TARIXINI TEKSHIRISH
         const userPhone = user.phone.replace('+', '');
         
         db.ref(`users/${userPhone}/used_promos/${code}`).once('value', u => {
-            const usedCount = u.val() || 0; // Agar oldin ishlatmagan bo'lsa 0 bo'ladi
+            const usedCount = u.val() || 0; // Mijoz necha marta ishlatgan?
 
-            // SHART: Har bir odam maksimal 3 marta ishlata oladi
-            if (usedCount >= 3) {
-                msg.innerHTML = `<b style="color:var(--red)">🚫 Siz bu koddan 3 marta foydalangansiz</b>`;
+            // YANGI MANTIQ: 
+            // Admin belgilagan 'limit' bu yerda "Maksimal foydalanish soni" deb qabul qilinadi.
+            // Masalan: Agar limit 3 bo'lsa, usedCount 3 ga yetganda to'xtatadi.
+            
+            if (usedCount >= promo.limit) {
+                msg.innerHTML = `<b style="color:var(--red)">🚫 Siz bu koddan maksimal (${promo.limit} marta) foydalanib bo'lgansiz.</b>`;
                 renderCart();
             } else {
-                // Hamma shartdan o'tdi -> Chegirma beramiz
+                // Ruxsat berish
                 activePromo = promo.discount;
-                activePromoCode = code; // Kod nomini eslab qolamiz
-                msg.innerHTML = `<b style="color:var(--success)">✅ ${activePromo}% Chegirma qabul qilindi!</b>`;
+                activePromoCode = code;
+                msg.innerHTML = `<b style="color:var(--success)">✅ ${activePromo}% Chegirma! (${usedCount + 1}-chi foydalanish)</b>`;
                 renderCart();
             }
         });
