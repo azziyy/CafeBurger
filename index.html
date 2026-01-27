@@ -1064,10 +1064,11 @@ body.light-mode .nav-btn.active::after {
 
     // --- SAVATNI CHIQARISH VA TUGMANI BOSHQARISH (MUHIM) ---
     // --- SAVATNI CHIQARISH VA TUGMANI BOSHQARISH ---
+// --- SAVATNI CHIQARISH (DOSTAVKA BILAN) ---
 function renderCart() {
     let t = 0, h = '';
     
-    // 1. Savatdagi mahsulotlarni hisoblash
+    // 1. Savatdagi mahsulotlarni yig'ish
     for (let id in cart) {
         const p = products.find(x => x.id == id);
         if (p) {
@@ -1087,58 +1088,85 @@ function renderCart() {
         }
     }
 
-    // 2. NARXNI KO'RSATISH (Promokod bo'lsa chizilgan narx chiqadi)
+    // 2. YANGI HISOB-KITOB
+    let subTotal = t; // Mahsulotlar narxi
+    let discount = activePromo ? (subTotal * activePromo / 100) : 0; // Chegirma
+    
+    // Dostavka narxi (Faqat savatda narsa bo'lsa qo'shiladi)
+    // DELIVERY_PRICE o'zgaruvchisi tepadagi sozlamalardan olinadi
+    let delivery = (t > 0) ? DELIVERY_PRICE : 0; 
+    
+    // Yakuniy summa
+    let grandTotal = (subTotal - discount) + delivery;
+
+    // 3. EKRANGA CHIQARISH (Chek ko'rinishida)
     let priceHtml = "";
 
-    if (activePromo) {
-        // Chegirmali narxni hisoblash
-        let discountedPrice = t - (t * activePromo / 100);
-        
-        // ESKI NARX: Kulrang va ustidan chizilgan
-        let oldPrice = `<span style="text-decoration: line-through; color: #999; margin-right: 10px; font-size: 0.9em;">${t.toLocaleString()}</span>`;
-        
-        // YANGI NARX: Asosiy rangda (Sariq) va qalin
-        let newPrice = `<span style="color: var(--primary); font-weight: bold; font-size: 1.2em;">${discountedPrice.toLocaleString()} so'm</span>`;
-        
-        priceHtml = oldPrice + newPrice;
+    if (t > 0) {
+        // Agar savat to'la bo'lsa -> Batafsil hisobot
+        priceHtml = `
+            <div style="width:100%; font-size:14px; color:#aaa; display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; justify-content:space-between;">
+                    <span>Mahsulotlar:</span> <span>${subTotal.toLocaleString()} so'm</span>
+                </div>
+                ${activePromo ? `
+                <div style="display:flex; justify-content:space-between; color:var(--success);">
+                    <span>Chegirma (${activePromo}%):</span> <span>-${discount.toLocaleString()} so'm</span>
+                </div>` : ''}
+                <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px; margin-bottom:5px;">
+                    <span>Yetkazib berish:</span> <span>${delivery.toLocaleString()} so'm</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:900; color:var(--primary);">
+                    <span>JAMI:</span> 
+                    <span id="cartTotal">${grandTotal.toLocaleString()} so'm</span>
+                </div>
+            </div>
+        `;
     } else {
-        // Promokod bo'lmasa, oddiy oq rangda chiqadi
-        priceHtml = `${t.toLocaleString()} so'm`;
+        // Savat bo'sh bo'lsa
+        priceHtml = `
+            <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:900;">
+                <span>Jami:</span> <span id="cartTotal" style="color:var(--primary);">0 so'm</span>
+            </div>
+        `;
     }
 
     // HTML ga joylash
     document.getElementById('cartList').innerHTML = h || "<div style='text-align:center;padding:30px;color:#666'>Savat bo'sh</div>";
-    document.getElementById('cartTotal').innerHTML = priceHtml;
+
+    // Jami narx blokini yangilash
+    const totalEl = document.getElementById('cartTotal');
+    if(totalEl && totalEl.parentElement) {
+        totalEl.parentElement.style.display = 'block'; 
+        totalEl.parentElement.innerHTML = priceHtml;
+    }
 
     const btn = document.getElementById('orderBtn');
 
-    // 3. Agar Kafe YOPIQ bo'lsa (Eng muhim tekshiruv)
+    // KAFE HOLATI TEKSHIRUVI
     if (shopStatus === 'closed') {
         btn.innerHTML = "⛔️ KAFE YOPILGAN";
         btn.style.background = "#333";
-        btn.style.boxShadow = "none"; // Nur (glow) o'chiriladi
+        btn.style.boxShadow = "none";
         btn.style.opacity = "1";
         btn.style.pointerEvents = "none";
-        return; // Shu yerda to'xtaydi
+        return;
     }
 
-    // 4. Agar Kafe OCHIQ bo'lsa
+    // OCHIQ HOLATI
     btn.innerHTML = "BUYURTMA BERISH";
-    btn.style.background = "var(--primary)"; // Sariq rang
-    btn.style.color = "#000000";             // Yozuv qora
-    btn.style.boxShadow = "0 4px 15px var(--primary-glow)"; // Sariq nur
+    btn.style.background = "var(--primary)";
+    btn.style.color = "#000000";
+    btn.style.boxShadow = "0 4px 15px var(--primary-glow)";
 
-    // Savat va Manzil tekshiruvi
+    // Tugma aktivligi
     if (t > 0 && loc) {
-        // Hammasi joyida -> Tugma yonadi
         btn.style.opacity = '1';
         btn.style.pointerEvents = 'all';
     } else {
-        // Biror narsa yetishmayapti -> Tugma xiralashadi
         btn.style.opacity = '0.5';
         btn.style.pointerEvents = 'none';
         
-        // Agar savat to'la lekin manzil yo'q bo'lsa
         if(t > 0 && !loc) {
             btn.innerHTML = "📍 MANZILNI ANIQLANG";
             btn.style.boxShadow = "none";
@@ -1162,6 +1190,7 @@ function renderCart() {
     }
 
    // --- BUYURTMA YUBORISH ---
+// --- BUYURTMA YUBORISH (YANGILANGAN) ---
 function sendOrder() {
     // 1. Tizimga kirganlikni tekshirish
     if (!user || !user.phone) { 
@@ -1171,7 +1200,7 @@ function sendOrder() {
     
     // 2. Savatdagi mahsulotlarni yig'ish
     const items = [];
-    let t = 0;
+    let t = 0; // Faqat mahsulotlar narxi
     for (let id in cart) {
         const product = products.find(p => p.id == id);
         if (product) {
@@ -1183,46 +1212,55 @@ function sendOrder() {
     // 3. Savat bo'shligini tekshirish
     if (items.length === 0) { toast("Savat bo'sh!"); return; }
 
-    // 4. Yakuniy narxni hisoblash (Promo bo'lsa)
-    let finalPrice = activePromo ? t - (t * activePromo / 100) : t;
+    // --- 4. MINIMAL BUYURTMA TEKSHIRUVI (YANGI) ---
+    // MIN_ORDER_PRICE o'zgaruvchisi tepadagi sozlamalardan olinadi
+    if (t < MIN_ORDER_PRICE) {
+        alert(`⚠️ Uzr, minimal buyurtma summasi ${MIN_ORDER_PRICE.toLocaleString()} so'm bo'lishi kerak.\n(Hozir: ${t.toLocaleString()} so'm)`);
+        return; // To'xtatamiz, buyurtma ketmaydi
+    }
+    // -----------------------------------------------
 
-    // 5. Buyurtma ma'lumotlarini tayyorlash
+    // 5. Yakuniy narxni hisoblash (Dostavka bilan)
+    let discountAmt = activePromo ? (t * activePromo / 100) : 0;
+    
+    // Jami = (Mahsulot - Chegirma) + Dostavka
+    let finalPrice = (t - discountAmt) + DELIVERY_PRICE; 
+
+    // 6. Buyurtma ma'lumotlarini tayyorlash
     const orderData = {
         user_id: user.phone,
         user_info: user.name || "Mijoz",
         items: items,
-        total: finalPrice,
-        original_total: t,
+        
+        // Narxlar (Bazaga to'liq info ketadi)
+        products_total: t,            // Mahsulotlar o'zi
+        delivery_fee: DELIVERY_PRICE, // Dostavka haqqi
         promo_discount: activePromo || 0,
+        total: finalPrice,            // Mijoz to'laydigan jami summa (Admin shuni ko'radi)
+        
         status: 'yangi',
         location: loc || null,
         time: new Date().toLocaleString('uz-UZ')
     };
 
-    // 6. Firebasega yuborish
+    // 7. Firebasega yuborish
     db.ref('orders').push(orderData, (error) => {
         if (error) { 
             alert("Xatolik: " + error.message); 
         } else {
-            // --- YANGI QISM: PROMOKOD ISHLATILGANINI SAQLASH ---
-            // --- PROMOKODNI SAQLASH ---
+            // --- PROMOKOD ISHLATILGANINI SAQLASH ---
             if (activePromoCode) {
                 const cleanPhone = user.phone.replace('+', '');
-                
-                // Faqat foydalanuvchining shaxsiy hisobini oshiramiz (+1)
+                // Faqat foydalanuvchi tarixiga +1 qo'shamiz
                 db.ref(`users/${cleanPhone}/used_promos/${activePromoCode}`).transaction(val => (val || 0) + 1);
-                
-                // DIQQAT: Umumiy limitni kamaytirmaymiz! 
-                // Chunki u raqam endi "qolgan soni" emas, balki "chegara qoidasi" bo'lib xizmat qiladi.
             }
-            // --------------------------
-            // ----------------------------------------------------
+            // ----------------------------------------
 
-            // 7. Tozalash va Xabar berish
+            // 8. Tozalash va Xabar berish
             cart = {}; 
             loc = null; 
             activePromo = null; 
-            activePromoCode = null; // Kod nomini ham o'chiramiz
+            activePromoCode = null;
             
             toast("✅ Buyurtma yuborildi!");
             
