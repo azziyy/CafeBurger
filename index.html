@@ -1179,78 +1179,73 @@ function openChatModal() {
         function loadHistory() {
     db.ref('orders').orderByChild('user_id').equalTo(user.phone).limitToLast(20).on('value', s => {
         const d = s.val();
-        
-        // Agar buyurtma bo'lmasa
         if (!d) {
-            document.getElementById('histList').innerHTML = "<div style='text-align:center; padding:40px; color:gray;'>Buyurtmalar tarixi bo'sh</div>";
+            document.getElementById('histList').innerHTML = ""; // Bo'sh bo'lsa tozalash
             return;
         }
 
         document.getElementById('histList').innerHTML = Object.values(d).reverse().map(o => {
-            let st = o.status; 
+            let st = o.status;
             
             // Standart qiymatlar
-            let cls = 'status-new'; 
+            let cls = 'status-new';
             let txt = 'YANGI';
 
-            // --- 1. QABUL QILINDI (Admin "Qabul qilish"ni bosganda) ---
-            if (['qabul_qilindi', 'accepted', 'active'].includes(st)) {
+            // 1. QABUL QILISH (Admin "Qabul qilish"ni ezganda)
+            // Bot bazaga "qabul_qilindi" deb yozadi
+            if (st == 'qabul_qilindi' || st == 'accepted') {
                 cls = 'status-cook';     
-                txt = 'QABUL QILINDI ✅';   
+                txt = 'QABUL QILINDI';   
             }
 
-            // --- 2. TAYYORLANMOQDA (Admin "Pishirish"ni bosganda) ---
-            // "cooking", "tayyorlanmoqda", "pishirilmoqda" so'zlarini taniydi
-            if (['tayyorlanmoqda', 'cooking', 'pishirilmoqda', 'tayyor'].includes(st)) {
+            // 2. TAYYORLANMOQDA (Admin "Pishirish"ni ezganda)
+            // Bot bazaga "tayyorlanmoqda" deb yozadi
+            if (st == 'tayyorlanmoqda' || st == 'cooking') {
                 cls = 'status-cook';     
-                txt = 'TAYYORLANMOQDA 👨‍🍳';   
+                txt = 'TAYYORLANMOQDA';   
             }
 
-            // --- 3. KURYERDA (Kuryerga berilganda yoki olib ketilganda) ---
-            if (['kuryerda', 'yetkazilmoqda', 'delivering', 'olib_ketildi', 'driver_picked', 'on_way'].includes(st)) {
+            // 3. KURYERDA (Kuryer "Olib ketdim"ni ezganda)
+            // Bot bazaga "yetkazilmoqda" yoki "kuryerda" deb yozadi
+            if (st == 'kuryerda' || st == 'yetkazilmoqda' || st == 'delivering' || st == 'olib_ketildi') {
                 cls = 'status-deliv';    
-                txt = 'KURYERDA 🛵';        
+                txt = 'KURYERDA';        
             }
 
-            // --- 4. YETKAZILDI (Yopilganda) ---
-            if (['yetkazildi', 'delivered', 'completed', 'bajarildi'].includes(st)) {
+            // 4. YETKAZILDI
+            if (st == 'yetkazildi' || st == 'delivered' || st == 'completed') {
                 cls = 'status-done';     
-                txt = 'YETKAZILDI 🏁';
-            }
-            
-            // --- 5. BEKOR QILINDI ---
-            if (['bekor_qilindi', 'canceled', 'rejected'].includes(st)) {
-                cls = 'status-new'; 
-                txt = 'BEKOR QILINDI ❌';
+                txt = 'YETKAZILDI';
             }
 
-            // --- TUGMA MANTIQI ---
-            // Agar status 'KURYERDA' bo'lsa va kuryer ID bor bo'lsa
-            let trk = '';
-            if (cls == 'status-deliv' && o.courier_id) {
-                trk = `<button class="track-btn" onclick="track('${o.courier_id}')">📍 Kuryerni Kuzatish</button>`;
+            // 5. BEKOR QILINDI
+            if (st == 'bekor_qilindi' || st == 'canceled') {
+                cls = 'status-new';
+                txt = 'BEKOR QILINDI';
             }
 
-            return `
-            <div class="hist-card ${cls}">
-                <div class="h-header">
-                    <span style="font-size:12px; color:gray;">${o.time}</span>
-                    <span class="h-badge">${txt}</span>
-                </div>
-                
-                <div style="font-size:14px; margin: 10px 0; line-height:1.5;">
-                    ${o.items.map(i => `${i.name} <b>x${i.qty}</b>`).join(', ')}
-                </div>
-                
-                <div style="font-size:18px; font-weight:800; color:var(--gold);">
-                    ${parseInt(o.total).toLocaleString()} so'm
-                </div>
-                
-                ${trk}
-            </div>`;
+            // Kuryerni kuzatish tugmasi (Faqat kuryerda bo'lsa chiqadi)
+            let trk = (cls == 'status-deliv' && o.courier_id) ? 
+                `<button class="track-btn" onclick="track('${o.courier_id}')">📍 Kuryerni Kuzatish</button>` : '';
+
+            // Ekranga chiqarish
+            return `<div class="hist-card ${cls}">
+                        <div class="h-header">
+                            <span style="font-size:12px;color:gray;">${o.time}</span>
+                            <span class="h-badge">${txt}</span>
+                        </div>
+                        <div style="font-size:14px;margin-bottom:10px;">
+                            ${o.items.map(i => `${i.name} x${i.qty}`).join(', ')}
+                        </div>
+                        <div style="font-size:18px;font-weight:800;">
+                            ${parseInt(o.total).toLocaleString()} so'm
+                        </div>
+                        ${trk}
+                    </div>`;
         }).join('');
     });
 }
+
 
 
 
