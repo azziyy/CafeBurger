@@ -412,12 +412,18 @@
     display: flex; 
     gap: 12px; 
     
-    /* 🔥 O'ZGARISH: Tepa 10px, Yonlar 15px, PAST 2px (Bo'sh joy qolmasligi uchun) */
-    padding: 10px 15px 2px 15px; 
+    /* 🔥 O'ZGARISH: 2px ni 0px qildik */
+    padding: 10px 15px 0px 15px; 
     
     overflow-x: auto; 
     scrollbar-width: none;
-    margin-top: 0; 
+    
+    margin-top: 0;
+    
+    /* 🔥 YANGI: Pastdan joy qoldirma deymiz */
+    margin-bottom: 0 !important; 
+}
+
     
     /* 🔥 O'ZGARISH: Tashqi masofani ham 0 qilamiz */
     margin-bottom: 0 !important;
@@ -800,20 +806,14 @@ body.light-mode .nav-btn.active::after {
 
 /* --- BANNER CAROUSEL (TOZA HOLAT) --- */
 .banner-wrap {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    gap: 15px;
+    /* ... boshqa kodlar turaversin ... */
+    
+    /* 🔥 1-O'ZGARISH: Padding boshini 0px qiling (Tepadan joy tashlamasin) */
+    /* Tepa 0 | O'ng 20 | Past 20 | Chap 20 */
+    padding: 0px 20px 20px 20px !important; 
 
-    /* Tepa: 10px (ozgina joy) | Yonlar va Past: 20px */
-    padding: 10px 20px 20px 20px; 
 
-    /* 🔥 O'ZGARISH: Hamma "negative margin" (-25px) olib tashlandi. Oddiy holatga qaytdi. */
-    margin-top: 0 !important; 
 
-    -webkit-overflow-scrolling: touch;
-    min-height: 160px;
-}
 
 /* Scrollbar ko'rinmasligi uchun */
 .banner-wrap::-webkit-scrollbar { display: none; }
