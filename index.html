@@ -787,28 +787,36 @@ body.light-mode .nav-btn.active::after {
 }
 
 
-/* --- BANNER CAROUSEL --- */
+/* --- BANNER CAROUSEL (YANGILANGAN) --- */
 .banner-wrap {
     display: flex;
     overflow-x: auto;
-    scroll-snap-type: x mandatory; /* Avtomatik markazga to'g'irlash */
+    scroll-snap-type: x mandatory; 
     gap: 15px;
-    padding: 0 20px 20px; /* Pastdan biroz joy */
-    -webkit-overflow-scrolling: touch; /* IPhone uchun silliq surilish */
+    
+    /* Tepa: 0 (muhim) | Yonlar va Past: 20px */
+    padding: 0 20px 20px 20px; 
+
+    /* 🔥 MUHIM: Bannerni tepaga 10px suramiz (Bo'sh joyni yopish uchun) */
+    margin-top: -10px !important; 
+
+    -webkit-overflow-scrolling: touch; 
+    min-height: 160px; 
 }
 
-/* Scrollbar ko'rinmasligi uchun */
+/* Scrollbar yashirish */
 .banner-wrap::-webkit-scrollbar { display: none; }
 
 .banner-item {
-    min-width: 85%; /* Ekranning 85% ini egallaydi (yonidagi ko'rinib turadi) */
+    min-width: 85%;
     height: 160px;
     border-radius: 20px;
     overflow: hidden;
-    scroll-snap-align: center; /* To'xtaganda o'rtada turadi */
+    scroll-snap-align: center;
     position: relative;
+    /* Soya beramiz */
     box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-    transition: transform 0.3s;
+    transition: transform 0.1s; 
 }
 
 .banner-item img {
@@ -817,10 +825,11 @@ body.light-mode .nav-btn.active::after {
     object-fit: cover;
 }
 
-/* Kichkina effekt: Bosganda sal kichrayadi */
+/* Bosganda chiroyli "ichiga kirish" effekti (Kattalashmaydi) */
 .banner-item:active {
-    transform: scale(0.98);
+    transform: scale(0.97);
 }
+
 
 
 
