@@ -755,48 +755,48 @@ body.light-mode .nav-btn.active::after {
 /* ================================================= */
 /* 🔥 STORIES VA BANNER UCHUN YAGONA TO'G'RI KOD 🔥 */
 /* ================================================= */
+/* ======================================================== */
+/* 🔥 STORIES VA BANNERNI BIRLASHTIRUVCHI YAGONA STYLE 🔥 */
+/* ======================================================== */
 
-/* --- 1. STORIES (DUMALOQ MENU) --- */
+/* --- 1. STORIES (DUMALOQCHA) --- */
 .stories-wrap {
     display: flex;
     align-items: center;
     gap: 15px;
     
-    /* Tepa: 10px | Yonlar: 15px | Past: 5px (Juda zich turishi uchun) */
-    padding: 10px 15px 5px 15px !important;
+    /* Tepa: 10px | Yonlar: 15px | PAST: 0px (Muhim!) */
+    padding: 10px 15px 0px 15px !important;
     
     overflow-x: auto;
-    scrollbar-width: none; /* Scrollbar ko'rinmasin */
+    scrollbar-width: none;
     
-    margin-top: 0;
-    margin-bottom: 0 !important; /* Pastdan joy tashlamasin */
-    height: auto; 
+    /* Pastdan umuman joy tashlamasin */
+    margin-bottom: 0 !important; 
+    
+    /* Balandlikni cheklaymiz, shunda ortiqcha joy yemaydi */
+    height: 90px !important; 
 }
 
-/* Scrollbar yashirish (Chrome/Safari) */
+/* Scrollbar yashirish */
 .stories-wrap::-webkit-scrollbar { display: none; }
 
 .story-c {
-    /* QAT'IY O'LCHAMLAR (Bu kod "tuxum" bo'lishini oldini oladi) */
-    width: 76px !important;
-    height: 76px !important;
-    min-width: 76px !important;
-    min-height: 76px !important;
-    
+    width: 74px !important;
+    height: 74px !important;
+    min-width: 74px !important;
+    min-height: 74px !important;
     border-radius: 50%;
-    padding: 3px; /* Chetidagi rangli chiziq uchun joy */
+    padding: 3px;
     background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366);
     position: relative;
-    flex-shrink: 0; /* Ezilib qolmasin */
+    flex-shrink: 0;
 }
 
 .story-c img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 3px solid var(--bg-body); /* Oradagi oq (yoki qora) chiziq */
-    object-fit: cover;
-    display: block;
+    width: 100%; height: 100%; border-radius: 50%;
+    border: 3px solid var(--bg-body); object-fit: cover;
+    display: block; /* Rasm tagidagi 2px joyni yo'qotadi */
 }
 
 /* --- 2. BANNER CAROUSEL (REKLAMA) --- */
@@ -806,75 +806,42 @@ body.light-mode .nav-btn.active::after {
     scroll-snap-type: x mandatory;
     gap: 15px;
 
-    /* Tepa: 0 (Storiesga taqaladi) | Yon va Past: 20px */
-    padding: 0 20px 20px 20px !important;
-    
-    margin-top: 0 !important; /* Ortiqcha masofa kerak emas */
+    /* Tepa: 0px (Muhim!) | Yon va Past: 20px */
+    padding: 0px 20px 20px 20px !important;
+
+    /* 🔥 ENG MUHIM JO: Bannerni tepaga 10px tortamiz */
+    margin-top: -10px !important; 
     
     -webkit-overflow-scrolling: touch;
     min-height: 160px;
+    
+    /* Stories ustiga chiqib ketmasligi uchun */
+    position: relative;
+    z-index: 1;
 }
 
-/* Scrollbar yashirish */
 .banner-wrap::-webkit-scrollbar { display: none; }
 
 .banner-item {
-    min-width: 85%; /* Ekranning 85% qismi */
+    min-width: 85%;
     height: 160px;
     border-radius: 20px;
     overflow: hidden;
     scroll-snap-align: center;
     position: relative;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    
-    /* Bosganda silliq ishlashi uchun */
     transition: transform 0.1s;
-    z-index: 1;
 }
 
 .banner-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: 100%; height: 100%; object-fit: cover;
+    display: block;
 }
 
-/* BOSGANDA KICHRAYISH EFFEKTI */
+/* Bosganda kichrayish effekti */
 .banner-item:active {
     transform: scale(0.97);
 }
-
-/* --- 3. FULL SCREEN STORY VIEW (KATTA EKRAN) --- */
-#storyViewer {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #000; z-index: 10000; display: none; flex-direction: column;
-}
-.s-bars { 
-    position: absolute; top: 15px; left: 10px; right: 10px; 
-    display: flex; gap: 5px; z-index: 10001; 
-}
-.s-bg { 
-    flex: 1; height: 3px; background: rgba(255,255,255,0.3); 
-    border-radius: 2px; overflow: hidden; 
-}
-.s-fill { height: 100%; background: #fff; width: 0%; }
-.s-fill.anim { animation: fillBar 5s linear forwards; }
-.s-fill.full { width: 100%; }
-
-@keyframes fillBar { to { width: 100%; } }
-
-.s-img { 
-    width: 100%; height: 100%; object-fit: contain; 
-}
-.s-close { 
-    position: absolute; top: 25px; right: 20px; font-size: 30px; 
-    color: white; z-index: 10002; cursor: pointer; text-shadow: 0 2px 10px black; 
-}
-.s-left, .s-right { 
-    position: absolute; top: 0; height: 100%; width: 40%; z-index: 10000; 
-}
-.s-left { left: 0; } 
-.s-right { right: 0; }
-
 
 
 
