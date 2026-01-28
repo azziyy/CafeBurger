@@ -1748,25 +1748,37 @@ function toggleTheme() {
     }
     
     
-    // --- BANNER CAROUSEL (YANGI) ---
+    // --- BANNER CAROUSEL (TUZATILGAN KOD) ---
 function loadBanners() {
-    // Bu yerga o'zingiz xohlagan rasm URLlarini yozasiz
+    console.log("Bannerlar yuklanmoqda..."); // Tekshirish uchun
+
     const banners = [
-        "https://img.freepik.com/free-psd/food-menu-restaurant-web-banner-template_106176-1444.jpg", // Aksiya 1
-        "https://img.freepik.com/free-psd/delicios-food-menu-social-media-banner-template_106176-417.jpg", // Aksiya 2
-        "https://img.freepik.com/premium-psd/delicious-burger-food-menu-web-banner-template_106176-402.jpg"  // Aksiya 3
+        "https://img.freepik.com/free-psd/food-menu-restaurant-web-banner-template_106176-1444.jpg",
+        "https://img.freepik.com/free-psd/delicios-food-menu-social-media-banner-template_106176-417.jpg",
+        "https://img.freepik.com/premium-psd/delicious-burger-food-menu-web-banner-template_106176-402.jpg"
     ];
 
     const container = document.getElementById('bannerCarousel');
-    if (!container) return;
 
-    // HTML yaratish
+    // Agar HTML da joyi bo'lmasa, xabar beramiz
+    if (!container) {
+        console.error("DIQQAT: 'bannerCarousel' ID li div topilmadi! index.html ni tekshiring.");
+        return;
+    }
+
+    // HTML yaratish (join ichidagi xato tuzatildi)
     container.innerHTML = banners.map(imgUrl => `
         <div class="banner-item tap">
-            <img src="${imgUrl}" loading="lazy">
+            <img src="${imgUrl}" loading="lazy" alt="Banner">
         </div>
-    `).join('');
+    `).join(''); // <-- MANA SHU YERDA (.join('')) BO'LISHI SHART
 }
+
+// Funksiyani darhol ishga tushiramiz
+loadBanners();
+
+// Sahifa to'liq yuklanganda ham qayta ishga tushiramiz (Ehtiyot shart)
+window.addEventListener('DOMContentLoaded', loadBanners);
 
     
 </script>
