@@ -751,16 +751,129 @@ body.light-mode .nav-btn.active::after {
 }
 
 
-/* --- BANNER CAROUSEL (TOZA HOLAT) --- */
-.banner-wrap {
-    /* ... boshqa kodlar turaversin ... */
+
+/* ================================================= */
+/* 🔥 STORIES VA BANNER UCHUN YAGONA TO'G'RI KOD 🔥 */
+/* ================================================= */
+
+/* --- 1. STORIES (DUMALOQ MENU) --- */
+.stories-wrap {
+    display: flex;
+    align-items: center;
+    gap: 15px;
     
-    /* 🔥 1-O'ZGARISH: Padding boshini 0px qiling (Tepadan joy tashlamasin) */
-    /* Tepa 0 | O'ng 20 | Past 20 | Chap 20 */
-    padding: 0px 20px 20px 20px !important; 
+    /* Tepa: 10px | Yonlar: 15px | Past: 5px (Juda zich turishi uchun) */
+    padding: 10px 15px 5px 15px !important;
+    
+    overflow-x: auto;
+    scrollbar-width: none; /* Scrollbar ko'rinmasin */
+    
+    margin-top: 0;
+    margin-bottom: 0 !important; /* Pastdan joy tashlamasin */
+    height: auto; 
+}
 
+/* Scrollbar yashirish (Chrome/Safari) */
+.stories-wrap::-webkit-scrollbar { display: none; }
 
+.story-c {
+    /* QAT'IY O'LCHAMLAR (Bu kod "tuxum" bo'lishini oldini oladi) */
+    width: 76px !important;
+    height: 76px !important;
+    min-width: 76px !important;
+    min-height: 76px !important;
+    
+    border-radius: 50%;
+    padding: 3px; /* Chetidagi rangli chiziq uchun joy */
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366);
+    position: relative;
+    flex-shrink: 0; /* Ezilib qolmasin */
+}
 
+.story-c img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid var(--bg-body); /* Oradagi oq (yoki qora) chiziq */
+    object-fit: cover;
+    display: block;
+}
+
+/* --- 2. BANNER CAROUSEL (REKLAMA) --- */
+.banner-wrap {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 15px;
+
+    /* Tepa: 0 (Storiesga taqaladi) | Yon va Past: 20px */
+    padding: 0 20px 20px 20px !important;
+    
+    margin-top: 0 !important; /* Ortiqcha masofa kerak emas */
+    
+    -webkit-overflow-scrolling: touch;
+    min-height: 160px;
+}
+
+/* Scrollbar yashirish */
+.banner-wrap::-webkit-scrollbar { display: none; }
+
+.banner-item {
+    min-width: 85%; /* Ekranning 85% qismi */
+    height: 160px;
+    border-radius: 20px;
+    overflow: hidden;
+    scroll-snap-align: center;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    
+    /* Bosganda silliq ishlashi uchun */
+    transition: transform 0.1s;
+    z-index: 1;
+}
+
+.banner-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* BOSGANDA KICHRAYISH EFFEKTI */
+.banner-item:active {
+    transform: scale(0.97);
+}
+
+/* --- 3. FULL SCREEN STORY VIEW (KATTA EKRAN) --- */
+#storyViewer {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #000; z-index: 10000; display: none; flex-direction: column;
+}
+.s-bars { 
+    position: absolute; top: 15px; left: 10px; right: 10px; 
+    display: flex; gap: 5px; z-index: 10001; 
+}
+.s-bg { 
+    flex: 1; height: 3px; background: rgba(255,255,255,0.3); 
+    border-radius: 2px; overflow: hidden; 
+}
+.s-fill { height: 100%; background: #fff; width: 0%; }
+.s-fill.anim { animation: fillBar 5s linear forwards; }
+.s-fill.full { width: 100%; }
+
+@keyframes fillBar { to { width: 100%; } }
+
+.s-img { 
+    width: 100%; height: 100%; object-fit: contain; 
+}
+.s-close { 
+    position: absolute; top: 25px; right: 20px; font-size: 30px; 
+    color: white; z-index: 10002; cursor: pointer; text-shadow: 0 2px 10px black; 
+}
+.s-left, .s-right { 
+    position: absolute; top: 0; height: 100%; width: 40%; z-index: 10000; 
+}
+.s-left { left: 0; } 
+.s-right { right: 0; }
 
 
 
