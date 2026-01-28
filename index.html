@@ -434,7 +434,12 @@
     .s-fill.full { width: 100%; }
     @keyframes fillBar { to { width: 100%; } }
     
-    .s-img { width: 100%; height: 100%; object-fit: contain; }
+    .s-img { 
+    width: 100vw;       /* Ekranning to'liq eni */
+    height: 100vh;      /* Ekranning to'liq bo'yi */
+    object-fit: cover;   /* Rasmni ekranga to'liq yoyish (chetlari biroz kesilishi mumkin) */
+}
+
     .s-close { position: absolute; top: 25px; right: 20px; font-size: 30px; color: white; z-index: 10002; cursor: pointer; text-shadow: 0 2px 10px black; }
     .s-left, .s-right { position: absolute; top: 0; height: 100%; width: 40%; z-index: 10000; }
     .s-left { left: 0; } .s-right { right: 0; }
@@ -800,8 +805,9 @@ body.light-mode .nav-btn.active::after {
             <p>Premium Service</p>
         </div>
         <div id="themeBtn" class="d-item tap" onclick="toggleTheme()">
-    <i class="fa fa-moon"></i> Tungi rejim
+    <i class="fa fa-sun"></i> Kunduzgi rejim
 </div>
+
         <div class="d-item tap" onclick="openModal('contactModal'); toggleDrawer()"><i class="fa fa-headset"></i> Bog'lanish</div>
         <div class="d-item tap" onclick="location.reload()"><i class="fa fa-sync"></i> Yangilash</div>
         <div class="d-item tap" style="margin-top:auto; color:var(--danger); border-color:rgba(239,68,68,0.2);" onclick="logout()"><i class="fa fa-sign-out-alt"></i> Chiqish</div>
