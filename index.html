@@ -786,6 +786,44 @@ body.light-mode .nav-btn.active::after {
     z-index: 1;
 }
 
+
+/* --- BANNER CAROUSEL --- */
+.banner-wrap {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory; /* Avtomatik markazga to'g'irlash */
+    gap: 15px;
+    padding: 0 20px 20px; /* Pastdan biroz joy */
+    -webkit-overflow-scrolling: touch; /* IPhone uchun silliq surilish */
+}
+
+/* Scrollbar ko'rinmasligi uchun */
+.banner-wrap::-webkit-scrollbar { display: none; }
+
+.banner-item {
+    min-width: 85%; /* Ekranning 85% ini egallaydi (yonidagi ko'rinib turadi) */
+    height: 160px;
+    border-radius: 20px;
+    overflow: hidden;
+    scroll-snap-align: center; /* To'xtaganda o'rtada turadi */
+    position: relative;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    transition: transform 0.3s;
+}
+
+.banner-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Kichkina effekt: Bosganda sal kichrayadi */
+.banner-item:active {
+    transform: scale(0.98);
+}
+
+
+
 </style>
 </head>
 <body>
@@ -821,6 +859,23 @@ body.light-mode .nav-btn.active::after {
 
     <div id="p-menu" class="page-cont active" style="padding-top:60px;">
         <div id="storiesContainer" class="stories-wrap"></div>
+            <div id="p-menu" class="page-cont active" style="padding-top:60px;">
+        <div id="storiesContainer" class="stories-wrap"></div>
+        
+        
+        
+        
+        
+        <div id="bannerCarousel" class="banner-wrap"></div>
+        
+        <div id="catNav" class="cat-bar"></div>
+        
+        <div id="menuGrid" class="grid"></div>
+    </div>
+    
+    
+    
+    
         <div id="catNav" class="cat-bar"></div>
         <div id="menuGrid" class="grid"></div>
     </div>
@@ -1691,6 +1746,29 @@ function toggleTheme() {
             map.panTo([d.lat, d.long]); 
         });
     }
+    
+    
+    // --- BANNER CAROUSEL (YANGI) ---
+function loadBanners() {
+    // Bu yerga o'zingiz xohlagan rasm URLlarini yozasiz
+    const banners = [
+        "https://img.freepik.com/free-psd/food-menu-restaurant-web-banner-template_106176-1444.jpg", // Aksiya 1
+        "https://img.freepik.com/free-psd/delicios-food-menu-social-media-banner-template_106176-417.jpg", // Aksiya 2
+        "https://img.freepik.com/premium-psd/delicious-burger-food-menu-web-banner-template_106176-402.jpg"  // Aksiya 3
+    ];
+
+    const container = document.getElementById('bannerCarousel');
+    if (!container) return;
+
+    // HTML yaratish
+    container.innerHTML = banners.map(imgUrl => `
+        <div class="banner-item tap">
+            <img src="${imgUrl}" loading="lazy">
+        </div>
+    `).join('');
+}
+
+    
 </script>
 
 </body>
