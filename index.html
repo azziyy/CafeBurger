@@ -787,24 +787,28 @@ body.light-mode .nav-btn.active::after {
 }
 
 
-/* --- BANNER CAROUSEL (YANGILANGAN) --- */
+/* --- BANNER CAROUSEL (KUCHAYTIRILGAN) --- */
 .banner-wrap {
     display: flex;
     overflow-x: auto;
-    scroll-snap-type: x mandatory; 
+    scroll-snap-type: x mandatory;
     gap: 15px;
     
-    /* Tepa: 0 (muhim) | Yonlar va Past: 20px */
-    padding: 0 20px 20px 20px; 
+    /* Tepa: 0 | Yonlar: 20px | Past: 20px */
+    padding: 0 20px 20px 20px !important; 
 
-    /* 🔥 MUHIM: Bannerni tepaga 10px suramiz (Bo'sh joyni yopish uchun) */
-    margin-top: -10px !important; 
-
-    -webkit-overflow-scrolling: touch; 
-    min-height: 160px; 
+    /* 🔥 O'ZGARISH: -10px o'rniga -25px qildik. Bu bannerni keskin tepaga tortadi */
+    margin-top: -25px !important; 
+    
+    -webkit-overflow-scrolling: touch;
+    min-height: 160px;
+    
+    /* Agar stories ustiga chiqib ketmasligi uchun */
+    position: relative;
+    z-index: 1;
 }
 
-/* Scrollbar yashirish */
+/* Scrollbar ko'rinmasligi uchun */
 .banner-wrap::-webkit-scrollbar { display: none; }
 
 .banner-item {
@@ -814,9 +818,8 @@ body.light-mode .nav-btn.active::after {
     overflow: hidden;
     scroll-snap-align: center;
     position: relative;
-    /* Soya beramiz */
     box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-    transition: transform 0.1s; 
+    transition: transform 0.1s;
 }
 
 .banner-item img {
@@ -825,10 +828,11 @@ body.light-mode .nav-btn.active::after {
     object-fit: cover;
 }
 
-/* Bosganda chiroyli "ichiga kirish" effekti (Kattalashmaydi) */
+/* Bosganda tugmadek kichrayish effekti */
 .banner-item:active {
-    transform: scale(0.97);
+    transform: scale(0.80);
 }
+
 
 
 
